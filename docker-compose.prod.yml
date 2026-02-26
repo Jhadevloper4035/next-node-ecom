@@ -1,0 +1,46 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose.prod.yml — production overrides
+#
+# Usage:
+#   cp .env.production.example .env.production
+#   cp frontend/.env.production.example frontend/.env.production
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Changes vs dev:
+#   • backend/frontend use production images (no bind-mounts)
+#   • NODE_ENV forced to production
+#   • mongo/redis ports not exposed
+#   • mailpit disabled (use real SMTP in .env.production)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    command: node src/server.js
+    env_file:
+      - ./.env.production
+    environment:
+      NODE_ENV: production
+      COOKIE_SECURE: "true"
+    volumes: []
+
+  frontend:
+    build:
+      context: ./frontend
+      target: runner
+    env_file:
+      - ./frontend/.env.production
+    environment:
+      NODE_ENV: production
+    volumes: []
+
+  mongo:
+    ports: []
+
+  redis:
+    ports: []
+
+  mailpit:
+    profiles: ["donotstart"]

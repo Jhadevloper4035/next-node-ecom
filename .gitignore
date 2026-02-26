@@ -1,0 +1,12 @@
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.staging
+.env.example
+.env.backup
+.env.dev.local
+frontend/.env.development
+frontend/.env.production
+.env*

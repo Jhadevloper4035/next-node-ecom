@@ -5,9 +5,13 @@ const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss");
 const { env } = require("./config/env");
-const routes = require("./routes/auth");
+
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
+
+
+const authRoutes = require("./routes/auth");
+const categoryRoutes = require("./routes/category")
 
 const app = express();
 
@@ -37,7 +41,9 @@ app.use((req, _res, next) => { console.log(req.method, req.originalUrl); next();
 
 app.get("/", (_req, res) => res.json({ ok: true, name: env.appName }));
 
-app.use("/api/v1/", routes);
+app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/", authRoutes);
+
 
 
 app.use(notFound);

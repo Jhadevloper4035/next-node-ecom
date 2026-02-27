@@ -62,6 +62,11 @@ ps:
 backend-sh:
 	$(COMPOSE) exec backend sh
 
+dev-backend-logs:
+	docker logs -f ecom_backend 
+dev-frontend-logs:
+	docker logs -f ecom_frontend
+
 frontend-sh:
 	$(COMPOSE) exec frontend sh
 

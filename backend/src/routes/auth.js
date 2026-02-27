@@ -14,29 +14,29 @@ const {
   updateRoleSchema, blockUserSchema, listUsersSchema,
 } = require("../validators");
 
-const r = express.Router();
+const router = express.Router();
 
 // Health
-r.get("/health", healthCtrl.health);
+router.get("/health", healthCtrl.health);
 
 // Auth
-r.post("/auth/register", authLimiter, validate(registerSchema), authCtrl.register);
-r.post("/auth/verify-otp", authLimiter, otpVerifyLimiter, validate(verifyOtpSchema), authCtrl.verifyOtp);
-r.post("/auth/resend-otp", authLimiter, validate(resendOtpSchema), authCtrl.resendOtp);
-r.post("/auth/login", authLimiter, loginLimiter, validate(loginSchema), authCtrl.login);
-r.post("/auth/refresh", authLimiter, validate(refreshSchema), authCtrl.refresh);
-r.post("/auth/logout", authLimiter, validate(refreshSchema), authCtrl.logout);
-r.get("/auth/me", auth, authCtrl.me);
-r.post("/auth/forgot-password", authLimiter, validate(forgotPasswordSchema), authCtrl.forgotPassword);
-r.post("/auth/reset-password", authLimiter, validate(resetPasswordSchema), authCtrl.resetPassword);
+router.post("/auth/register", authLimiter, validate(registerSchema), authCtrl.register);
+router.post("/auth/verify-otp", authLimiter, otpVerifyLimiter, validate(verifyOtpSchema), authCtrl.verifyOtp);
+router.post("/auth/resend-otp", authLimiter, validate(resendOtpSchema), authCtrl.resendOtp);
+router.post("/auth/login", authLimiter, loginLimiter, validate(loginSchema), authCtrl.login);
+router.post("/auth/refresh", authLimiter, validate(refreshSchema), authCtrl.refresh);
+router.post("/auth/logout", authLimiter, validate(refreshSchema), authCtrl.logout);
+router.get("/auth/me", auth, authCtrl.me);
+router.post("/auth/forgot-password", authLimiter, validate(forgotPasswordSchema), authCtrl.forgotPassword);
+router.post("/auth/reset-password", authLimiter, validate(resetPasswordSchema), authCtrl.resetPassword);
 
 // User (requires login)
-r.get("/users/profile", auth, userCtrl.getProfile);
-r.patch("/users/profile", auth, validate(updateProfileSchema), userCtrl.updateProfile);
+router.get("/users/profile", auth, userCtrl.getProfile);
+router.patch("/users/profile", auth, validate(updateProfileSchema), userCtrl.updateProfile);
 
 // Admin (requires login + admin role)
-r.get("/admin/users", auth, requireRole("admin"), validate(listUsersSchema, "query"), adminCtrl.listUsers);
-r.patch("/admin/users/:id/role", auth, requireRole("admin"), validate(updateRoleSchema), adminCtrl.updateUserRole);
-r.patch("/admin/users/:id/block", auth, requireRole("admin"), validate(blockUserSchema), adminCtrl.blockUser);
+router.get("/admin/users", auth, requireRole("admin"), validate(listUsersSchema, "query"), adminCtrl.listUsers);
+router.patch("/admin/users/:id/role", auth, requireRole("admin"), validate(updateRoleSchema), adminCtrl.updateUserRole);
+router.patch("/admin/users/:id/block", auth, requireRole("admin"), validate(blockUserSchema), adminCtrl.blockUser);
 
-module.exports = r;
+module.exports = router;

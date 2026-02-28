@@ -1,9 +1,27 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Nav from "./Nav";
 import Image from "next/image";
 import Link from "next/link";
 import CartLength from "../common/CartLength";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "@/redux/authSlice";
+import { useRouter } from "next/navigation";
+
 export default function Header1({ fullWidth = false }) {
+  const { user, token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [name, setName] = useState("User");
+
+  console.log("Auth state in Header:", user);
+  const handleLogout = () => {
+    dispatch(logout());
+    setShowDropdown(false);
+    router.push("/");
+  };
   return (
     <header
       id="header"
@@ -73,7 +91,14 @@ export default function Header1({ fullWidth = false }) {
                 </a>
               </li>
               <li className="nav-account">
-                <a href="#" className="nav-icon-item">
+                <a
+                  href="#"
+                  className="nav-icon-item"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowDropdown((prev) => !prev);
+                  }}
+                >
                   <svg
                     className="icon"
                     width={24}
@@ -98,20 +123,73 @@ export default function Header1({ fullWidth = false }) {
                     />
                   </svg>
                 </a>
-                <div className="dropdown-account dropdown-login">
-                  <div className="sub-top">
-                    <Link href={`/login`} className="tf-btn btn-reset">
-                      Login
-                    </Link>
-                    <p className="text-center text-secondary-2">
-                      Don’t have an account?{" "}
-                      <Link href={`/register`}>Register</Link>
-                    </p>
+                {/* dropdown content toggles based on auth state */}
+                {showDropdown && (
+                  <div className="dropdown-account shadow-lg rounded-3">
+                    {token && user ? (
+                      <div className="dropdown-content">
+                        {/* User Info */}
+                        <div className="dropdown-header text-center border-bottom pb-3 mb-3">
+                          {/* <div className="avatar-circle mb-2">
+                            {user.fullName?.charAt(0)?.toUpperCase() ||
+                              user.email?.charAt(0)?.toUpperCase()}
+                          </div> */}
+                          <p className="mb-0 mt-2 fw-semibold">{name}</p>
+                          <small className="text-secondary-2">Welcome 👋</small>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="dropdown-actions d-grid gap-2 mb-2">
+                          <Link
+                            href="/profile"
+                            className="tf-btn btn-reset w-100"
+                          >
+                            View Profile
+                          </Link>
+
+                          <Link
+                            href="/reset-password"
+                            className="tf-btn btn-reset w-100"
+                          >
+                            Reset Password
+                          </Link>
+
+                          <button
+                            onClick={handleLogout}
+                            className="tf-btn btn-reset w-100 logout-btn"
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="dropdown-content">
+                        <div className="dropdown-actions d-grid gap-2 mt-2 mb-2">
+                          <Link
+                            href="/login"
+                            className="tf-btn btn-reset w-100"
+                          >
+                            Login
+                          </Link>
+
+                          <Link
+                            href="/register"
+                            className="tf-btn btn-reset w-100 logout-btn"
+                          >
+                            Create Account
+                          </Link>
+                        </div>
+
+                        <div className="dropdown-footer text-center mt-3 pt-3 border-top">
+                          <small className="text-secondary-2">
+                            Need help?{" "}
+                            <Link href="/support">Contact Support</Link>
+                          </small>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="sub-bot">
-                    <span className="body-text-">Support</span>
-                  </div>
-                </div>
+                )}
               </li>
               <li className="nav-wishlist">
                 <Link href={`/wish-list`} className="nav-icon-item">

@@ -1,13 +1,102 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { login as loginService } from "@/services/auth/login.service";
+import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
+import { useToast } from "@/components/common/ToastContext";
+
 export default function Login() {
   const [passwordType, setPasswordType] = useState("password");
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const toast = useToast();
 
   const togglePassword = () => {
     setPasswordType((prevType) =>
-      prevType === "password" ? "text" : "password"
+      prevType === "password" ? "text" : "password",
     );
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setError("");
+  };
+
+  const validateForm = () => {
+    if (!formData.email || !formData.password) {
+      const msg = "Please fill in all fields";
+      setError(msg);
+      toast(msg, "warning");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      const msg = "Please enter a valid email address";
+      setError(msg);
+      toast(msg, "warning");
+      return false;
+    }
+    return true;
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      dispatch(loginStart());
+      const response = await loginService(formData.email, formData.password);
+
+      if (response.otpRequired) {
+        // redirect to standalone OTP verification page
+        router.push(
+          `/otp-verification?email=${encodeURIComponent(formData.email)}`,
+        );
+      } else if (response.accessToken) {
+        // Login successful, response contains token and user
+        // optionally call getMe for latest user data
+        try {
+          const me = await import("@/services/auth/me.service").then((m) =>
+            m.getMe(),
+          );
+          dispatch(
+            loginSuccess({
+              user: me.data || response.user,
+              token: response.accessToken,
+            }),
+          );
+        } catch (meErr) {
+          // fall back
+          dispatch(
+            loginSuccess({
+              user: response.user,
+              token: response.accessToken,
+            }),
+          );
+        }
+        // wait for state update and storage write before redirecting
+        toast("Logged in successfully", "success");
+        setTimeout(() => {
+          router.push("/");
+        }, 200);
+      }
+    } catch (err) {
+      const errorMessage = err?.message || "Login failed. Please try again.";
+      setError(errorMessage);
+      dispatch(loginFailure(errorMessage));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -19,9 +108,14 @@ export default function Login() {
               <h4>Login</h4>
             </div>
             <form
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleLogin}
               className="form-login form-has-password"
             >
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
               <div className="wrap">
                 <fieldset className="">
                   <input
@@ -30,9 +124,11 @@ export default function Login() {
                     placeholder="Username or email address*"
                     name="email"
                     tabIndex={2}
-                    defaultValue=""
+                    value={formData.email}
+                    onChange={handleInputChange}
                     aria-required="true"
                     required
+                    disabled={isLoading}
                   />
                 </fieldset>
                 <fieldset className="position-relative password-item">
@@ -42,9 +138,11 @@ export default function Login() {
                     placeholder="Password*"
                     name="password"
                     tabIndex={2}
-                    defaultValue=""
+                    value={formData.password}
+                    onChange={handleInputChange}
                     aria-required="true"
                     required
+                    disabled={isLoading}
                   />
                   <span
                     className={`toggle-password ${
@@ -84,8 +182,14 @@ export default function Login() {
                 </div>
               </div>
               <div className="button-submit">
-                <button className="tf-btn btn-fill" type="submit">
-                  <span className="text text-button">Login</span>
+                <button
+                  className="tf-btn btn-fill"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  <span className="text text-button">
+                    {isLoading ? "Logging in..." : "Login"}
+                  </span>
                 </button>
               </div>
             </form>

@@ -18369,4 +18369,155 @@ ul.list-text.type-number {
   }
 }
 
+.dropdown-account {
+  width: 270px;
+  background: var(--white);
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Header */
+.dropdown-header {
+  text-align: center;
+}
+
+.dropdown-header p {
+  font-size: 15px;
+  color: var(--dark);
+}
+
+.dropdown-header small {
+  font-size: 12px;
+  color: var(--secondary);
+}
+
+/* Avatar */
+.avatar-circle {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #6a5af9);
+  color: #fff;
+  font-weight: 600;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Buttons */
+.dropdown-actions .tf-btn {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.dropdown-actions .tf-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Normal action buttons */
+.dropdown-actions a.tf-btn {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.dropdown-actions a.tf-btn:hover {
+  background: var(--primary);
+  color: #fff !important;
+  border-color: var(--primary);
+}
+
+/* Logout Button */
+.logout-btn {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  background: rgba(220, 53, 69, 0.05);
+}
+
+.logout-btn:hover {
+  background: #dc3545;
+  color: #fff !important;
+  border-color: #dc3545;
+}
+
+/* Footer */
+.dropdown-footer {
+  font-size: 13px;
+}
+
+.dropdown-footer a {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.dropdown-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  color: var(--dark);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  background: var(--primary);
+  color: #fff !important;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* REGISTER BUTTON (Primary Action) */
+.register-btn {
+  background: var(--primary);
+  color: #fff !important;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.register-btn:hover {
+  background: #000; /* or darker primary if you have one */
+  border-color: #000;
+  transform: translateY(-2px);
+}
+
+/* Footer polish */
+.dropdown-footer {
+  font-size: 13px;
+  color: var(--secondary);
+}
+
+.dropdown-footer a {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.dropdown-footer a:hover {
+  text-decoration: underline;
+}
+
+
+
 /*# sourceMappingURL=styles.css.map */

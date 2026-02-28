@@ -1,7 +1,45 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { forgotPassword } from "@/services/auth/forgot.service";
+import { useToast } from "@/components/common/ToastContext";
+
 export default function ForgotPass() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setMessage("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      const msg = "Please enter a valid email address";
+      setError(msg);
+      toast(msg, "warning");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await forgotPassword(email);
+      const msg = "If the email exists, you'll receive a reset link shortly.";
+      setMessage(msg);
+      toast(msg, "info");
+    } catch (err) {
+      const errMsg = err?.message || "Failed to send email. Please try again.";
+      setError(errMsg);
+      toast(errMsg, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section className="flat-spacing">
       <div className="container">
@@ -11,7 +49,7 @@ export default function ForgotPass() {
               <h4 className="mb_8">Reset your password</h4>
               <p>We will send you an email to reset your password</p>
             </div>
-            <form onSubmit={(e) => e.preventDefault()} className="form-login">
+            <form onSubmit={handleSubmit} className="form-login">
               <div className="wrap">
                 <fieldset className="">
                   <input
@@ -20,7 +58,8 @@ export default function ForgotPass() {
                     placeholder="Username or email address*"
                     name="email"
                     tabIndex={2}
-                    defaultValue=""
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     aria-required="true"
                     required
                   />
@@ -31,6 +70,8 @@ export default function ForgotPass() {
                   <span className="text text-button">Submit</span>
                 </button>
               </div>
+              {message && <p className="text-success mt-2">{message}</p>}
+              {error && <p className="text-danger mt-2">{error}</p>}
             </form>
           </div>
           <div className="right">

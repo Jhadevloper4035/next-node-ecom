@@ -23,6 +23,8 @@ import DemoModal from "@/components/modals/DemoModal";
 import Categories from "@/components/modals/Categories";
 import RtlToggler from "@/components/common/RtlToggler";
 import AccountSidebar from "@/components/modals/AccountSidebar";
+import AuthHydrator from "@/components/common/AuthHydrator";
+import { ToastProvider } from "@/components/common/ToastContext";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -128,8 +130,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="preload-wrapper popup-loader">
         <Provider store={store}>
-          <RtlToggler />
-          <div id="wrapper">{children}</div>
+          <ToastProvider>
+            <AuthHydrator />
+            <RtlToggler />
+            <div id="wrapper">{children}</div>
           <CartModal />
           <QuickView />
           <QuickAdd />
@@ -143,6 +147,7 @@ export default function RootLayout({ children }) {
           <DemoModal />
           <Categories />
           <AccountSidebar />
+          </ToastProvider>
         </Provider>
       </body>
     </html>

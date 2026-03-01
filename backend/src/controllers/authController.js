@@ -77,7 +77,7 @@ async function sendOtp(user) {
   return { sent: true };
 }
 
-const register = asyncHandler(async (req, res) => {
+exports.register = asyncHandler(async (req, res) => {
   const { fullName, email, password, mobileNumber } = req.body;
   let user = await User.findOne({ email });
 
@@ -96,7 +96,7 @@ const register = asyncHandler(async (req, res) => {
   return res.status(201).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
 });
 
-const resendOtp = asyncHandler(async (req, res) => {
+exports.resendOtp = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user || user.isEmailVerified) {
     return res.status(200).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
@@ -106,7 +106,7 @@ const resendOtp = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
 });
 
-const verifyOtp = asyncHandler(async (req, res) => {
+exports.verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
   const user = await User.findOne({ email });
 
@@ -128,7 +128,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "Email verified successfully", data: { user: toSafeUser(user), ...tokens } }));
 });
 
-const login = asyncHandler(async (req, res) => {
+exports.login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
@@ -147,7 +147,7 @@ const login = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "Logged in successfully", data: { user: toSafeUser(user), ...tokens } }));
 });
 
-const refresh = asyncHandler(async (req, res) => {
+exports.refresh = asyncHandler(async (req, res) => {
   const token = req.cookies?.[env.cookieName] || req.body?.refreshToken;
   if (!token) throw new ApiError(401, "Unauthorized");
 
@@ -174,7 +174,7 @@ const refresh = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "Token refreshed", data: tokens }));
 });
 
-const logout = asyncHandler(async (req, res) => {
+exports.logout = asyncHandler(async (req, res) => {
   const token = req.cookies?.[env.cookieName] || req.body?.refreshToken;
 
   if (token) {
@@ -197,11 +197,11 @@ const logout = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "Logged out", data: null }));
 });
 
-const me = asyncHandler(async (req, res) => {
+exports.me = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "OK", data: { user: toSafeUser(req.userDoc) } }));
 });
 
-const forgotPassword = asyncHandler(async (req, res) => {
+exports.forgotPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
   console.log("Found user:", user);
@@ -227,7 +227,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "If an account exists, a password reset link has been sent to your email.", data: null }));
 });
 
-const resetPassword = asyncHandler(async (req, res) => {
+exports.resetPassword = asyncHandler(async (req, res) => {
   const tokenHash = crypto.createHash("sha256").update(req.body.token).digest("hex");
   const user = await User.findOne({ passwordResetTokenHash: tokenHash, passwordResetExpiresAt: { $gt: new Date() } });
 
@@ -244,4 +244,16 @@ const resetPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse({ message: "Password reset successful. Please login again.", data: null }));
 });
 
-module.exports = { register, resendOtp, verifyOtp, login, refresh, logout, me, forgotPassword, resetPassword };
+exports.changePassword = asyncHandler(async (req, res) => {
+  const user = req.userDoc;
+
+  if (user.isBlocked) throw new ApiError(403, "Account blocked");
+  if (!await user.comparePassword(req.body.currentPassword)) throw new ApiError(400, "Current password is incorrect");
+
+  user.password = req.body.newPassword;
+  user.refreshTokens = [];
+  await user.save();
+
+  res.clearCookie(env.cookieName, cookieOptions());
+  return res.status(200).json(new ApiResponse({ message: "Password changed successfully. Please login again.", data: null }));
+});

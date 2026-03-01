@@ -7,7 +7,7 @@ const makeSlug = (name) => slugify(name, { lower: true, strict: true, trim: true
 
 // ---------- CATEGORY ----------
 
-const createCategory = async (req, res) => {
+exports.createCategory = async (req, res) => {
   try {
     const { name, parent, ...rest } = req.body;
 
@@ -43,7 +43,7 @@ const createCategory = async (req, res) => {
   }
 };
 
-const updateCategory = async (req, res) => {
+exports.updateCategory = async (req, res) => {
   try {
     const update = { ...req.body };
 
@@ -77,7 +77,7 @@ const updateCategory = async (req, res) => {
   }
 };
 
-const getCategories = async (req, res) => {
+exports.getCategories = async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page || "1", 10), 1);
     const limit = Math.min(Math.max(parseInt(req.query.limit || "20", 10), 1), 100);
@@ -116,7 +116,7 @@ const getCategories = async (req, res) => {
   }
 };
 
-const getCategoryById = async (req, res) => {
+exports.getCategoryById = async (req, res) => {
   try {
     const doc = await Category.findOne({ _id: req.params.id, isDeleted: false }).lean();
     if (!doc) return sendError(res, "Category not found", 404);
@@ -126,7 +126,7 @@ const getCategoryById = async (req, res) => {
   }
 };
 
-const getCategoryBySlug = async (req, res) => {
+exports.getCategoryBySlug = async (req, res) => {
   try {
     const doc = await Category.findOne({ slug: req.params.slug.toLowerCase(), isDeleted: false }).lean();
     if (!doc) return sendError(res, "Category not found", 404);
@@ -136,7 +136,7 @@ const getCategoryBySlug = async (req, res) => {
   }
 };
 
-const deleteCategory = async (req, res) => {
+exports.deleteCategory = async (req, res) => {
   try {
     const doc = await Category.findOne({ _id: req.params.id, isDeleted: false });
     if (!doc) return sendError(res, "Category not found", 404);
@@ -152,7 +152,7 @@ const deleteCategory = async (req, res) => {
   }
 };
 
-const restoreCategory = async (req, res) => {
+exports.restoreCategory = async (req, res) => {
   try {
     const doc = await Category.findOne({ _id: req.params.id, isDeleted: true });
     if (!doc) return sendError(res, "Deleted category not found", 404);
@@ -168,9 +168,12 @@ const restoreCategory = async (req, res) => {
   }
 };
 
-const getCategoryTree = async (req, res) => {
+exports.getCategoryTree = async (req, res) => {
   try {
-    const categories = await Category.find({ isDeleted: false }).sort({ displayOrder: 1, name: 1 }).lean();
+    const categories = await Category.find({ isDeleted: false })
+      .select("_id name slug parent  level")
+      .sort({ displayOrder: 1, name: 1 })
+      .lean();
 
     const map = new Map();
     const tree = [];
@@ -193,7 +196,7 @@ const getCategoryTree = async (req, res) => {
   }
 };
 
-const getCategoryStats = async (req, res) => {
+exports.getCategoryStats = async (req, res) => {
   try {
     const [total, active, deleted] = await Promise.all([
       Category.countDocuments({}),
@@ -207,7 +210,7 @@ const getCategoryStats = async (req, res) => {
   }
 };
 
-const bulkUpdateCategories = async (req, res) => {
+exports.bulkUpdateCategories = async (req, res) => {
   try {
     const { ids, ...updateData } = req.body;
 
@@ -224,7 +227,7 @@ const bulkUpdateCategories = async (req, res) => {
   }
 };
 
-const bulkDeleteCategories = async (req, res) => {
+exports.bulkDeleteCategories = async (req, res) => {
   try {
     const { ids } = req.body;
 
@@ -241,7 +244,7 @@ const bulkDeleteCategories = async (req, res) => {
 
 // ---------- SUBCATEGORY ----------
 
-const createSubcategory = async (req, res) => {
+exports.createSubcategory = async (req, res) => {
   try {
     const parentId = req.params.parentId;
     const { name, ...rest } = req.body;
@@ -259,11 +262,11 @@ const createSubcategory = async (req, res) => {
       name: name.trim(),
       slug,
       parent: parentId,
-      level : 1,
+      level: 1,
       ...rest,
     });
 
-  
+
 
     return sendSuccess(res, doc, "Subcategory created successfully", 201);
   } catch (error) {
@@ -272,7 +275,7 @@ const createSubcategory = async (req, res) => {
   }
 };
 
-const getSubcategories = async (req, res) => {
+exports.getSubcategories = async (req, res) => {
   try {
     const { parentId } = req.params;
 
@@ -296,7 +299,7 @@ const getSubcategories = async (req, res) => {
   }
 };
 
-const moveSubcategory = async (req, res) => {
+exports.moveSubcategory = async (req, res) => {
   try {
     const { subcategoryId } = req.params;
     const { newParentId } = req.body;
@@ -324,7 +327,7 @@ const moveSubcategory = async (req, res) => {
   }
 };
 
-const reorderSubcategories = async (req, res) => {
+exports.reorderSubcategories = async (req, res) => {
   try {
     const { parentId } = req.params;
     const { orderData } = req.body;
@@ -343,23 +346,3 @@ const reorderSubcategories = async (req, res) => {
   }
 };
 
-module.exports = {
-  // category
-  createCategory,
-  updateCategory,
-  getCategories,
-  getCategoryById,
-  getCategoryBySlug,
-  deleteCategory,
-  restoreCategory,
-  getCategoryTree,
-  getCategoryStats,
-  bulkUpdateCategories,
-  bulkDeleteCategories,
-
-  // subcategory
-  createSubcategory,
-  getSubcategories,
-  moveSubcategory,
-  reorderSubcategories,
-};

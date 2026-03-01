@@ -1,45 +1,63 @@
 // validators/product.validators.js
 const { body, param, query } = require("express-validator");
 const mongoose = require("mongoose");
-const Product = require("../models/Product");
+const Product = require("../models/Products");
 
 const isValidObjectId = (v) => mongoose.Types.ObjectId.isValid(v);
 
 // reusable option item rules
+
 const optionItemRules = (path) => [
-    body(`${path}`).optional().isArray().withMessage(`${path} must be an array`),
+  body(path).optional().isArray().withMessage(`${path} must be an array`),
 
-    body(`${path}.*.value`)
-        .exists()
-        .withMessage("value is required")
-        .bail()
-        .isString()
-        .trim()
-        .notEmpty(),
+  body(`${path}.*.value`)
+    .if(body(path).exists())
+    .exists()
+    .withMessage("value is required")
+    .bail()
+    .isString()
+    .trim()
+    .notEmpty(),
 
-    body(`${path}.*.label`)
-        .exists()
-        .withMessage("label is required")
-        .bail()
-        .isString()
-        .trim()
-        .notEmpty(),
+  body(`${path}.*.label`)
+    .if(body(path).exists())
+    .exists()
+    .withMessage("label is required")
+    .bail()
+    .isString()
+    .trim()
+    .notEmpty(),
 
-    body(`${path}.*.priceDelta`)
-        .optional()
-        .isFloat({ min: 0 })
-        .withMessage("priceDelta must be >= 0"),
+  body(`${path}.*.priceDelta`)
+    .if(body(path).exists())
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("priceDelta must be >= 0"),
 
-    body(`${path}.*.priceOverride`)
-        .optional({ nullable: true })
-        .custom((v) => v === null || (typeof v === "number" && v >= 0))
-        .withMessage("priceOverride must be null or a number >= 0"),
+  body(`${path}.*.priceOverride`)
+    .if(body(path).exists())
+    .optional({ nullable: true })
+    .custom((v) => v === null || (typeof v === "number" && v >= 0))
+    .withMessage("priceOverride must be null or a number >= 0"),
 
-    body(`${path}.*.images`).optional().isArray(),
-    body(`${path}.*.images.*`).optional().isString().trim().notEmpty(),
+  body(`${path}.*.images`)
+    .if(body(path).exists())
+    .optional()
+    .isArray(),
 
-    body(`${path}.*.isActive`).optional().isBoolean(),
+  body(`${path}.*.images.*`)
+    .if(body(path).exists())
+    .optional()
+    .isString()
+    .trim()
+    .notEmpty(),
+
+  body(`${path}.*.isActive`)
+    .if(body(path).exists())
+    .optional()
+    .isBoolean(),
 ];
+
 
 // ---- CREATE ----
 const createProductValidator = [

@@ -23,9 +23,6 @@ const categorySchema = new mongoose.Schema(
     slug: {
       type: String,
       required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
       index: true,
     },
 
@@ -108,11 +105,18 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
+
+// add compound unique index
+categorySchema.index(
+  { parent: 1, slug: 1 },
+  { unique: true, partialFilterExpression: { isDeleted: false } }
+);
+
+
 // ========== INDEXES ==========
 categorySchema.index({ slug: 1, isDeleted: 1 });
 categorySchema.index({ parent: 1, isActive: 1 });
 categorySchema.index({ isActive: 1, displayOrder: 1 });
-
 
 
 // ========== INSTANCE METHODS ==========

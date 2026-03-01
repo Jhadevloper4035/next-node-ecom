@@ -1,7 +1,7 @@
 // validators/product.validators.js
 const { body, param, query } = require("express-validator");
 const mongoose = require("mongoose");
-const Product = require("../models/Products");
+const Product = require("../models/product.model");
 
 const isValidObjectId = (v) => mongoose.Types.ObjectId.isValid(v);
 

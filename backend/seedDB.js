@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
 
-const Category = require("./src/models/Category");
-const Product = require("./src/models/Products");
+const Category = require("./src/models/category.model");
+const Product = require("./src/models/product.model");
 
 
 

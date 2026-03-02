@@ -1,5 +1,5 @@
 const slugify = require("slugify");
-const Category = require("../models/Category");
+const Category = require("../models/category.model");
 const { sendSuccess, sendError, isDuplicateErr } = require("../helper/request");
 
 

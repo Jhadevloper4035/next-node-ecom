@@ -1,6 +1,6 @@
 
-const Product = require("../models/Products");
-const Category = require("../models/Category");
+const Product = require("../models/product.model");
+const Category = require("../models/category.model");
 
 /**
  * Helpers

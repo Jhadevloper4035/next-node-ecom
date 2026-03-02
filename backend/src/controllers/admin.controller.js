@@ -1,7 +1,7 @@
 const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
-const User = require("../models/User");
+const User = require("../models/user.model");
 const { toSafeUser } = require("../utils/safeUser");
 
 

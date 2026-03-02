@@ -3,10 +3,12 @@ const validate = require("../middlewares/validate");
 const auth = require("../middlewares/auth");
 const requireRole = require("../middlewares/requireRole");
 const { authLimiter, loginLimiter, otpVerifyLimiter } = require("../middlewares/rateLimiters");
-const authCtrl = require("../controllers/authController");
-const userCtrl = require("../controllers/userController");
-const adminCtrl = require("../controllers/adminController");
-const healthCtrl = require("../controllers/healthController");
+
+const authCtrl = require("../controllers/auth.controller");
+const userCtrl = require("../controllers/user.controller");
+const adminCtrl = require("../controllers/admin.controller");
+const healthCtrl = require("../controllers/health.controller");
+
 const {
   registerSchema, verifyOtpSchema, loginSchema, resendOtpSchema,
   forgotPasswordSchema, resetPasswordSchema, refreshSchema,

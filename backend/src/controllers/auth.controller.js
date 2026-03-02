@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const User = require("../models/User");
+const User = require("../models/user.model");
 const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");

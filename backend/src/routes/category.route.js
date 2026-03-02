@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const ctrl = require("../controllers/categoryController");
-const validator = require("../validators/category.validator");
+const ctrl = require("../controllers/category.controller.js");
+const validator = require("../validators/category.validator.js");
 const validate  = require("../validators/index.js")
 
 // category

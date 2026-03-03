@@ -55,7 +55,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./frontend/.env.development
+      - ./.env.development
     depends_on:
       - backend
     volumes:

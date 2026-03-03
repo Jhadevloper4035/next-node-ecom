@@ -30,7 +30,7 @@ env-prod:
 	@test -f frontend/.env.production || cp frontend/.env.production.example frontend/.env.production
 	@echo "✅ Prod env ready."
 
-dev-up: env-dev
+dev-up: 
 	$(COMPOSE) up -d  --build
 
 dev-down:

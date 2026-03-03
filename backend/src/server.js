@@ -8,6 +8,7 @@ const { initRateLimitStore } = require("./middlewares/rateLimiters");
 const server = http.createServer(app);
 
 async function bootstrap() {
+  
   await connectDB();
   await initRateLimitStore();
   console.log("SMTP:", env.smtpHost || "not set — emails disabled");

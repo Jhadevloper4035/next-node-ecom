@@ -87,9 +87,13 @@ exports.getCategories = async (req, res) => {
 
     if (req.query.isActive !== undefined) filter.isActive = req.query.isActive === "true";
 
-    if (req.query.parent !== undefined) {
-      filter.parent = req.query.parent === "null" || req.query.parent === "" ? null : req.query.parent;
+    console.log("Query parent:", req.query.parent);
+
+    if (req.query.parent === undefined) {
+      filter.parent = null; // only top-level categories by default
     }
+
+
 
     if (req.query.search) {
       const s = String(req.query.search).trim();

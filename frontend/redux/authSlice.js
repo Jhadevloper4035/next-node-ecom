@@ -1,19 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearAuth } from "@/services/auth/utils";
+import { clearAuth, getUser, getToken } from "@/services/auth/utils";
 
-// Load user from localStorage (client only)
-const loadUserFromStorage = () => {
+// Load user and token from cookies (client only)
+const loadFromCookies = () => {
   if (typeof window !== "undefined") {
-    const user = localStorage.getItem("user");
-    const token = localStorage.getItem("authToken");
-    return user && token ? JSON.parse(user) : null;
+    return getUser();
+  }
+  return null;
+};
+
+const loadTokenFromCookies = () => {
+  if (typeof window !== "undefined") {
+    return getToken();
   }
   return null;
 };
 
 const initialState = {
-  user: loadUserFromStorage(),
-  token: typeof window !== "undefined" ? localStorage.getItem("authToken") : null,
+  user: loadFromCookies(),
+  token: loadTokenFromCookies(),
   isLoading: false,
   error: null,
 };
@@ -24,10 +29,10 @@ const authSlice = createSlice({
   reducers: {
     hydrate(state) {
       if (typeof window !== "undefined") {
-        const user = localStorage.getItem("user");
-        const token = localStorage.getItem("authToken");
+        const user = getUser();
+        const token = getToken();
         if (user && token) {
-          state.user = JSON.parse(user);
+          state.user = user;
           state.token = token;
         }
       }

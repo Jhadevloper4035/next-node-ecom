@@ -2,9 +2,26 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/authSlice";
+import { logoutAPI } from "@/services/auth/logout.service";
 export default function AccountSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      await logoutAPI();
+      dispatch(logout());
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // dispatch(logout());
+      // router.push("/");
+    }
+  };
   return (
     <div className="wrap-sidebar-account">
       <div className="sidebar-account">
@@ -111,11 +128,16 @@ export default function AccountSidebar() {
             </Link>
           </li>
           <li>
-            <Link
-              href={`/login`}
-              className={`my-account-nav-item ${
-                pathname == "/login" ? "active" : ""
-              } `}
+            <button
+              onClick={handleLogout}
+              className="my-account-nav-item"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "left",
+                width: "100%",
+              }}
             >
               <svg
                 width={24}
@@ -147,7 +169,7 @@ export default function AccountSidebar() {
                 />
               </svg>
               Logout
-            </Link>
+            </button>
           </li>
         </ul>
       </div>

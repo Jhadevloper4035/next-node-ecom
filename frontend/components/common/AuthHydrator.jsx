@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { hydrate } from "@/redux/authSlice";
+import { useAxiosInterceptors } from "@/hooks/useAxiosInterceptors";
+import { useRouteLoadingState } from "@/hooks/useRouteLoadingState";
 
 /**
  * This component restores auth state from localStorage after client mount.
@@ -10,6 +12,8 @@ import { hydrate } from "@/redux/authSlice";
  */
 export default function AuthHydrator() {
   const dispatch = useDispatch();
+  useAxiosInterceptors();
+  useRouteLoadingState();
 
   useEffect(() => {
     // Hydrate auth state from localStorage after client mounts

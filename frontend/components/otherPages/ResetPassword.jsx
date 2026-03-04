@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { resetPassword } from "@/services/auth/reset.service";
 import { useToast } from "@/components/common/ToastContext";
+import styles from "./Login.module.css";
 
 export default function ResetPassword() {
   const searchParams = useSearchParams();
@@ -54,62 +55,71 @@ export default function ResetPassword() {
   };
 
   return (
-    <section className="flat-spacing">
-      <div className="container">
-        <div className="login-wrap">
-          <div className="left">
-            <div className="heading">
-              <h4 className="mb_8">Choose new password</h4>
-              <p>Enter a secure password and confirm below.</p>
-            </div>
-            <form
-              onSubmit={handleSubmit}
-              className="form-login form-has-password"
-            >
-              {error && <div className="alert alert-danger">{error}</div>}
-              {message && <div className="alert alert-success">{message}</div>}
-              <div className="wrap">
-                <fieldset className="position-relative password-item">
-                  <input
-                    className="input-password"
-                    type="password"
-                    placeholder="New Password*"
-                    name="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
-                </fieldset>
-                <fieldset className="position-relative password-item">
-                  <input
-                    className="input-password"
-                    type="password"
-                    placeholder="Confirm Password*"
-                    name="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
-                </fieldset>
-              </div>
-              <div className="button-submit">
-                <button
-                  className="tf-btn btn-fill"
-                  type="submit"
-                  disabled={isLoading}
-                >
-                  <span className="text text-button">
-                    {isLoading ? "Resetting..." : "Reset Password"}
-                  </span>
-                </button>
-              </div>
-            </form>
+    <div className={styles.loginContainer}>
+      <div className={styles.loginLeft}>
+        <div className={styles.loginFormWrapper}>
+          <div className={styles.loginHead}>
+            <h2>Choose New Password</h2>
+            <p>Enter a secure password and confirm below.</p>
           </div>
-          <div className="right">{/* Optionally some info or links */}</div>
+
+          {error && <div className={styles.alertError}>{error}</div>}
+          {message && <div className="alert alert-success">{message}</div>}
+
+          <form onSubmit={handleSubmit} className={styles.loginForm}>
+            <div className={styles.formGroup}>
+              <label htmlFor="password">New Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Enter new password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  style={{ paddingRight: "45px" }}
+                />
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Re-enter new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  style={{ paddingRight: "45px" }}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className={styles.loginBtn}
+              disabled={isLoading}
+            >
+              {isLoading ? "Resetting..." : "Reset Password"}
+            </button>
+          </form>
         </div>
       </div>
-    </section>
+
+      {/* Right Side - Furniture Image */}
+      <div className={styles.loginRight}>
+        <img
+          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&h=900&fit=crop"
+          alt="Premium furniture"
+          className={styles.loginRightImage}
+        />
+      </div>
+    </div>
   );
 }

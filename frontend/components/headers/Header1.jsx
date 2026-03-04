@@ -8,6 +8,7 @@ import CartLength from "../common/CartLength";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/redux/authSlice";
 import { useRouter } from "next/navigation";
+import { logoutAPI } from "@/services/auth/logout.service";
 
 export default function Header1({ fullWidth = false }) {
   const { user, token } = useSelector((state) => state.auth);
@@ -17,10 +18,19 @@ export default function Header1({ fullWidth = false }) {
   const [name, setName] = useState("User");
 
   console.log("Auth state in Header:", user);
-  const handleLogout = () => {
-    dispatch(logout());
-    setShowDropdown(false);
-    router.push("/");
+  const handleLogout = async () => {
+    try {
+      await logoutAPI();
+      dispatch(logout());
+      setShowDropdown(false);
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still logout even if API fails
+      // dispatch(logout());
+      // setShowDropdown(false);
+      // router.push("/");
+    }
   };
   return (
     <header

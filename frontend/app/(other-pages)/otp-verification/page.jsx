@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { verifyOtp } from "@/services/auth/otp.service";
 import { loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
+import styles from "@/components/otherPages/Login.module.css";
 
 export default function OtpVerificationPage() {
   const router = useRouter();
@@ -55,7 +56,6 @@ export default function OtpVerificationPage() {
           }),
         );
         toast("OTP verified, logging you in", "success");
-        // wait for state update and storage write before redirecting
         setTimeout(() => {
           router.push("/");
         }, 200);
@@ -71,52 +71,55 @@ export default function OtpVerificationPage() {
   };
 
   return (
-    <section className="flat-spacing">
-      <div className="container">
-        <div className="login-wrap">
-          <div className="left">
-            <div className="heading">
-              <h4 className="mb_8">Verify OTP</h4>
+    <>
+      {/* <Topbar6 bgColor="bg-main" /> */}
+
+      <div className={styles.loginContainer}>
+        <div className={styles.loginLeft}>
+          <div className={styles.loginFormWrapper}>
+            <div className={styles.loginHead}>
+              <h2>Verify OTP</h2>
               <p>
                 Enter the one-time code sent to <strong>{email}</strong>.
               </p>
             </div>
-            <form
-              onSubmit={handleSubmit}
-              className="form-login form-has-password"
-            >
-              {error && <div className="alert alert-danger">{error}</div>}
-              <div className="wrap">
-                <fieldset className="">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg text-center"
-                    placeholder="000000"
-                    value={otp}
-                    onChange={handleOtpChange}
-                    maxLength={6}
-                    disabled={isLoading}
-                    required
-                    style={{ fontSize: "24px", letterSpacing: "10px" }}
-                  />
-                </fieldset>
-              </div>
-              <div className="button-submit">
-                <button
-                  className="tf-btn btn-fill"
-                  type="submit"
+
+            {error && <div className={styles.alertError}>{error}</div>}
+
+            <form onSubmit={handleSubmit} className={styles.loginForm}>
+              <div className={styles.formGroup}>
+                <input
+                  type="text"
+                  className="form-control form-control-lg text-center"
+                  placeholder="000000"
+                  value={otp}
+                  onChange={handleOtpChange}
+                  maxLength={6}
                   disabled={isLoading}
-                >
-                  <span className="text text-button">
-                    {isLoading ? "Verifying..." : "Verify OTP"}
-                  </span>
-                </button>
+                  required
+                  style={{ fontSize: "24px", letterSpacing: "10px" }}
+                />
               </div>
+
+              <button
+                type="submit"
+                className={styles.loginBtn}
+                disabled={isLoading}
+              >
+                {isLoading ? "Verifying..." : "Verify OTP"}
+              </button>
             </form>
           </div>
-          <div className="right">{/* optional info or illustration */}</div>
+        </div>
+
+        <div className={styles.loginRight}>
+          <img
+            src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=900&fit=crop"
+            alt="Premium furniture"
+            className={styles.loginRightImage}
+          />
         </div>
       </div>
-    </section>
+    </>
   );
 }

@@ -14,11 +14,11 @@ export const metadata = {
 export default function MyAccountPage() {
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
+      {/* <Topbar6 bgColor="bg-main" /> */}
+      {/* <Header1 /> */}
       <>
         {/* page-title */}
-        <div
+        {/* <div
           className="page-title"
           style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
         >
@@ -48,7 +48,7 @@ export default function MyAccountPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* /page-title */}
         <div className="btn-sidebar-account">
           <button data-bs-toggle="offcanvas" data-bs-target="#mbAccount">

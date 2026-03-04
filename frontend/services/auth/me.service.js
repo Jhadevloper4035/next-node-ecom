@@ -1,17 +1,9 @@
-import axios from "axios";
-import { getToken } from "./utils";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+import axiosInstance from "../api.config";
 
 export const getMe = async () => {
   try {
-    const token = getToken();
-    console.log("Getting user info with token:", token);
-    const response = await axios.get(`${API_BASE_URL}/v1/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    // Token is automatically added to headers by axios interceptor
+    const response = await axiosInstance.get(`/v1/auth/me`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

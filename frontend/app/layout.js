@@ -131,6 +131,7 @@ export default function RootLayout({ children }) {
       <body className="preload-wrapper popup-loader">
         <Provider store={store}>
           <ToastProvider>
+          <Header2 />
             <AuthHydrator />
             <RtlToggler />
             <div id="wrapper">{children}</div>

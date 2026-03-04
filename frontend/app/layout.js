@@ -26,6 +26,7 @@ import AccountSidebar from "@/components/modals/AccountSidebar";
 import AuthHydrator from "@/components/common/AuthHydrator";
 import { ToastProvider } from "@/components/common/ToastContext";
 import Header2 from "@/components/headers/Header2";
+import GlobalSpinner from "@/components/common/GlobalSpinner";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -124,6 +125,7 @@ export default function RootLayout({ children }) {
       <body className="preload-wrapper popup-loader">
         <Provider store={store}>
           <ToastProvider>
+            <GlobalSpinner />
             <AuthHydrator />
             <RtlToggler />
             <Header2 />

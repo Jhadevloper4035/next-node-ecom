@@ -2,19 +2,29 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/redux/authSlice";
 import { useRouter } from "next/navigation";
+import { logoutAPI } from "@/services/auth/logout.service";
 import Nav from "./Nav";
 import Link from "next/link";
 import Image from "next/image";
 import CurrencySelect from "../common/CurrencySelect";
 import CartLength from "../common/CartLength";
+import GlobalSpinner from "../common/GlobalSpinner";
 export default function Header2() {
   const dispatch = useDispatch();
   const router = useRouter();
   const user = useSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push("/");
+  const handleLogout = async () => {
+    try {
+      await logoutAPI();
+      dispatch(logout());
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still logout even if API fails
+      // dispatch(logout());
+      // router.push("/");
+    }
   };
 
   return (

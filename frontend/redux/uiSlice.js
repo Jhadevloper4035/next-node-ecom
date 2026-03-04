@@ -4,6 +4,7 @@ import { allProducts } from "@/data/products";
 const initialState = {
   quickViewItem: allProducts[0] || null,
   quickAddItem: 1,
+  isLoading: false,
 };
 
 const uiSlice = createSlice({
@@ -16,8 +17,11 @@ const uiSlice = createSlice({
     setQuickAddItem(state, action) {
       state.quickAddItem = action.payload;
     },
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
+    },
   },
 });
 
-export const { setQuickViewItem, setQuickAddItem } = uiSlice.actions;
+export const { setQuickViewItem, setQuickAddItem, setIsLoading } = uiSlice.actions;
 export default uiSlice.reducer;

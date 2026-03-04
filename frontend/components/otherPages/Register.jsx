@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { register as registerService } from "@/services/auth/register.service";
 import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
+import styles from "./Login.module.css";
 
 export default function Register() {
   const [passwordType, setPasswordType] = useState("password");
@@ -51,8 +52,7 @@ export default function Register() {
       !formData.fullName ||
       !formData.email ||
       !formData.mobileNumber ||
-      !formData.password ||
-      !formData.confirmPassword
+      !formData.password
     ) {
       const msg = "Please fill in all fields";
       setError(msg);
@@ -70,13 +70,6 @@ export default function Register() {
 
     if (formData.password.length < 8) {
       const msg = "Password must be at least 8 characters long";
-      setError(msg);
-      toast(msg, "warning");
-      return false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      const msg = "Passwords do not match";
       setError(msg);
       toast(msg, "warning");
       return false;
@@ -109,10 +102,6 @@ export default function Register() {
         formData.mobileNumber,
       );
 
-      // backend will always send an OTP and no token/data on register;
-      // navigate to verification page regardless of response content
-      console.log("register response", response);
-      // wait for any state updates before redirecting
       toast("Registration initiated, please verify your email", "info");
       setTimeout(() => {
         router.push(
@@ -131,171 +120,137 @@ export default function Register() {
   };
 
   return (
-    <section className="flat-spacing">
-      <div className="container">
-        <div className="login-wrap">
-          <div className="left">
-            <div className="heading">
-              <h4>Register</h4>
-            </div>
-            <form
-              onSubmit={handleRegister}
-              className="form-login form-has-password"
-            >
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
-              <div className="wrap">
-                <fieldset className="">
-                  <input
-                    className=""
-                    type="text"
-                    placeholder="Full Name*"
-                    name="fullName"
-                    tabIndex={1}
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    disabled={isLoading}
-                    required
-                  />
-                </fieldset>
-                <fieldset className="">
-                  <input
-                    className=""
-                    type="email"
-                    placeholder="Email address*"
-                    name="email"
-                    tabIndex={2}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    disabled={isLoading}
-                    required
-                  />
-                </fieldset>
-                <fieldset className="position-relative password-item">
-                  <input
-                    className="input-password"
-                    type={passwordType}
-                    placeholder="Password*"
-                    name="password"
-                    tabIndex={2}
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    disabled={isLoading}
-                    required
-                  />
-                  <span
-                    className={`toggle-password ${
-                      !(passwordType === "text") ? "unshow" : ""
-                    }`}
-                    onClick={togglePassword}
-                  >
-                    <i
-                      className={`icon-eye-${
-                        !(passwordType === "text") ? "hide" : "show"
-                      }-line`}
-                    />
-                  </span>
-                </fieldset>
-
-                <fieldset className="position-relative password-item">
-                  <input
-                    className="input-password"
-                    type={confirmPasswordType}
-                    placeholder="Confirm Password*"
-                    name="confirmPassword"
-                    tabIndex={2}
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    disabled={isLoading}
-                    required
-                  />
-                  <span
-                    className={`toggle-password ${
-                      !(confirmPasswordType === "text") ? "unshow" : ""
-                    }`}
-                    onClick={toggleConfirmPassword}
-                  >
-                    <i
-                      className={`icon-eye-${
-                        !(confirmPasswordType === "text") ? "hide" : "show"
-                      }-line`}
-                    />
-                  </span>
-                </fieldset>
-                <fieldset className="">
-                  <input
-                    className=""
-                    type="tel"
-                    placeholder="Mobile number*"
-                    name="mobileNumber"
-                    tabIndex={3}
-                    value={formData.mobileNumber}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    disabled={isLoading}
-                    required
-                  />
-                </fieldset>
-                <div className="d-flex align-items-center">
-                  <div className="tf-cart-checkbox">
-                    <div className="tf-checkbox-wrapp">
-                      <input
-                        className=""
-                        type="checkbox"
-                        id="login-form_agree"
-                        name="agreeToTerms"
-                        checked={formData.agreeToTerms}
-                        onChange={handleInputChange}
-                      />
-                      <div>
-                        <i className="icon-check" />
-                      </div>
-                    </div>
-                    <label
-                      className="text-secondary-2"
-                      htmlFor="login-form_agree"
-                    >
-                      I agree to the&nbsp;
-                    </label>
-                  </div>
-                  <Link href={`/term-of-use`} title="Terms of Service">
-                    Terms of User
-                  </Link>
-                </div>
-              </div>
-              <div className="button-submit">
-                <button
-                  className="tf-btn btn-fill"
-                  type="submit"
-                  disabled={isLoading}
-                >
-                  <span className="text text-button">
-                    {isLoading ? "Registering..." : "Register"}
-                  </span>
-                </button>
-              </div>
-            </form>
+    <div className={styles.loginContainer}>
+      <div className={styles.loginLeft}>
+        <div className={styles.loginFormWrapper}>
+          <div className={styles.loginHead}>
+            <h2>Create Account</h2>
+            <p>Sign up to start shopping</p>
           </div>
-          <div className="right">
-            <h4 className="mb_8">Already have an account?</h4>
-            <p className="text-secondary">
-              Welcome back. Sign in to access your personalized experience,
-              saved preferences, and more. We're thrilled to have you with us
-              again!
-            </p>
-            <Link href={`/login`} className="tf-btn btn-fill">
-              <span className="text text-button">Login</span>
-            </Link>
+
+          {error && <div className={styles.alertError}>{error}</div>}
+
+          <form onSubmit={handleRegister} className={styles.loginForm}>
+            <div className={styles.formGroup}>
+              <label htmlFor="fullName">Full Name</label>
+              <input
+                id="fullName"
+                type="text"
+                name="fullName"
+                placeholder="Enter your full name"
+                value={formData.fullName}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="password">Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  id="password"
+                  type={passwordType}
+                  name="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  required
+                  style={{ paddingRight: "45px" }}
+                />
+                <span
+                  className={styles.passwordToggle}
+                  onClick={togglePassword}
+                  role="button"
+                  tabIndex={0}
+                >
+                  {passwordType === "password" ? "👁️" : "👁️‍🗨️"}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="mobileNumber">Mobile Number</label>
+              <input
+                id="mobileNumber"
+                type="text"
+                name="mobileNumber"
+                placeholder="Enter your phone number"
+                value={formData.mobileNumber}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.checkboxWrapper}>
+                <input
+                  type="checkbox"
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                />
+                <span>
+                  I agree to the <Link href="/term-of-use">Terms of Use</Link>
+                </span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className={styles.loginBtn}
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing up..." : "Register"}
+            </button>
+          </form>
+
+          <div className={styles.divider}>
+            <span>OR</span>
+          </div>
+
+          <div className={styles.socialLogin}>
+            <button className={styles.socialBtn} type="button">
+              <span>🔵</span>
+              Continue with Google
+            </button>
+            <button className={styles.socialBtn} type="button">
+              <span>🍎</span>
+              Continue with Apple
+            </button>
+          </div>
+
+          <div className={styles.signupPrompt}>
+            Already have an account? <Link href="/login">Sign In</Link>
           </div>
         </div>
       </div>
-    </section>
+
+      {/* Right Side - Furniture Image */}
+      <div className={styles.loginRight}>
+        <img
+          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=1500&fit=crop"
+          alt="Premium furniture"
+          className={styles.loginRightImage}
+        />
+      </div>
+    </div>
   );
 }

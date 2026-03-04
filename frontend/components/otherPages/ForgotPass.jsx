@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { forgotPassword } from "@/services/auth/forgot.service";
 import { useToast } from "@/components/common/ToastContext";
+import styles from "./Login.module.css";
 
 export default function ForgotPass() {
   const [email, setEmail] = useState("");
@@ -41,52 +42,55 @@ export default function ForgotPass() {
   };
 
   return (
-    <section className="flat-spacing">
-      <div className="container">
-        <div className="login-wrap">
-          <div className="left">
-            <div className="heading">
-              <h4 className="mb_8">Reset your password</h4>
-              <p>We will send you an email to reset your password</p>
-            </div>
-            <form onSubmit={handleSubmit} className="form-login">
-              <div className="wrap">
-                <fieldset className="">
-                  <input
-                    className=""
-                    type="email"
-                    placeholder="Username or email address*"
-                    name="email"
-                    tabIndex={2}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    aria-required="true"
-                    required
-                  />
-                </fieldset>
-              </div>
-              <div className="button-submit">
-                <button className="tf-btn btn-fill" type="submit">
-                  <span className="text text-button">Submit</span>
-                </button>
-              </div>
-              {message && <p className="text-success mt-2">{message}</p>}
-              {error && <p className="text-danger mt-2">{error}</p>}
-            </form>
+    <div className={styles.loginContainer}>
+      <div className={styles.loginLeft}>
+        <div className={styles.loginFormWrapper}>
+          <div className={styles.loginHead}>
+            <h2>Reset your password</h2>
+            <p>We will send you an email to reset your password</p>
           </div>
-          <div className="right">
-            <h4 className="mb_8">New Customer</h4>
-            <p className="text-secondary">
-              Be part of our growing family of new customers! Join us today and
-              unlock a world of exclusive benefits, offers, and personalized
-              experiences.
-            </p>
-            <Link href={`/register`} className="tf-btn btn-fill">
-              <span className="text text-button">Register</span>
-            </Link>
+
+          {error && <div className={styles.alertError}>{error}</div>}
+          {message && <div className="alert alert-success">{message}</div>}
+
+          <form onSubmit={handleSubmit} className={styles.loginForm}>
+            <div className={styles.formGroup}>
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className={styles.loginBtn}
+              disabled={isLoading}
+            >
+              {isLoading ? "Submitting..." : "Submit"}
+            </button>
+          </form>
+
+          <div className={styles.signupPrompt}>
+            Remembered your password? <Link href="/login">Sign In</Link>
           </div>
         </div>
       </div>
-    </section>
+
+      {/* Right Side - Furniture Image */}
+      <div className={styles.loginRight}>
+        <img
+          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=900&fit=crop"
+          alt="Premium furniture"
+          className={styles.loginRightImage}
+        />
+      </div>
+    </div>
   );
 }

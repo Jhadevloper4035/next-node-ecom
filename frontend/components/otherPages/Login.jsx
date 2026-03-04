@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { login as loginService } from "@/services/auth/login.service";
 import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
+import styles from "./Login.module.css";
 
 export default function Login() {
   const [passwordType, setPasswordType] = useState("password");
@@ -63,8 +64,6 @@ export default function Login() {
           `/otp-verification?email=${encodeURIComponent(formData.email)}`,
         );
       } else if (response.accessToken) {
-        // Login successful, response contains token and user
-        // optionally call getMe for latest user data
         try {
           const me = await import("@/services/auth/me.service").then((m) =>
             m.getMe(),
@@ -100,113 +99,105 @@ export default function Login() {
   };
 
   return (
-    <section className="flat-spacing">
-      <div className="container">
-        <div className="login-wrap">
-          <div className="left">
-            <div className="heading">
-              <h4>Login</h4>
-            </div>
-            <form
-              onSubmit={handleLogin}
-              className="form-login form-has-password"
-            >
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
-              <div className="wrap">
-                <fieldset className="">
-                  <input
-                    className=""
-                    type="email"
-                    placeholder="Username or email address*"
-                    name="email"
-                    tabIndex={2}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    required
-                    disabled={isLoading}
-                  />
-                </fieldset>
-                <fieldset className="position-relative password-item">
-                  <input
-                    className="input-password"
-                    type={passwordType}
-                    placeholder="Password*"
-                    name="password"
-                    tabIndex={2}
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    aria-required="true"
-                    required
-                    disabled={isLoading}
-                  />
-                  <span
-                    className={`toggle-password ${
-                      !(passwordType === "text") ? "unshow" : ""
-                    }`}
-                    onClick={togglePassword}
-                  >
-                    <i
-                      className={`icon-eye-${
-                        !(passwordType === "text") ? "hide" : "show"
-                      }-line`}
-                    />
-                  </span>
-                </fieldset>
-                <div className="d-flex align-items-center justify-content-between">
-                  <div className="tf-cart-checkbox">
-                    <div className="tf-checkbox-wrapp">
-                      <input
-                        defaultChecked
-                        className=""
-                        type="checkbox"
-                        id="login-form_agree"
-                        name="agree_checkbox"
-                      />
-                      <div>
-                        <i className="icon-check" />
-                      </div>
-                    </div>
-                    <label htmlFor="login-form_agree"> Remember me </label>
-                  </div>
-                  <Link
-                    href={`/forget-password`}
-                    className="font-2 text-button forget-password link"
-                  >
-                    Forgot Your Password?
-                  </Link>
-                </div>
-              </div>
-              <div className="button-submit">
-                <button
-                  className="tf-btn btn-fill"
-                  type="submit"
-                  disabled={isLoading}
-                >
-                  <span className="text text-button">
-                    {isLoading ? "Logging in..." : "Login"}
-                  </span>
-                </button>
-              </div>
-            </form>
+    <div className={styles.loginContainer}>
+      {/* Left Side - Login Form */}
+      <div className={styles.loginLeft}>
+        <div className={styles.loginFormWrapper}>
+          <div className={styles.loginHead}>
+            <h2>Welcome Back!</h2>
+            <p>Sign in to access your account and continue shopping</p>
           </div>
-          <div className="right">
-            <h4 className="mb_8">New Customer</h4>
-            <p className="text-secondary">
-              Be part of our growing family of new customers! Join us today and
-              unlock a world of exclusive benefits, offers, and personalized
-              experiences.
-            </p>
-            <Link href={`/register`} className="tf-btn btn-fill">
-              <span className="text text-button">Register</span>
-            </Link>
+
+          {error && <div className={styles.alertError}>{error}</div>}
+
+          <form onSubmit={handleLogin} className={styles.loginForm}>
+            <div className={styles.formGroup}>
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="password">Password</label>
+              <div className={styles.passwordWrapper}>
+                <input
+                  id="password"
+                  type={passwordType}
+                  placeholder="Enter your password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  required
+                  style={{ paddingRight: "45px" }}
+                />
+                <span
+                  className={styles.passwordToggle}
+                  onClick={togglePassword}
+                  role="button"
+                  tabIndex={0}
+                >
+                  {passwordType === "password" ? "👁️" : "👁️‍🗨️"}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.formOptions}>
+              <label className={styles.checkboxWrapper}>
+                <input type="checkbox" defaultChecked />
+                <span>Remember me</span>
+              </label>
+              <Link href="/forget-password" className={styles.forgotPassword}>
+                Forgot Password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              className={styles.loginBtn}
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <div className={styles.divider}>
+            <span>OR</span>
+          </div>
+
+          <div className={styles.socialLogin}>
+            <button className={styles.socialBtn} type="button">
+              <span>🔵</span>
+              Continue with Google
+            </button>
+            <button className={styles.socialBtn} type="button">
+              <span>🍎</span>
+              Continue with Apple
+            </button>
+          </div>
+
+          <div className={styles.signupPrompt}>
+            Don't have an account? <Link href="/register">Sign Up</Link>
           </div>
         </div>
       </div>
-    </section>
+
+      {/* Right Side - Furniture Image */}
+      <div className={styles.loginRight}>
+        <img
+          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=900&fit=crop"
+          alt="Premium furniture"
+          className={styles.loginRightImage}
+        />
+      </div>
+    </div>
   );
 }

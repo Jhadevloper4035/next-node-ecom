@@ -1,10 +1,22 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "@/redux/authSlice";
+import { useRouter } from "next/navigation";
 import Nav from "./Nav";
 import Link from "next/link";
 import Image from "next/image";
 import CurrencySelect from "../common/CurrencySelect";
 import CartLength from "../common/CartLength";
 export default function Header2() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const user = useSelector((state) => state.auth.user);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push("/");
+  };
+
   return (
     <header id="header" className="header-default header-style-4">
       <div className="main-header">
@@ -116,18 +128,48 @@ export default function Header2() {
                       </svg>
                     </a>
                     <div className="dropdown-account dropdown-login">
-                      <div className="sub-top">
-                        <Link href={`/login`} className="tf-btn btn-reset">
-                          Login
-                        </Link>
-                        <p className="text-center text-secondary-2">
-                          Don’t have an account?{" "}
-                          <Link href={`/register`}>Register</Link>
-                        </p>
-                      </div>
-                      <div className="sub-bot">
-                        <span className="body-text-">Support</span>
-                      </div>
+                      {user ? (
+                        <>
+                          <div className="sub-top text-center">
+                            <p className="mb-2">
+                              Welcome
+                              <br />
+                              <strong>{user.email}</strong>
+                            </p>
+                            <Link
+                              href="/my-account"
+                              className="tf-btn btn-reset mb-2"
+                            >
+                              My Account
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={handleLogout}
+                              className="tf-btn btn-reset"
+                            >
+                              Logout
+                            </button>
+                          </div>
+                          <div className="sub-bot">
+                            <span className="body-text-">Support</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="sub-top">
+                            <Link href={`/login`} className="tf-btn btn-reset">
+                              Login
+                            </Link>
+                            <p className="text-center text-secondary-2">
+                              Don’t have an account?{" "}
+                              <Link href={`/register`}>Register</Link>
+                            </p>
+                          </div>
+                          <div className="sub-bot">
+                            <span className="body-text-">Support</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </li>
                   <li className="nav-wishlist">

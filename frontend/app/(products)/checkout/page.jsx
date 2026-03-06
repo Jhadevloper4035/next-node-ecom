@@ -43,8 +43,6 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}

@@ -1,10 +1,15 @@
 "use client";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function Information() {
+  const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
+  
   const [passwordType, setPasswordType] = useState("password");
   const [confirmPasswordType, setConfirmPasswordType] = useState("password");
   const [newPasswordType, setNewPasswordType] = useState("password");
+
 
   const togglePassword = () => {
     setPasswordType((prevType) =>
@@ -22,6 +27,18 @@ export default function Information() {
       prevType === "password" ? "text" : "password"
     );
   };
+  if (!user && token) {
+    return (
+      <div className="my-account-content">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "300px" }}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="my-account-content">
       <div className="account-details">
@@ -39,7 +56,7 @@ export default function Information() {
                   placeholder="First Name*"
                   name="text"
                   tabIndex={2}
-                  defaultValue="Tony"
+                  defaultValue={user?.fullName?.split(" ")[0] || ""}
                   aria-required="true"
                   required
                 />
@@ -51,7 +68,7 @@ export default function Information() {
                   placeholder="Last Name*"
                   name="text"
                   tabIndex={2}
-                  defaultValue="Nguyen"
+                  defaultValue={user?.fullName?.split(" ").slice(1).join(" ") || ""}
                   aria-required="true"
                   required
                 />
@@ -65,8 +82,9 @@ export default function Information() {
                   placeholder="Username or email address*"
                   name="email"
                   tabIndex={2}
-                  defaultValue="themesflat@gmail.com"
+                  defaultValue={user?.email || ""}
                   aria-required="true"
+                  readOnly
                   required
                 />
               </fieldset>
@@ -77,7 +95,7 @@ export default function Information() {
                   placeholder="Phone*"
                   name="text"
                   tabIndex={2}
-                  defaultValue="(+12) 345 678 910"
+                  defaultValue={user?.mobileNumber || ""}
                   aria-required="true"
                   required
                 />

@@ -1,13 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearAuth, getUser, getToken } from "@/services/auth/utils";
-
-// Load user and token from cookies (client only)
-const loadFromCookies = () => {
-  if (typeof window !== "undefined") {
-    return getUser();
-  }
-  return null;
-};
+import { clearAuth, getToken } from "@/services/auth/utils";
 
 const loadTokenFromCookies = () => {
   if (typeof window !== "undefined") {
@@ -17,7 +9,7 @@ const loadTokenFromCookies = () => {
 };
 
 const initialState = {
-  user: loadFromCookies(),
+  user: null,
   token: loadTokenFromCookies(),
   isLoading: false,
   error: null,
@@ -29,10 +21,8 @@ const authSlice = createSlice({
   reducers: {
     hydrate(state) {
       if (typeof window !== "undefined") {
-        const user = getUser();
         const token = getToken();
-        if (user && token) {
-          state.user = user;
+        if (token) {
           state.token = token;
         }
       }
@@ -44,8 +34,11 @@ const authSlice = createSlice({
     },
     // Login success
     loginSuccess(state, action) {
+      console.log("auth/loginSuccess payload:", action.payload);
       state.isLoading = false;
-      state.user = action.payload.user;
+      // Defensive: extract user if it's nested
+      const userData = action.payload.user;
+      state.user = userData?.user || userData;
       state.token = action.payload.token;
       state.error = null;
     },
@@ -61,6 +54,11 @@ const authSlice = createSlice({
       state.error = null;
       state.isLoading = false;
       clearAuth();
+    },
+    // Update user
+    updateUser(state, action) {
+      const userData = action.payload;
+      state.user = userData?.user || userData;
     },
     // Set error
     setError(state, action) {
@@ -79,6 +77,7 @@ export const {
   loginSuccess,
   loginFailure,
   logout,
+  updateUser,
   setError,
   clearError,
 } = authSlice.actions;

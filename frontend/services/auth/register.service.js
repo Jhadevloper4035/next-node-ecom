@@ -1,5 +1,5 @@
 import axiosInstance from "../api.config";
-import { setToken, storeUser } from "./utils";
+import { setToken } from "./utils";
 
 export const register = async (fullName, email, password, mobileNumber) => {
   try {
@@ -17,7 +17,6 @@ export const register = async (fullName, email, password, mobileNumber) => {
 
     if (data.token) {
       setToken(data.token);
-      storeUser(data.user);
     }
     return normalized;
   } catch (error) {

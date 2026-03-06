@@ -1,53 +1,147 @@
 import axios from "axios";
 import { store } from "@/redux/store";
 import { setIsLoading } from "@/redux/uiSlice";
-import { getToken } from "@/services/auth/utils";
+import { getToken, setToken, clearAuth } from "@/services/auth/utils";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // Enable cookies for cross-origin requests
+  withCredentials: true,
 });
 
 let requestCount = 0;
+let isRefreshing = false;
+let failedQueue = [];
 
-// Request interceptor
+/**
+ * Process queued requests while refresh token is happening
+ */
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+
+  failedQueue = [];
+};
+
+
+// ================================
+// REQUEST INTERCEPTOR
+// ================================
+
 axiosInstance.interceptors.request.use(
   (config) => {
+
+    // loader start
     requestCount++;
     if (requestCount === 1) {
       store.dispatch(setIsLoading(true));
     }
-    // Add token from cookie to Authorization header
+
+    // attach token
     const token = getToken();
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor
+
+// ================================
+// RESPONSE INTERCEPTOR
+// ================================
+
 axiosInstance.interceptors.response.use(
   (response) => {
+
+    // loader stop
     requestCount--;
-    // Hide spinner when all requests are complete
     if (requestCount === 0) {
       store.dispatch(setIsLoading(false));
     }
+
     return response;
   },
-  (error) => {
+
+  async (error) => {
+
+    const originalRequest = error.config;
+
     requestCount--;
-    // Hide spinner when all requests are complete even on error
     if (requestCount === 0) {
       store.dispatch(setIsLoading(false));
     }
-    return Promise.reject(error);
+
+    // only handle 401 errors
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    // ================================
+    // IF TOKEN REFRESH ALREADY RUNNING
+    // ================================
+
+    if (isRefreshing) {
+
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      })
+        .then((token) => {
+          console.log("Token refreshed:", token);
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        })
+        .catch((err) => Promise.reject(err));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+
+      // call refresh API
+      const response = await axios.post(
+        `${API_BASE_URL}/v1/auth/refresh`,
+        {},
+        { withCredentials: true }
+      );
+
+      const { accessToken } = response.data.data;
+
+      // save new access token
+      setToken(accessToken);
+
+      // process queued requests
+      processQueue(null, accessToken);
+
+      // reset refreshing state
+      isRefreshing = false;
+
+      // retry original request
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+      return axiosInstance(originalRequest);
+
+    } catch (refreshError) {
+
+      processQueue(refreshError, null);
+      isRefreshing = false;
+
+      clearAuth();
+
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+
+      return Promise.reject(refreshError);
+    }
   }
 );
 

@@ -5,6 +5,7 @@ import RecentProducts from "@/components/otherPages/RecentProducts";
 import ShopCart from "@/components/otherPages/ShopCart";
 import Link from "next/link";
 import React from "react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export const metadata = {
   title:
@@ -15,8 +16,7 @@ export const metadata = {
 export default function ShopingCartPage() {
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
+      <ProtectedRoute>
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
@@ -48,6 +48,7 @@ export default function ShopingCartPage() {
       <ShopCart />
       <RecentProducts />
       <Footer1 />
+      </ProtectedRoute>
     </>
   );
 }

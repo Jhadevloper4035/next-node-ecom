@@ -7,6 +7,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function WishListPage() {
   const { token } = useSelector((state) => state.auth);
@@ -42,9 +43,9 @@ export default function WishListPage() {
   }
 
   return (
-    <>
+    <ProtectedRoute>
       <Wishlist />
       <Footer1 />
-    </>
+    </ProtectedRoute>
   );
 }

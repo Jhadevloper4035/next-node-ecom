@@ -15,8 +15,6 @@ export const metadata = {
 export default function MyAccountOrdersDetailsPage() {
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
       <>
         {/* page-title */}
         <div

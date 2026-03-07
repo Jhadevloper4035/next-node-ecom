@@ -9,7 +9,7 @@ import ScrollTop from "@/components/common/ScrollTop";
 // Redux Toolkit provider only
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
-
+import AuthProvider from "@/context/AuthProvider";
 import CartModal from "@/components/modals/CartModal";
 import QuickView from "@/components/modals/QuickView";
 import QuickAdd from "@/components/modals/QuickAdd";
@@ -124,26 +124,28 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="preload-wrapper popup-loader">
         <Provider store={store}>
-          <ToastProvider>
-            <GlobalSpinner />
-            <AuthHydrator />
-            <RtlToggler />
-            <Header2 />
-            <div id="wrapper">{children}</div>
-          <CartModal />
-          <QuickView />
-          <QuickAdd />
-          <Compare />
-          <MobileMenu />
+          <AuthProvider>
+            <ToastProvider>
+              <GlobalSpinner />
+              <AuthHydrator />
+              <RtlToggler />
+              <Header2 />
+              <div id="wrapper">{children}</div>
+              <CartModal />
+              <QuickView />
+              <QuickAdd />
+              <Compare />
+              <MobileMenu />
 
-          <NewsLetterModal />
-          <SearchModal />
-          <SizeGuide />
-          <Wishlist />
-          <DemoModal />
-          <Categories />
-          <AccountSidebar />
-          </ToastProvider>
+              <NewsLetterModal />
+              <SearchModal />
+              <SizeGuide />
+              <Wishlist />
+              <DemoModal />
+              <Categories />
+              <AccountSidebar />
+            </ToastProvider>
+          </AuthProvider>
         </Provider>
       </body>
     </html>

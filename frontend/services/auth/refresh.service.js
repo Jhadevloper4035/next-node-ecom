@@ -1,19 +1,15 @@
 import axiosInstance from "../api.config";
 import { setToken } from "./utils";
 
-export const verifyOtp = async (email, otp) => {
+export const refreshToken = async () => {
   try {
-    const response = await axiosInstance.post(`/v1/auth/verify-otp`, {
-      email,
-      otp,
-    });
-    const wrapper = response.data;
-    const data = wrapper.data || {};
-
+    const response = await axiosInstance.post(`/v1/auth/refresh`);
+    const data = response.data.data;
+    
     if (data.accessToken) {
       setToken(data.accessToken);
     }
-
+    
     return data;
   } catch (error) {
     throw error.response?.data || error.message;

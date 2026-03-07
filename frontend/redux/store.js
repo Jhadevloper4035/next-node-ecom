@@ -4,6 +4,7 @@ import wishlistReducer from "./wishlistSlice";
 import compareReducer from "./compareSlice";
 import uiReducer from "./uiSlice";
 import authReducer from "./authSlice";
+import addressReducer from "./addressSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     compare: compareReducer,
     ui: uiReducer,
     auth: authReducer,
+    address: addressReducer,
   },
 });
 

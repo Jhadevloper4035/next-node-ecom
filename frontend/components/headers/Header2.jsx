@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/redux/authSlice";
 import { useRouter } from "next/navigation";
 import { logoutAPI } from "@/services/auth/logout.service";
-import { getMe } from "@/services/auth/me.service";
+import { getMe } from "@/services/user/me.service";
 import { updateUser } from "@/redux/authSlice";
 import Nav from "./Nav";
 import Link from "next/link";

@@ -1,9 +1,9 @@
-import axiosInstance from "../api.config";
-import { clearAuth } from "./utils";
+import api from "../../api/api.config";
+import { clearAuth } from "@/utlis/auth.utlis";
 
 export const logoutAPI = async () => {
   try {
-    const response = await axiosInstance.post(`/v1/auth/logout`);
+    const response = await api.post(`/v1/auth/logout`);
     clearAuth();
     return response.data;
   } catch (error) {

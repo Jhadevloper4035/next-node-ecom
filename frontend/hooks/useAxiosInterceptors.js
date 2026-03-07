@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import axiosInstance from "@/services/api.config";
+import axiosInstance from "@/api/api.config";
 
 // This hook initializes axios interceptors
 // Call this once in a client component that loads early (like AuthHydrator)

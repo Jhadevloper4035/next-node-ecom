@@ -27,13 +27,17 @@ export default function Address() {
 
   // Form states for adding new address
   const [newAddress, setNewAddress] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    label: "",
+    fullName: "",
     phone: "",
-    address: "",
-    country: "United States",
+    alternatePhone: "",
+    line1: "",
+    line2: "",
+    landmark: "",
     city: "",
+    state: "",
+    country: "India",
+    postalCode: "",
     isDefault: false,
   });
 
@@ -57,7 +61,7 @@ export default function Address() {
       addresses.map((addr) => ({
         ...addr,
         isEditing: (addr.id || addr._id) === editingId,
-      }))
+      })),
     );
   }, [addresses, editingId]);
 
@@ -66,7 +70,8 @@ export default function Address() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this address?")) return;
+    if (!window.confirm("Are you sure you want to delete this address?"))
+      return;
     dispatch(addressStart());
     try {
       await deleteAddressApi(id);
@@ -87,13 +92,17 @@ export default function Address() {
       dispatch(addAddressSuccess(response.data || response));
       toast("Address added successfully", "success");
       setNewAddress({
-        firstName: "",
-        lastName: "",
-        email: "",
+        label: "",
+        fullName: "",
         phone: "",
-        address: "",
-        country: "United States",
+        alternatePhone: "",
+        line1: "",
+        line2: "",
+        landmark: "",
         city: "",
+        state: "",
+        country: "India",
+        postalCode: "",
         isDefault: false,
       });
       document.querySelector(".createForm").classList.remove("d-block");
@@ -126,15 +135,14 @@ export default function Address() {
     if (isEdit) {
       setLocalAddresses((prev) =>
         prev.map((addr) =>
-          (addr.id || addr._id) === id ? { ...addr, [name]: val } : addr
-        )
+          (addr.id || addr._id) === id ? { ...addr, [name]: val } : addr,
+        ),
       );
     } else {
       setNewAddress((prev) => ({ ...prev, [name]: val }));
     }
   };
-
-
+  console.log("Local Addresses:", localAddresses);
   return (
     <div className="my-account-content">
       <div className="account-address">
@@ -156,9 +164,9 @@ export default function Address() {
               <fieldset className="">
                 <input
                   type="text"
-                  placeholder="First Name*"
-                  name="firstName"
-                  value={newAddress.firstName}
+                  placeholder="Address Label*"
+                  name="label"
+                  value={newAddress.label}
                   onChange={(e) => handleInputChange(e)}
                   required
                 />
@@ -166,25 +174,15 @@ export default function Address() {
               <fieldset className="">
                 <input
                   type="text"
-                  placeholder="Last Name*"
-                  name="lastName"
-                  value={newAddress.lastName}
+                  placeholder="Full Name*"
+                  name="fullName"
+                  value={newAddress.fullName}
                   onChange={(e) => handleInputChange(e)}
                   required
                 />
               </fieldset>
             </div>
             <div className="cols mb_20">
-              <fieldset className="">
-                <input
-                  type="email"
-                  placeholder="Email address*"
-                  name="email"
-                  value={newAddress.email}
-                  onChange={(e) => handleInputChange(e)}
-                  required
-                />
-              </fieldset>
               <fieldset className="">
                 <input
                   type="text"
@@ -195,44 +193,96 @@ export default function Address() {
                   required
                 />
               </fieldset>
+              <fieldset className="">
+                <input
+                  type="text"
+                  placeholder="Alternate Phone"
+                  name="alternatePhone"
+                  value={newAddress.alternatePhone}
+                  onChange={(e) => handleInputChange(e)}
+                />
+              </fieldset>
             </div>
             <fieldset className="mb_20">
               <input
                 type="text"
-                placeholder="Address"
-                name="address"
-                value={newAddress.address}
+                placeholder="Address Line 1*"
+                name="line1"
+                value={newAddress.line1}
                 onChange={(e) => handleInputChange(e)}
                 required
               />
             </fieldset>
-            <div className="tf-select mb_20">
-              <select
-                className="text-title"
-                name="country"
-                value={newAddress.country}
-                onChange={(e) => handleInputChange(e)}
-              >
-                <option value="Australia">Australia</option>
-                <option value="Canada">Canada</option>
-                <option value="United States">United States</option>
-                <option value="France">France</option>
-                <option value="Germany">Germany</option>
-                <option value="Italy">Italy</option>
-                <option value="Japan">Japan</option>
-                <option value="Vietnam">Vietnam</option>
-              </select>
-            </div>
             <fieldset className="mb_20">
               <input
                 type="text"
-                placeholder="City"
-                name="city"
-                value={newAddress.city}
+                placeholder="Address Line 2"
+                name="line2"
+                value={newAddress.line2}
                 onChange={(e) => handleInputChange(e)}
-                required
               />
             </fieldset>
+            <fieldset className="mb_20">
+              <input
+                type="text"
+                placeholder="Landmark"
+                name="landmark"
+                value={newAddress.landmark}
+                onChange={(e) => handleInputChange(e)}
+              />
+            </fieldset>
+            <div className="cols mb_20">
+              <fieldset className="">
+                <input
+                  type="text"
+                  placeholder="City*"
+                  name="city"
+                  value={newAddress.city}
+                  onChange={(e) => handleInputChange(e)}
+                  required
+                />
+              </fieldset>
+              <fieldset className="">
+                <input
+                  type="text"
+                  placeholder="State*"
+                  name="state"
+                  value={newAddress.state}
+                  onChange={(e) => handleInputChange(e)}
+                  required
+                />
+              </fieldset>
+            </div>
+            <div className="cols mb_20">
+              <fieldset className="">
+                <input
+                  type="text"
+                  placeholder="Postal Code*"
+                  name="postalCode"
+                  value={newAddress.postalCode}
+                  onChange={(e) => handleInputChange(e)}
+                  required
+                />
+              </fieldset>
+              <div className="tf-select">
+                <select
+                  className="text-title"
+                  name="country"
+                  value={newAddress.country}
+                  onChange={(e) => handleInputChange(e)}
+                >
+                  <option value="India">India</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Canada">Canada</option>
+                  <option value="United States">United States</option>
+                  <option value="France">France</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Vietnam">Vietnam</option>
+                </select>
+              </div>
+            </div>
             <div className="tf-cart-checkbox mb_20">
               <div className="tf-checkbox-wrapp">
                 <input
@@ -246,7 +296,9 @@ export default function Address() {
                   <i className="icon-check" />
                 </div>
               </div>
-              <label htmlFor="create-address-default">Set as default address.</label>
+              <label htmlFor="create-address-default">
+                Set as default address.
+              </label>
             </div>
             <div className="d-flex align-items-center justify-content-center gap-20">
               <button type="submit" className="tf-btn btn-fill radius-4">
@@ -255,7 +307,9 @@ export default function Address() {
               <span
                 className="tf-btn btn-fill radius-4 btn-hide-address"
                 onClick={() =>
-                  document.querySelector(".createForm").classList.remove("d-block")
+                  document
+                    .querySelector(".createForm")
+                    .classList.remove("d-block")
                 }
               >
                 <span className="text">Cancel</span>
@@ -266,23 +320,40 @@ export default function Address() {
           {isLoading ? (
             <div className="text-center p-4">Loading addresses...</div>
           ) : localAddresses.length === 0 ? (
-            <div className="text-center p-4">No addresses found. Add a new one above.</div>
+            <div className="text-center p-4">
+              No addresses found. Add a new one above.
+            </div>
           ) : (
             <div className="list-account-address">
               {localAddresses.map((address) => (
-                <div className="account-address-item" key={address.id || address._id}>
-                  <h6 className="mb_20">{address.isDefault ? "Default" : "Address"}</h6>
-                  <p>{`${address.firstName} ${address.lastName}`}</p>
-                  <p>{address.address}</p>
-                  <p>{`${address.city}, ${address.country}`}</p>
-                  <p>{address.email}</p>
-                  <p className="mb_10">{address.phone}</p>
+                <div
+                  className="account-address-item"
+                  key={address.id || address._id}
+                >
+                  <h6 className="mb_20">
+                    {address.label} {address.isDefault ? "(Default)" : ""}
+                  </h6>
+                  <p>{address.fullName}</p>
+                  <p>{address.line1}</p>
+                  {address.line2 && <p>{address.line2}</p>}
+                  {address.landmark && <p>Landmark: {address.landmark}</p>}
+                  <p>{`${address.city}, ${address.state} ${address.postalCode}`}</p>
+                  <p>{`${address.country}`}</p>
+                  <p>{address.phone}</p>
+                  {address.alternatePhone && (
+                    <p>Alt: {address.alternatePhone}</p>
+                  )}
+                  <p className="mb_10"></p>
                   <div className="d-flex gap-10 justify-content-center">
                     <button
                       className="tf-btn radius-4 btn-fill justify-content-center btn-edit-address"
-                      onClick={() => handleEditToggle(address.id || address._id)}
+                      onClick={() =>
+                        handleEditToggle(address.id || address._id)
+                      }
                     >
-                      <span className="text">{address.isEditing ? "Close" : "Edit"}</span>
+                      <span className="text">
+                        {address.isEditing ? "Close" : "Edit"}
+                      </span>
                     </button>
                     <button
                       className="tf-btn radius-4 btn-outline justify-content-center btn-delete-address"
@@ -294,86 +365,204 @@ export default function Address() {
                   {address.isEditing && (
                     <form
                       className="edit-form-address wd-form-address d-block"
-                      onSubmit={(e) => handleUpdateAddress(e, address.id || address._id, address)}
+                      onSubmit={(e) =>
+                        handleUpdateAddress(
+                          e,
+                          address.id || address._id,
+                          address,
+                        )
+                      }
                     >
                       <div className="title">Edit address</div>
-                      <fieldset className="mb_20">
-                        <input
-                          type="text"
-                          placeholder="First Name*"
-                          name="firstName"
-                          value={address.firstName || ""}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
-                          required
-                        />
-                      </fieldset>
-                      <fieldset className="mb_20">
-                        <input
-                          type="text"
-                          placeholder="Last Name*"
-                          name="lastName"
-                          value={address.lastName || ""}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
-                          required
-                        />
-                      </fieldset>
-                      <fieldset className="mb_20">
-                        <input
-                          type="email"
-                          placeholder="Email*"
-                          name="email"
-                          value={address.email || ""}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
-                          required
-                        />
-                      </fieldset>
-                      <fieldset className="mb_20">
-                        <input
-                          type="text"
-                          placeholder="Phone*"
-                          name="phone"
-                          value={address.phone || ""}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
-                          required
-                        />
-                      </fieldset>
-                      <fieldset className="mb_20">
-                        <input
-                          type="text"
-                          placeholder="Address"
-                          name="address"
-                          value={address.address || ""}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
-                          required
-                        />
-                      </fieldset>
-                      <div className="tf-select mb_20">
-                        <select
-                          name="country"
-                          value={address.country || "United States"}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
-                          required
-                        >
-                          <option value="Australia">Australia</option>
-                          <option value="Canada">Canada</option>
-                          <option value="United States">United States</option>
-                          <option value="France">France</option>
-                          <option value="Germany">Germany</option>
-                          <option value="Italy">Italy</option>
-                          <option value="Japan">Japan</option>
-                          <option value="Vietnam">Vietnam</option>
-                        </select>
+                      <div className="cols mb_20">
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="Address Label*"
+                            name="label"
+                            value={address.label || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          />
+                        </fieldset>
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="Full Name*"
+                            name="fullName"
+                            value={address.fullName || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          />
+                        </fieldset>
+                      </div>
+                      <div className="cols mb_20">
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="Phone*"
+                            name="phone"
+                            value={address.phone || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          />
+                        </fieldset>
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="Alternate Phone"
+                            name="alternatePhone"
+                            value={address.alternatePhone || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                          />
+                        </fieldset>
                       </div>
                       <fieldset className="mb_20">
                         <input
                           type="text"
-                          placeholder="City"
-                          name="city"
-                          value={address.city || ""}
-                          onChange={(e) => handleInputChange(e, true, address.id || address._id)}
+                          placeholder="Address Line 1*"
+                          name="line1"
+                          value={address.line1 || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              e,
+                              true,
+                              address.id || address._id,
+                            )
+                          }
                           required
                         />
                       </fieldset>
+                      <fieldset className="mb_20">
+                        <input
+                          type="text"
+                          placeholder="Address Line 2"
+                          name="line2"
+                          value={address.line2 || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              e,
+                              true,
+                              address.id || address._id,
+                            )
+                          }
+                        />
+                      </fieldset>
+                      <fieldset className="mb_20">
+                        <input
+                          type="text"
+                          placeholder="Landmark"
+                          name="landmark"
+                          value={address.landmark || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              e,
+                              true,
+                              address.id || address._id,
+                            )
+                          }
+                        />
+                      </fieldset>
+                      <div className="cols mb_20">
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="City*"
+                            name="city"
+                            value={address.city || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          />
+                        </fieldset>
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="State*"
+                            name="state"
+                            value={address.state || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          />
+                        </fieldset>
+                      </div>
+                      <div className="cols mb_20">
+                        <fieldset className="">
+                          <input
+                            type="text"
+                            placeholder="Postal Code*"
+                            name="postalCode"
+                            value={address.postalCode || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          />
+                        </fieldset>
+                        <div className="tf-select">
+                          <select
+                            name="country"
+                            value={address.country || "India"}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
+                            required
+                          >
+                            <option value="India">India</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Canada">Canada</option>
+                            <option value="United States">United States</option>
+                            <option value="France">France</option>
+                            <option value="Germany">Germany</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Vietnam">Vietnam</option>
+                          </select>
+                        </div>
+                      </div>
                       <div className="tf-cart-checkbox mb_20">
                         <div className="tf-checkbox-wrapp">
                           <input
@@ -381,22 +570,35 @@ export default function Address() {
                             id={`edit-address-default-${address.id || address._id}`}
                             name="isDefault"
                             checked={address.isDefault || false}
-                            onChange={(e) => handleInputChange(e, true, address.id || address._id)}
+                            onChange={(e) =>
+                              handleInputChange(
+                                e,
+                                true,
+                                address.id || address._id,
+                              )
+                            }
                           />
                           <div>
                             <i className="icon-check"></i>
                           </div>
                         </div>
-                        <label htmlFor={`edit-address-default-${address.id || address._id}`}>
+                        <label
+                          htmlFor={`edit-address-default-${address.id || address._id}`}
+                        >
                           Set as default address.
                         </label>
                       </div>
                       <div className="d-flex flex-column gap-20">
-                        <button type="submit" className="tf-btn btn-fill radius-4">
+                        <button
+                          type="submit"
+                          className="tf-btn btn-fill radius-4"
+                        >
                           <span className="text">Update address</span>
                         </button>
                         <span
-                          onClick={() => handleEditToggle(address.id || address._id)}
+                          onClick={() =>
+                            handleEditToggle(address.id || address._id)
+                          }
                           className="tf-btn btn-fill radius-4 btn-hide-edit-address"
                         >
                           <span className="text">Cancel</span>

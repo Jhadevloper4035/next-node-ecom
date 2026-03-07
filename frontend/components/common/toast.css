@@ -1,6 +1,6 @@
 .toast-wrapper {
   position: fixed;
-  top: 20px;
+  top: 75px;
   right: 30px;
   display: flex;
   flex-direction: column;

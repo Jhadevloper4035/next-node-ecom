@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearAuth, getToken } from "@/services/auth/utils";
+import { clearAuth, getToken } from "@/utlis/auth.utlis";
 
 const loadTokenFromCookies = () => {
   if (typeof window !== "undefined") {

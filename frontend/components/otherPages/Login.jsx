@@ -65,7 +65,7 @@ export default function Login() {
         );
       } else if (response.accessToken) {
         try {
-          const me = await import("@/services/auth/me.service").then((m) =>
+          const me = await import("@/services/user/me.service").then((m) =>
             m.getMe(),
           );
           dispatch(

@@ -1,4 +1,4 @@
-import axiosInstance from "../api.config";
+import axiosInstance from "../../api/api.config";
 
 export const getAllAddresses = async () => {
     try {

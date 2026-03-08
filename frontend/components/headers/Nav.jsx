@@ -18,8 +18,25 @@ import {
   swatchLinks,
 } from "@/data/menu";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "@/redux/categorySlice";
+
 export default function Nav() {
   const pathname = usePathname();
+  const dispatch = useDispatch();
+  const { categories, loading, error } = useSelector((state) => state.category);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  const isCategoryActive = (category) => {
+    if (pathname.includes(`/shop-collection/${category.slug}`)) return true;
+    return category.children?.some((child) =>
+      pathname.includes(`/shop-collection/${child.slug}`)
+    );
+  };
   return (
     <>
       {" "}
@@ -32,10 +49,10 @@ export default function Nav() {
             : ""
         } `}
       >
-        <a href="/" className="item-link">
+        {/* <a href="/" className="item-link">
           Home
-          {/* <i className="icon icon-arrow-down" /> */}
-        </a>
+          <i className="icon icon-arrow-down" />
+        </a> */}
         {/* <div className="sub-menu mega-menu">
           <div className="container">
             <div className="row-demo">
@@ -84,270 +101,56 @@ export default function Nav() {
           </div>
         </div> */}
       </li>
-      <li
-        className={`menu-item ${
-          [
-            ...shopLayout,
-            ...shopFeatures,
-            ...productStyles,
-            ...otherShopMenus,
-          ].some((elm) => elm.href.split("/")[1] == pathname.split("/")[1])
-            ? "active"
-            : ""
-        } `}
-      >
-        <a href="/shop-collection" className="item-link">
-          Shop
-          {/* <i className="icon icon-arrow-down" /> */}
-        </a>
-        {/* <div className="sub-menu mega-menu">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-2">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">Shop Layout</div>
-                  <ul className="menu-list">
-                    {shopLayout.map((link, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == link.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
+      {loading ? (
+        <li className="menu-item">
+          <a href="#" className="item-link">Loading...</a>
+        </li>
+      ) : error ? (
+        <li className="menu-item">
+          {/* <a href="#" className="item-link text-danger">Error loading categories</a> */}
+          console.log(error);
+        </li>
+      ) : (
+        categories?.map((category) => (
+          <li
+            key={category._id}
+            className={`menu-item ${
+              isCategoryActive(category) ? "active" : ""
+            } ${category.children?.length > 0 ? "position-relative" : ""}`}
+          >
+            <Link
+              href={`/shop-collection/${category.slug}`}
+              className="item-link"
+            >
+              {category.name}
+              {category.children?.length > 0 && (
+                <i className="icon icon-arrow-down" />
+              )}
+            </Link>
+            {category.children?.length > 0 && (
+              <div className="sub-menu submenu-default">
+                <ul className="menu-list">
+                  {category.children.map((child) => (
+                    <li
+                      key={child._id}
+                      className={`menu-item-li ${
+                        pathname.includes(child.slug) ? "active" : ""
+                      }`}
+                    >
+                      <Link
+                        href={`/shop-collection/${child.slug}`}
+                        className="menu-link-text"
                       >
-                        <Link href={link.href} className="menu-link-text">
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {child.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="col-lg-2">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">Shop Features</div>
-                  <ul className="menu-list">
-                    {shopFeatures.map((link, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == link.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
-                      >
-                        <Link href={link.href} className="menu-link-text">
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-2">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">Products Hover</div>
-                  <ul className="menu-list">
-                    {productStyles.map((style, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == style.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
-                      >
-                        <Link href={style.href} className="menu-link-text">
-                          {style.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-2">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">My Pages</div>
-                  <ul className="menu-list">
-                    {otherShopMenus.map((link, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == link.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
-                      >
-                        <Link href={link.href} className="menu-link-text">
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="wrapper-sub-shop">
-                  <div className="menu-heading">Recent Products</div>
-                  <Swiper
-                    dir="ltr"
-                    className="swiper tf-product-header"
-                    slidesPerView={2}
-                    spaceBetween={20}
-                  >
-                    {products
-                      .slice(0, 4)
-                      .map((elm) => ({
-                        ...elm,
-                        colors: null,
-                      }))
-                      .map((elm, i) => (
-                        <SwiperSlide key={i} className="swiper-slide">
-                          <ProductCard1 product={elm} />
-                        </SwiperSlide>
-                      ))}
-                  </Swiper>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-      </li>
-      <li
-        className={`menu-item ${
-          [...productLinks, ...swatchLinks, ...productFeatures].some(
-            (elm) => elm.href.split("/")[1] == pathname.split("/")[1],
-          )
-            ? "active"
-            : ""
-        } `}
-      >
-        <a href="#" className="item-link">
-          Products
-          {/* <i className="icon icon-arrow-down" /> */}
-        </a>
-        {/* <div className="sub-menu mega-menu">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-3">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">Products Layout</div>
-                  <ul className="menu-list">
-                    {productLinks.map((link, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == link.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
-                      >
-                        <Link href={link.href} className="menu-link-text">
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-3">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">Colors Swatched</div>
-                  <ul className="menu-list">
-                    {swatchLinks.map((link, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == link.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
-                      >
-                        <Link href={link.href} className="menu-link-text">
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-3">
-                <div className="mega-menu-item">
-                  <div className="menu-heading">Products Features</div>
-                  <ul className="menu-list">
-                    {productFeatures.map((link, index) => (
-                      <li
-                        key={index}
-                        className={`menu-item-li ${
-                          pathname.split("/")[1] == link.href.split("/")[1]
-                            ? "active"
-                            : ""
-                        } `}
-                      >
-                        <Link
-                          href={link.href}
-                          className={`menu-link-text ${
-                            link.badge ? "position-relative" : ""
-                          } `}
-                        >
-                          {link.name}
-                          {link.badge && (
-                            <div className="demo-label">
-                              <span className="demo-new">{link.badge}</span>
-                            </div>
-                          )}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-3">
-                <div className="menu-heading">Best seller</div>
-                <div className="sec-cls-header">
-                  <div className="collection-position hover-img">
-                    <Link href={`/shop-collection`} className="img-style">
-                      <Image
-                        className="lazyload"
-                        data-src="/images/collections/cls-header.jpg"
-                        alt="banner-cls"
-                        src="/images/collections/cls-header.jpg"
-                        width={300}
-                        height={400}
-                      />
-                    </Link>
-                    <div className="content">
-                      <div className="title-top">
-                        <h4 className="title">
-                          <Link
-                            href={`/shop-collection`}
-                            className="link text-white wow fadeInUp"
-                          >
-                            Shop our top picks
-                          </Link>
-                        </h4>
-                        <p className="desc text-white wow fadeInUp">
-                          Reserved for special occasions
-                        </p>
-                      </div>
-                      <div>
-                        <Link
-                          href={`/shop-collection`}
-                          className="tf-btn btn-md btn-white"
-                        >
-                          <span className="text">Shop Now</span>
-                          <i className="icon icon-arrowUpRight" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-      </li>
+            )}
+          </li>
+        ))
+      )}
       {/* <li
         className={`menu-item position-relative ${
           [...blogLinks].some(

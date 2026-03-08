@@ -5,6 +5,7 @@ import compareReducer from "./compareSlice";
 import uiReducer from "./uiSlice";
 import authReducer from "./authSlice";
 import addressReducer from "./addressSlice";
+import categoryReducer from "./categorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     ui: uiReducer,
     auth: authReducer,
     address: addressReducer,
+    category: categoryReducer,
   },
 });
 

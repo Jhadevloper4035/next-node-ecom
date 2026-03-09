@@ -14,8 +14,7 @@ export default async function BlogDetailsPage1({ params }) {
   const blog = allBlogs.filter((p) => p.id == id)[0] || allBlogs[0];
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
+      {/* <Topbar6 bgColor="bg-main" /> */}
       <BlogDetail1 blog={blog} />
       <RelatedBlogs />
       <Footer1 />

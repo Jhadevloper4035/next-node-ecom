@@ -125,7 +125,7 @@ export default function Header2() {
                     </a>
                   </li>
                   <li className="nav-account">
-                    <a href="#" className="nav-icon-item">
+                    <a href="/" className="nav-icon-item">
                       <svg
                         className="icon"
                         width={24}

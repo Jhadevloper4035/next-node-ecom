@@ -4,7 +4,7 @@ import { allProducts } from "@/data/products";
 const initialState = {
   quickViewItem: allProducts[0] || null,
   quickAddItem: 1,
-  isLoading: false,
+  loadingCount: 0,
 };
 
 const uiSlice = createSlice({
@@ -18,10 +18,19 @@ const uiSlice = createSlice({
       state.quickAddItem = action.payload;
     },
     setIsLoading(state, action) {
-      state.isLoading = action.payload;
+      if (action.payload) {
+        state.loadingCount++;
+      } else {
+        state.loadingCount = Math.max(0, state.loadingCount - 1);
+      }
     },
+    resetLoading(state) {
+      state.loadingCount = 0;
+    }
   },
 });
 
-export const { setQuickViewItem, setQuickAddItem, setIsLoading } = uiSlice.actions;
+export const { setQuickViewItem, setQuickAddItem, setIsLoading, resetLoading } = uiSlice.actions;
+export const selectIsLoading = (state) => state.ui.loadingCount > 0;
 export default uiSlice.reducer;
+

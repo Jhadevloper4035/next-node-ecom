@@ -22,8 +22,7 @@ export const metadata = {
 export default function HomeActivemearPage() {
   return (
     <>
-      <Topbar3 />
-      <Header1 fullWidth />
+      {/* <Topbar3 /> */}
       <Hero />
       <MarqueeSection2 parentClass="tf-marquee border-0" />
       <Collections />

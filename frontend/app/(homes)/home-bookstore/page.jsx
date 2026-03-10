@@ -21,8 +21,8 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Header14 />
-      <Topbar8 />
+      {/* <Header14 /> */}
+      {/* <Topbar8 /> */}
       <Hero />
       <Categories />
       <Collections />

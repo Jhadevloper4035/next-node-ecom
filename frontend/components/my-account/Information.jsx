@@ -15,8 +15,8 @@ export default function Information() {
     firstName: "",
     lastName: "",
     mobileNumber: "",
-    country: "Australia",
     password: "",
+    // country: "INDIA",
     newPassword: "",
     confirmPassword: "",
   });
@@ -63,8 +63,7 @@ export default function Information() {
       }
 
       const payload = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        fullName: `${formData.firstName} ${formData.lastName}`.trim(),
         mobileNumber: formData.mobileNumber,
       };
 
@@ -197,7 +196,7 @@ export default function Information() {
                 />
               </fieldset>
             </div>
-            <div className="tf-select">
+            {/* <div className="tf-select">
               <select
                 className="text-title"
                 id="country"
@@ -205,7 +204,7 @@ export default function Information() {
                 value={formData.country}
                 onChange={handleChange}
               >
-                <option value="Australia">Australia</option>
+                <option value="INDIA">India</option>
                 <option value="Austria">Austria</option>
                 <option value="Belgium">Belgium</option>
                 <option value="Canada">Canada</option>
@@ -230,6 +229,7 @@ export default function Information() {
                 <option value="Spain">Spain</option>
                 <option value="Sweden">Sweden</option>
                 <option value="Switzerland">Switzerland</option>
+                <option value="Inida">India</option>
                 <option value="United Arab Emirates">
                   United Arab Emirates
                 </option>
@@ -237,77 +237,9 @@ export default function Information() {
                 <option value="United States">United States</option>
                 <option value="Vietnam">Vietnam</option>
               </select>
-            </div>
+            </div> */}
           </div>
-          <div className="account-password">
-            <h5 className="title">Change Password (Optional)</h5>
-            <fieldset className="position-relative password-item mb_20">
-              <input
-                className="input-password"
-                type={passwordType}
-                placeholder="Current Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <span
-                className={`toggle-password ${
-                  !(passwordType === "text") ? "unshow" : ""
-                }`}
-                onClick={togglePassword}
-              >
-                <i
-                  className={`icon-eye-${
-                    !(passwordType === "text") ? "hide" : "show"
-                  }-line`}
-                />
-              </span>
-            </fieldset>
-            <fieldset className="position-relative password-item mb_20">
-              <input
-                className="input-password"
-                type={newPasswordType}
-                placeholder="New Password"
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleChange}
-              />
-              <span
-                className={`toggle-password ${
-                  !(newPasswordType === "text") ? "unshow" : ""
-                }`}
-                onClick={toggleNewPassword}
-              >
-                <i
-                  className={`icon-eye-${
-                    !(newPasswordType === "text") ? "hide" : "show"
-                  }-line`}
-                />
-              </span>
-            </fieldset>
-            <fieldset className="position-relative password-item">
-              <input
-                className="input-password"
-                type={confirmPasswordType}
-                placeholder="Confirm Password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-              <span
-                className={`toggle-password ${
-                  !(confirmPasswordType === "text") ? "unshow" : ""
-                }`}
-                onClick={toggleConfirmPassword}
-              >
-                <i
-                  className={`icon-eye-${
-                    !(confirmPasswordType === "text") ? "hide" : "show"
-                  }-line`}
-                />
-              </span>
-            </fieldset>
-          </div>
+
           <div className="button-submit">
             <button
               className="tf-btn btn-fill"

@@ -6,7 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/authSlice";
 import { logoutAPI } from "@/services/auth/logout.service";
+import { useSelector } from "react-redux";
 export default function AccountSidebar() {
+  const user = useSelector((state) => state.auth.user);
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -34,8 +36,10 @@ export default function AccountSidebar() {
               height={280}
             />
           </div>
-          <h6 className="mb_4">Tony Nguyen</h6>
-          <div className="body-text-1">themesflat@gmail.com</div>
+          <h6 className="mb_4">{user?.fullName || "Guest User"}</h6>
+          <div className="body-text-1">
+            {user?.email || "themesflat@gmail.com"}
+          </div>
         </div>
         <ul className="my-account-nav">
           <li>

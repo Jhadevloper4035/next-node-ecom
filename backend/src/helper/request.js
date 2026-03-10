@@ -11,4 +11,4 @@ const isDuplicateErr = (err) =>
   err?.code === 11000 || String(err?.message || "").toLowerCase().includes("already exists");
 
 
-module.exports = {sendSuccess , sendError , isDuplicateErr }
+module.exports = { sendSuccess, sendError, isDuplicateErr }

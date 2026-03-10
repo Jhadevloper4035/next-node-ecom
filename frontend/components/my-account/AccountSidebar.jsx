@@ -41,9 +41,8 @@ export default function AccountSidebar() {
           <li>
             <Link
               href={`/my-account`}
-              className={`my-account-nav-item ${
-                pathname == "/my-account" ? "active" : ""
-              } `}
+              className={`my-account-nav-item ${pathname == "/my-account" ? "active" : ""
+                } `}
             >
               <svg
                 width={24}
@@ -73,9 +72,8 @@ export default function AccountSidebar() {
           <li>
             <Link
               href={`/my-account-orders`}
-              className={`my-account-nav-item ${
-                pathname == "/my-account-orders" ? "active" : ""
-              } `}
+              className={`my-account-nav-item ${pathname == "/my-account-orders" ? "active" : ""
+                } `}
             >
               <svg
                 width={24}
@@ -98,9 +96,8 @@ export default function AccountSidebar() {
           <li>
             <Link
               href={`/my-account-address`}
-              className={`my-account-nav-item ${
-                pathname == "/my-account-address" ? "active" : ""
-              } `}
+              className={`my-account-nav-item ${pathname == "/my-account-address" ? "active" : ""
+                } `}
             >
               <svg
                 width={24}

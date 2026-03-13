@@ -22,8 +22,8 @@ export const metadata = {
 export default function HomeJeweleryPage1() {
   return (
     <>
-      <Topbar3 />
-      <Header10 />
+      {/* <Topbar3 /> */}
+      {/* <Header10 /> */}
       <Hero />
       <Tiktok parentClass="flat-spacing" />
       <Categories />

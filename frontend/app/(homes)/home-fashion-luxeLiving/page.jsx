@@ -22,7 +22,7 @@ export const metadata = {
 export default function HomeFasionLuxelivingPage() {
   return (
     <>
-      <Header1 fullWidth />
+      {/* <Header1 fullWidth /> */}
       <Hero />
       <Products4 parentClass="flat-spacing" />
       <MarqueeSection />

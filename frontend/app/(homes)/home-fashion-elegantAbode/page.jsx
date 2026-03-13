@@ -24,8 +24,8 @@ export const metadata = {
 export default function HomeFashionElegantAbodePage() {
   return (
     <>
-      <Topbar3 />
-      <Header1 />
+      {/* <Topbar3 />
+      <Header1 /> */}
       <Hero />
       <Categories />
       <Products />

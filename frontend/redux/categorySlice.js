@@ -1,18 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getAllCategories } from "../services/category/category.service";
-
-export const fetchCategories = createAsyncThunk(
-    "category/fetchCategories",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await getAllCategories();
-            // Based on the provided API response structure: { success: true, message: "...", data: [...] }
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error);
-        }
-    }
-);
+import { createSlice } from "@reduxjs/toolkit";
 
 const categorySlice = createSlice({
     name: "category",
@@ -21,22 +7,26 @@ const categorySlice = createSlice({
         loading: false,
         error: null,
     },
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchCategories.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchCategories.fulfilled, (state, action) => {
-                state.loading = false;
-                state.categories = action.payload;
-            })
-            .addCase(fetchCategories.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
+    reducers: {
+        fetchCategoriesStart: (state) => {
+            state.loading = true;
+            state.error = null;
+        },
+        fetchCategoriesSuccess: (state, action) => {
+            state.loading = false;
+            state.categories = action.payload;
+        },
+        fetchCategoriesFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     },
 });
+
+export const {
+    fetchCategoriesStart,
+    fetchCategoriesSuccess,
+    fetchCategoriesFailure,
+} = categorySlice.actions;
 
 export default categorySlice.reducer;

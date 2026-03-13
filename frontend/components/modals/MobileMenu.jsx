@@ -135,7 +135,7 @@ export default function MobileMenu() {
                           {category.children.map((child) => (
                             <li key={child._id}>
                               <Link
-                                href={`/shop-collection/${child.slug}`}
+                                href={`/shop-collection/${category.slug}/${child.slug}`}
                                 className={`sub-nav-link ${
                                   pathname.includes(child.slug) ? "active" : ""
                                 }`}

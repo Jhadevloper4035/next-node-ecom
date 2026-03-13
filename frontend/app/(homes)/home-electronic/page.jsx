@@ -24,7 +24,7 @@ export default function HomeElectronicPage() {
   return (
     <>
       <Topbar6 />
-      <Header11 />
+      {/* <Header11 /> */}
       <Hero />
       <Categories />
       <Products />

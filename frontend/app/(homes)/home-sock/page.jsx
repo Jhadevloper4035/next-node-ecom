@@ -20,7 +20,7 @@ export const metadata = {
 export default function HomeSockPage() {
   return (
     <>
-      <Header1 />
+      {/* <Header1 /> */}
       <Hero />
       <MarqueeSection2 />
       <Products1 />

@@ -20,7 +20,8 @@ import {
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "@/redux/categorySlice";
+import { fetchCategoriesStart, fetchCategoriesSuccess, fetchCategoriesFailure } from "@/redux/categorySlice";
+import { getAllCategories } from "@/services/category/category.service";
 
 export default function Nav() {
   const pathname = usePathname();
@@ -28,7 +29,16 @@ export default function Nav() {
   const { categories, loading, error } = useSelector((state) => state.category);
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    const fetchCats = async () => {
+        dispatch(fetchCategoriesStart());
+        try {
+            const response = await getAllCategories();
+            dispatch(fetchCategoriesSuccess(response.data));
+        } catch (error) {
+            dispatch(fetchCategoriesFailure(error?.message || "Failed to fetch categories"));
+        }
+    };
+    fetchCats();
   }, [dispatch]);
 
   const isCategoryActive = (category) => {
@@ -138,7 +148,7 @@ export default function Nav() {
                       }`}
                     >
                       <Link
-                        href={`/shop-collection/${child.slug}`}
+                        href={`/shop-collection/${category.slug}/${child.slug}`}
                         className="menu-link-text"
                       >
                         {child.name}

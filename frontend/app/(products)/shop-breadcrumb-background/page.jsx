@@ -8,8 +8,8 @@ import React from "react";
 export default function ShopBreadcumbBackgroundPage() {
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
+      {/* <Topbar6 bgColor="bg-main" />
+      <Header1 /> */}
       <div className="page-title">
         <div className="container">
           <h3 className="heading text-center">Women</h3>

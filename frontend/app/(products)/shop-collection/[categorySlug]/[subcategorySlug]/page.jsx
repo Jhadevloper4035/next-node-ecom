@@ -1,12 +1,17 @@
 import Footer1 from "@/components/footers/Footer1";
 import Header1 from "@/components/headers/Header1";
 import Topbar6 from "@/components/headers/Topbar6";
-
-import Products2 from "@/components/products/Products2";
+import SubcategoryProducts from "@/components/products/SubcategoryProducts";
 import Link from "next/link";
 import React from "react";
 
-export default function ProductStylePage2() {
+export default function SubcategoryPage({ params }) {
+  const { categorySlug, subcategorySlug } = params;
+
+  // Format titles for display
+  const categoryTitle = categorySlug.replace(/-/g, " ");
+  const subcategoryTitle = subcategorySlug.replace(/-/g, " ");
+
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" />
@@ -18,7 +23,7 @@ export default function ProductStylePage2() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Women</h3>
+              <h3 className="heading text-center text-capitalize">{subcategoryTitle}</h3>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
@@ -28,13 +33,26 @@ export default function ProductStylePage2() {
                 <li>
                   <i className="icon-arrRight" />
                 </li>
-                <li>Women</li>
+                <li>
+                  <Link className="link text-capitalize" href={`/shop-collection/${categorySlug}`}>
+                    {categoryTitle}
+                  </Link>
+                </li>
+                <li>
+                  <i className="icon-arrRight" />
+                </li>
+                <li className="text-capitalize">{subcategoryTitle}</li>
               </ul>
             </div>
           </div>
         </div>
       </div>
-      <Products2 />
+
+      <SubcategoryProducts 
+        categorySlug={categorySlug} 
+        subcategorySlug={subcategorySlug} 
+      />
+      
       <Footer1 />
     </>
   );

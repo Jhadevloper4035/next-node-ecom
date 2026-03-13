@@ -25,8 +25,8 @@ export default function CheckoutPage() {
   if (isLoading) {
     return (
       <>
-        <Topbar6 bgColor="bg-main" />
-        <Header1 />
+        {/* <Topbar6 bgColor="bg-main" />
+        <Header1 /> */}
         <div
           style={{
             minHeight: "400px",

@@ -15,7 +15,9 @@ export default function Slider1({
   thumbSlidePerViewOnMobile = 6,
 }) {
   const items = [...slideItems];
-  items[0].src = firstItem ?? items[0].src;
+  if (items.length > 0) {
+    items[0] = { ...items[0], src: firstItem ?? items[0].src };
+  }
 
   useEffect(() => {
     // Function to initialize Drift

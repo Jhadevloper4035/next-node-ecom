@@ -23,11 +23,34 @@ export const useAppState = () => {
   const quickViewItem = useSelector((s) => s.ui.quickViewItem);
   const quickAddItem = useSelector((s) => s.ui.quickAddItem);
 
+  // Read products from Redux as fallback for dynamic products
+  const apiProducts = useSelector((s) => s.product?.products || []);
+  const selectedProduct = useSelector((s) => s.product?.selectedProduct);
+
   const isAddedToCartProducts = (id) =>
     cartProducts.find((elm) => elm.id == id) !== undefined;
 
-  const addProductToCart = (id, qty = 1, isModal = true) => {
-    dispatch(addProduct({ id, qty }));
+  const addProductToCart = (id, qty = 1, isModal = true, productFull = null) => {
+    let pObj = productFull;
+    if (!pObj) {
+      pObj = apiProducts.find((p) => p.id === id || p._id === id);
+    }
+    if (!pObj && selectedProduct && (selectedProduct.id === id || selectedProduct._id === id)) {
+      pObj = selectedProduct;
+    }
+
+    if (pObj) {
+      // Ensure the object has the fields expected by the UI and Cart
+      pObj = {
+        ...pObj,
+        id: pObj.id || pObj._id,
+        price: pObj.price !== undefined ? pObj.price : (pObj.basePrice || 0),
+        imgSrc: pObj.imgSrc || (pObj.images && pObj.images.length > 0 ? (typeof pObj.images[0] === 'string' ? pObj.images[0] : pObj.images[0].url) : "/images/placeholder.jpg"),
+        title: pObj.title || pObj.name || "Product"
+      };
+    }
+
+    dispatch(addProduct({ id, qty, product: pObj }));
     if (isModal) openCartModal();
   };
 

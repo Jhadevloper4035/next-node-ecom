@@ -19,6 +19,13 @@ export default function CartModal() {
   };
 
   const [currentOpenPopup, setCurrentOpenPopup] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="modal fullRight fade modal-shopping-cart" id="shoppingCart">
@@ -51,7 +58,7 @@ export default function CartModal() {
                       </div>
                       <div className="cart-item-bot">
                         <div className="text-button price">
-                          ${product.price.toFixed(2)}
+                          ₹{product.price?.toFixed(2) || "0.00"}
                         </div>
                         <a
                           className="link text-button"
@@ -130,10 +137,16 @@ export default function CartModal() {
                                 </div>
                               </div>
                               <div className="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                <div className="text-secondary-2">XL/Blue</div>
+                                <div className="text-secondary-2">
+                                  {product.selectedSize || product.selectedColor || product.selectedFabric || product.selectedMaterial || product.selectedFoam ? (
+                                    [product.selectedSize, product.selectedColor, product.selectedFabric, product.selectedMaterial, product.selectedFoam].filter(Boolean).join("/")
+                                  ) : (
+                                    "Standard"
+                                  )}
+                                </div>
                                 <div className="text-button">
-                                  {product.quantity} X $
-                                  {product.price.toFixed(2)}
+                                  {product.quantity} X ₹
+                                  {product.price?.toFixed(2) || "0.00"}
                                 </div>
                               </div>
                             </div>
@@ -268,7 +281,7 @@ export default function CartModal() {
                     <div className="tf-cart-totals-discounts">
                       <h5>Subtotal</h5>
                       <h5 className="tf-totals-total-value">
-                        ${totalPrice.toFixed(2)}
+                        ₹{totalPrice?.toFixed(2) || "0.00"}
                       </h5>
                     </div>
                     <div className="tf-cart-checkbox">

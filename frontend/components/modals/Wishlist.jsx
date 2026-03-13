@@ -34,7 +34,7 @@ export default function Wishlist() {
                             <Image
                               className="lazyload"
                               alt=""
-                              src={elm.imgSrc}
+                              src={elm.imgSrc || "/images/products/placeholder.jpg"}
                               width={600}
                               height={800}
                             />
@@ -59,7 +59,7 @@ export default function Wishlist() {
                             <div className="d-flex align-items-center justify-content-between flex-wrap gap-12">
                               <div className="text-secondary-2">XL/Blue</div>
                               <div className="text-button">
-                                ${elm.price.toFixed(2)}
+                                ₹{elm.price?.toFixed(2) || "0.00"}
                               </div>
                             </div>
                           </div>

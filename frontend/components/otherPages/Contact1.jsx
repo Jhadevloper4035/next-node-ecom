@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+
 export default function Contact1() {
   const formRef = useRef();
   const [success, setSuccess] = useState(true);
@@ -15,6 +16,7 @@ export default function Contact1() {
 
   const sendMail = (e) => {
     e.preventDefault();
+
     emailjs
       .sendForm("service_noj8796", "template_fs3xchn", formRef.current, {
         publicKey: "iG4SCmR-YtJagQ4gV",
@@ -23,7 +25,6 @@ export default function Contact1() {
         if (res.status === 200) {
           setSuccess(true);
           handleShowMessage();
-
           formRef.current.reset();
         } else {
           setSuccess(false);
@@ -32,8 +33,11 @@ export default function Contact1() {
       })
       .catch((err) => {
         console.log(err);
+        setSuccess(false);
+        handleShowMessage();
       });
   };
+
   return (
     <section className="flat-spacing pt-0">
       <div className="container">
@@ -43,8 +47,9 @@ export default function Contact1() {
             Use the form below to get in touch with the sales team
           </p>
         </div>
+
         <div
-          className={`tfSubscribeMsg  footer-sub-element ${
+          className={`tfSubscribeMsg footer-sub-element ${
             showMessage ? "active" : ""
           }`}
         >
@@ -56,46 +61,52 @@ export default function Contact1() {
             <p style={{ color: "red" }}>Something went wrong</p>
           )}
         </div>
+
         <form onSubmit={sendMail} ref={formRef} className="form-leave-comment">
           <div className="wrap">
             <div className="cols">
-              <fieldset className="">
+              <fieldset>
                 <input
-                  className=""
                   type="text"
                   placeholder="Your Name*"
-                  name="text"
-                  tabIndex={2}
-                  defaultValue=""
-                  aria-required="true"
+                  name="name"
                   required
                 />
               </fieldset>
-              <fieldset className="">
+
+              <fieldset>
                 <input
-                  className=""
                   type="email"
                   placeholder="Your Email*"
                   name="email"
-                  tabIndex={2}
-                  defaultValue=""
-                  aria-required="true"
                   required
                 />
               </fieldset>
             </div>
-            <fieldset className="">
+
+            <div className="cols">
+              <fieldset>
+                <input
+                  type="tel"
+                  placeholder="Your Phone*"
+                  name="phone"
+                  pattern="[6-9]{1}[0-9]{9}"
+                  title="Enter valid Indian phone number"
+                  required
+                />
+              </fieldset>
+            </div>
+
+            <fieldset>
               <textarea
-                className=""
                 rows={4}
                 placeholder="Your Message*"
-                tabIndex={2}
-                aria-required="true"
+                name="message"
                 required
-                defaultValue={""}
               />
             </fieldset>
           </div>
+
           <div className="button-submit text-center">
             <button className="tf-btn btn-fill" type="submit">
               <span className="text text-button">Send message</span>

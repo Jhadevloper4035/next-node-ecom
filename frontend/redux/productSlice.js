@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     products: [],
+    selectedProduct: null,
     loading: false,
     error: null,
 };
@@ -25,6 +26,19 @@ const productSlice = createSlice({
         clearProductError: (state) => {
             state.error = null;
         },
+        fetchProductStart: (state) => {
+            state.loading = true;
+            state.error = null;
+            state.selectedProduct = null;
+        },
+        fetchProductSuccess: (state, action) => {
+            state.loading = false;
+            state.selectedProduct = action.payload;
+        },
+        fetchProductFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
     },
 });
 
@@ -33,6 +47,9 @@ export const {
     fetchProductsSuccess,
     fetchProductsFailure,
     clearProductError,
+    fetchProductStart,
+    fetchProductSuccess,
+    fetchProductFailure,
 } = productSlice.actions;
 
 export default productSlice.reducer;

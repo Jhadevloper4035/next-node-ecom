@@ -61,9 +61,17 @@ export default function ShopCart() {
     setSelectedOption(elm);
   };
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
-    document.querySelector(".progress-cart .value").style.width = "70%";
+    setMounted(true);
+    const progressEl = document.querySelector(".progress-cart .value");
+    if (progressEl) {
+      progressEl.style.width = "70%";
+    }
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -99,7 +107,7 @@ export default function ShopCart() {
                   <div className="text">
                     Buy
                     <span className="fw-semibold text-primary">
-                      $70.00
+                      ₹70.00
                     </span>{" "}
                     more to get <span className="fw-semibold">Freeship</span>
                   </div>
@@ -136,7 +144,7 @@ export default function ShopCart() {
                             >
                               <Image
                                 alt="product"
-                                src={elm.imgSrc}
+                                src={elm.imgSrc || "/images/products/placeholder.jpg"}
                                 width={600}
                                 height={800}
                               />
@@ -149,26 +157,12 @@ export default function ShopCart() {
                                 {elm.title}
                               </Link>
                               <div className="variant-box">
-                                <div className="tf-select">
-                                  <select>
-                                    <option>Blue</option>
-                                    <option>Black</option>
-                                    <option>White</option>
-                                    <option>Red</option>
-                                    <option>Beige</option>
-                                    <option>Pink</option>
-                                  </select>
-                                </div>
-                                <div className="tf-select">
-                                  <select>
-                                    <option>XL</option>
-                                    <option>XS</option>
-                                    <option>S</option>
-                                    <option>M</option>
-                                    <option>L</option>
-                                    <option>XL</option>
-                                    <option>2XL</option>
-                                  </select>
+                                <div className="text-secondary-2">
+                                  {elm.selectedSize || elm.selectedColor || elm.selectedFabric || elm.selectedMaterial || elm.selectedFoam ? (
+                                    [elm.selectedSize, elm.selectedColor, elm.selectedFabric, elm.selectedMaterial, elm.selectedFoam].filter(Boolean).join("/")
+                                  ) : (
+                                    "Standard"
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -178,7 +172,7 @@ export default function ShopCart() {
                             className="tf-cart-item_price text-center"
                           >
                             <div className="cart-price text-button price-on-sale">
-                              ${elm.price.toFixed(2)}
+                              ₹{elm.price?.toFixed(2) || "0.00"}
                             </div>
                           </td>
                           <td
@@ -216,7 +210,7 @@ export default function ShopCart() {
                             className="tf-cart-item_total text-center"
                           >
                             <div className="cart-total text-button total-price">
-                              ${(elm.price * elm.quantity).toFixed(2)}
+                              ₹{((elm.price || 0) * (elm.quantity || 0)).toFixed(2)}
                             </div>
                           </td>
                           <td
@@ -284,11 +278,11 @@ export default function ShopCart() {
                   <h5 className="title">Order Summary</h5>
                   <div className="subtotal text-button d-flex justify-content-between align-items-center">
                     <span>Subtotal</span>
-                    <span className="total">${totalPrice.toFixed(2)}</span>
+                    <span className="total">₹{totalPrice?.toFixed(2) || "0.00"}</span>
                   </div>
                   <div className="discount text-button d-flex justify-content-between align-items-center">
                     <span>Discounts</span>
-                    <span className="total">${totalPrice ? "20" : 0}</span>
+                    <span className="total">₹{totalPrice ? "20" : 0}</span>
                   </div>
                   <div className="ship">
                     <span className="text-button">Shipping</span>
@@ -306,7 +300,7 @@ export default function ShopCart() {
                           <label htmlFor={option.id}>
                             <span>{option.label}</span>
                             <span className="price">
-                              ${option.price.toFixed(2)}
+                              ₹{option.price.toFixed(2)}
                             </span>
                           </label>
                         </fieldset>
@@ -316,10 +310,10 @@ export default function ShopCart() {
                   <h5 className="total-order d-flex justify-content-between align-items-center">
                     <span>Total</span>
                     <span className="total">
-                      $
+                      ₹
                       {totalPrice
-                        ? (selectedOption.price + totalPrice).toFixed(2)
-                        : 0}
+                        ? ((selectedOption?.price || 0) + totalPrice).toFixed(2)
+                        : "0.00"}
                     </span>
                   </h5>
                   <div className="box-progress-checkout">

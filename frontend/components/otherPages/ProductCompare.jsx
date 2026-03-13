@@ -95,7 +95,7 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <span className="price">${elm.price.toFixed(2)}</span>
+                  <span className="price">₹{elm.price.toFixed(2)}</span>
                 </div>
               ))}
             </div>

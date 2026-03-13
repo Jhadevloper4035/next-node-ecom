@@ -68,7 +68,7 @@ export default function ProductCard2({
           {product.title}
         </Link>
         <span className="price">
-          <span className="old-price">${product.price.toFixed(2)}</span>$
+          <span className="old-price">₹{product.price.toFixed(2)}</span>₹
           {product.oldPrice.toFixed(2)}
         </span>
         <ul className="list-color-product">

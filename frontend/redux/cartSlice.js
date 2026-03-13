@@ -3,13 +3,17 @@ import { allProducts } from "@/data/products";
 
 // helper to compute total price
 const calculateTotal = (cartProducts) =>
-  cartProducts.reduce((acc, p) => acc + p.quantity * p.price, 0);
+  cartProducts.reduce((acc, p) => acc + (p.quantity || 0) * (p.price || 0), 0);
 
 // try to load from localStorage (client only)
 const loadCartFromStorage = () => {
   if (typeof window !== "undefined") {
-    const items = JSON.parse(localStorage.getItem("cartList"));
-    return Array.isArray(items) ? items : [];
+    try {
+      const items = JSON.parse(localStorage.getItem("cartList"));
+      return Array.isArray(items) ? items : [];
+    } catch (e) {
+      return [];
+    }
   }
   return [];
 };
@@ -24,14 +28,25 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addProduct(state, action) {
-      const { id, qty = 1 } = action.payload;
+  const { id, qty = 1, product = null } = action.payload;
       const exists = state.cartProducts.find((p) => p.id === id);
       if (!exists) {
-        const item = {
-          ...allProducts.find((p) => p.id === id),
-          quantity: qty,
-        };
-        state.cartProducts.push(item);
+        const productData = product || allProducts.find((p) => p.id === id);
+        if (productData) {
+          const item = {
+            ...productData,
+            quantity: qty,
+          };
+          // Make sure price is a number to avoid checkout issues
+          item.price = typeof item.price === "number" ? item.price : 0;
+          state.cartProducts.push(item);
+        }
+      } else {
+        exists.quantity += qty;
+        // Optionally update the existing product details if newly added
+        if (product) {
+          exists.price = typeof product.price === "number" ? product.price : exists.price;
+        }
       }
       state.totalPrice = calculateTotal(state.cartProducts);
       if (typeof window !== "undefined") {

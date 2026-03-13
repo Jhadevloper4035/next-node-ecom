@@ -1,0 +1,86 @@
+.optionGroup {
+  margin-bottom: 28px;
+}
+
+.labelWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.groupLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.selectedLabel {
+  font-size: 14px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.optionBox {
+  flex: 1;
+  min-width: 100px;
+  padding: 14px 12px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.optionBox:hover {
+  border-color: #555;
+  background: rgba(255, 255, 255, 0.02);
+  transform: translateY(-1px);
+}
+
+.activeOption {
+  border-color: #000000;
+  border-width: 2px;
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.optionName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 3px;
+  white-space: nowrap;
+}
+
+.optionSub {
+  font-size: 11px;
+  color: #888;
+  font-weight: 500;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .optionBox {
+    flex-basis: calc(33.33% - 7px);
+  }
+}
+
+@media (max-width: 480px) {
+  .optionBox {
+    flex-basis: calc(50% - 5px);
+  }
+}

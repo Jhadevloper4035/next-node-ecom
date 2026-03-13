@@ -236,9 +236,9 @@ export default function ProductCard3({ product }) {
         </div>
         <span className="price">
           {product.oldPrice && (
-            <span className="old-price">${product.oldPrice.toFixed(2)}</span>
+            <span className="old-price">₹{product.oldPrice.toFixed(2)}</span>
           )}{" "}
-          ${product.price.toFixed(2)}
+          ₹{product.price.toFixed(2)}
         </span>
         <div className="box-progress-stock">
           <div className="progress">

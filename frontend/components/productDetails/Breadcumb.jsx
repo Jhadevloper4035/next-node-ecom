@@ -14,29 +14,28 @@ export default function Breadcumb({ product }) {
               Homepage
             </Link>
 
+            {product?.category && (
+              <>
+                <i className="icon icon-arrRight" />
+                <Link 
+                  href={`/shop-collection/${product.category.slug}`} 
+                  className="text text-caption-1 text-capitalize"
+                >
+                  {product.category.name}
+                </Link>
+              </>
+            )}
+
             <i className="icon icon-arrRight" />
-            <span className="text text-caption-1">{product.title}</span>
+            <span className="text text-caption-1">{product?.title}</span>
           </div>
           <div className="tf-breadcrumb-prev-next">
-            <Link
-              href={`/${pathname.split("/")[1]}/${
-                product.id <= 1 ? 1 : product.id - 1
-              }`}
-              className="tf-breadcrumb-prev"
+            <button
+              onClick={() => window.history.back()}
+              className="tf-breadcrumb-back btn-reset"
             >
-              <i className="icon icon-arrLeft" />
-            </Link>
-            <a href="#" className="tf-breadcrumb-back">
               <i className="icon icon-squares-four" />
-            </a>
-            <Link
-              href={`/${pathname.split("/")[1]}/${
-                product.id >= allProducts.length ? 1 : product.id + 1
-              }`}
-              className="tf-breadcrumb-next"
-            >
-              <i className="icon icon-arrRight" />
-            </Link>
+            </button>
           </div>
         </div>
       </div>

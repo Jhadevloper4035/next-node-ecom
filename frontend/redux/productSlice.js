@@ -19,6 +19,10 @@ const productSlice = createSlice({
             state.loading = false;
             state.products = action.payload || [];
         },
+        appendProducts: (state, action) => {
+            state.loading = false;
+            state.products = [...state.products, ...(action.payload || [])];
+        },
         fetchProductsFailure: (state, action) => {
             state.loading = false;
             state.error = action.payload;
@@ -45,6 +49,7 @@ const productSlice = createSlice({
 export const {
     fetchProductsStart,
     fetchProductsSuccess,
+    appendProducts,
     fetchProductsFailure,
     clearProductError,
     fetchProductStart,

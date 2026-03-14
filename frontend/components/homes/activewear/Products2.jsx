@@ -37,7 +37,7 @@ export default function Products2() {
 
           <div className="sw-pagination-recent sw-dots type-circle justify-content-center spd561" />
           <div className="sec-btn text-center">
-            <Link href={`/shop-default-grid`} className="btn-line">
+            <Link href={`/all-products`} className="btn-line">
               View All Products
             </Link>
           </div>

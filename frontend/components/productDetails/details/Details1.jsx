@@ -115,6 +115,7 @@ export default function Details1({ product }) {
                             ))}
                           </div>
                           <div className="text text-caption-1">
+                            {product.rating && <span className="fw-6 me-1">{product.rating}</span>}
                             ({product.reviewsCount || 0} reviews)
                           </div>
                         </div>
@@ -124,6 +125,14 @@ export default function Details1({ product }) {
                             In Stock: {product.stock}
                           </div>
                         </div>
+                        {/* {product.assemblyRequired !== undefined && (
+                          <div className="tf-product-info-sold">
+                            <i className="icon icon-squares-four" />
+                            <div className="text text-caption-1">
+                              Assembly: {product.assemblyRequired ? "Required" : "Not Required"}
+                            </div>
+                          </div>
+                        )} */}
                       </div>
                     </div>
                     <div className="tf-product-info-desc">
@@ -351,6 +360,18 @@ export default function Details1({ product }) {
                           ))}
                         </p>
                       </li>
+                      {product.warranty && (
+                        <li>
+                          <p className="text-caption-1">Warranty:</p>
+                          <p className="text-caption-1 text-1">{product.warranty.split(':')[0]}</p>
+                        </li>
+                      )}
+                      {product.tags && product.tags.length > 0 && (
+                        <li>
+                          <p className="text-caption-1">Tags:</p>
+                          <p className="text-caption-1 text-1">{product.tags.join(', ')}</p>
+                        </li>
+                      )}
                     </ul>
                     <div className="tf-product-info-guranteed">
                       <div className="text-title">Guranteed safe checkout:</div>

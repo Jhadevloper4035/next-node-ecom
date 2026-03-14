@@ -2,14 +2,15 @@
 import React from "react";
 import Image from "next/image";
 import ReviewSorting from "./ReviewSorting";
-export default function Reviews() {
+export default function Reviews({product}) {
+  
   return (
     <>
       <div className="tab-reviews-heading">
         {" "}
         <div className="top">
           <div className="text-center">
-            <div className="number title-display">4.9</div>
+            <div className="number title-display">{product.rating}</div>
             <div className="list-star">
               <i className="icon icon-star" />
               <i className="icon icon-star" />

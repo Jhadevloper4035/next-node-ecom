@@ -44,7 +44,7 @@ export default function ProductCard1({
           <Image
             className="lazyload img-product"
             src={currentImage}
-            alt={product.title}
+            alt={product.title || "Product image"}
             width={600}
             height={800}
           />
@@ -52,7 +52,7 @@ export default function ProductCard1({
           <Image
             className="lazyload img-hover"
             src={product.imgHover}
-            alt={product.title}
+            alt={product.title || "Product image hover"}
             width={600}
             height={800}
           />
@@ -247,7 +247,7 @@ export default function ProductCard1({
       <div className="card-product-info">
         <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="title link">
 
-          {product.title}
+          {product.title || "Unnamed Product"}
         </Link>
         <span className="price">
           {product.oldPrice && (

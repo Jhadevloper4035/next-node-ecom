@@ -4,15 +4,22 @@ import LayoutHandler from "./LayoutHandler";
 import Sorting from "./Sorting";
 import Listview from "./Listview";
 import GridView from "./GridView";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import FilterModal from "./FilterModal";
 import { initialState, reducer } from "@/reducer/filterReducer";
 import { productMain } from "@/data/products";
 import FilterMeta from "./FilterMeta";
 
+import { getAllProducts } from "@/services/product/product.service";
+
 export default function Products1({ parentClass = "flat-spacing" }) {
   const [activeLayout, setActiveLayout] = useState(4);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState(false);
+  const [loadedItems, setLoadedItems] = useState([]);
+  const [apiProducts, setApiProducts] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
+
   const {
     price,
     availability,
@@ -28,6 +35,32 @@ export default function Products1({ parentClass = "flat-spacing" }) {
     currentPage,
     itemPerPage,
   } = state;
+
+  useEffect(() => {
+    const fetchProds = async () => {
+      try {
+        const response = await getAllProducts({ page: 1, limit: 100 });
+        const mapped = (response.data || []).map((p) => ({
+          ...p,
+          id: p._id,
+          title: p.title || "Product", // Use p.title as defined in backend model
+          price: p.basePrice,
+          imgSrc: p.images?.[0] ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].url) : "/images/placeholder.jpg",
+          imgHover: p.images?.[1] ? (typeof p.images[1] === 'string' ? p.images[1] : p.images[1].url) : (p.images?.[0] ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].url) : "/images/placeholder.jpg"),
+          filterColor: p.colors || [],
+          filterSizes: p.sizes || [],
+          filterBrands: p.brand ? [p.brand] : [],
+          inStock: p.stock > 0,
+        }));
+        setApiProducts(mapped);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+    fetchProds();
+  }, []);
 
   const allProps = {
     ...state,
@@ -76,46 +109,52 @@ export default function Products1({ parentClass = "flat-spacing" }) {
 
   useEffect(() => {
     let filteredArrays = [];
+    const source = apiProducts;
+
+    if (source.length === 0) {
+      dispatch({ type: "SET_FILTERED", payload: [] });
+      return;
+    }
 
     if (brands.length) {
-      const filteredByBrands = [...productMain].filter((elm) =>
-        brands.every((el) => elm.filterBrands.includes(el))
+      const filteredByBrands = [...source].filter((elm) =>
+        brands.every((el) => elm.filterBrands && elm.filterBrands.includes(el))
       );
       filteredArrays = [...filteredArrays, filteredByBrands];
     }
     if (availability !== "All") {
-      const filteredByavailability = [...productMain].filter(
+      const filteredByavailability = [...source].filter(
         (elm) => availability.value === elm.inStock
       );
       filteredArrays = [...filteredArrays, filteredByavailability];
     }
     if (color !== "All") {
-      const filteredByColor = [...productMain].filter((elm) =>
-        elm.filterColor.includes(color.name)
+      const filteredByColor = [...source].filter((elm) =>
+        elm.filterColor && elm.filterColor.includes(color.name)
       );
       filteredArrays = [...filteredArrays, filteredByColor];
     }
     if (size !== "All" && size !== "Free Size") {
-      const filteredBysize = [...productMain].filter((elm) =>
-        elm.filterSizes.includes(size)
+      const filteredBysize = [...source].filter((elm) =>
+        elm.filterSizes && elm.filterSizes.includes(size)
       );
       filteredArrays = [...filteredArrays, filteredBysize];
     }
     if (activeFilterOnSale) {
-      const filteredByonSale = [...productMain].filter((elm) => elm.oldPrice);
+      const filteredByonSale = [...source].filter((elm) => elm.oldPrice);
       filteredArrays = [...filteredArrays, filteredByonSale];
     }
 
-    const filteredByPrice = [...productMain].filter(
+    const filteredByPrice = [...source].filter(
       (elm) => elm.price >= price[0] && elm.price <= price[1]
     );
     filteredArrays = [...filteredArrays, filteredByPrice];
 
-    const commonItems = [...productMain].filter((item) =>
+    const commonItems = [...source].filter((item) =>
       filteredArrays.every((array) => array.includes(item))
     );
     dispatch({ type: "SET_FILTERED", payload: commonItems });
-  }, [price, availability, color, size, brands, activeFilterOnSale]);
+  }, [price, availability, color, size, brands, activeFilterOnSale, apiProducts]);
 
   useEffect(() => {
     if (sortingOption === "Price Ascending") {
@@ -143,6 +182,44 @@ export default function Products1({ parentClass = "flat-spacing" }) {
     }
     dispatch({ type: "SET_CURRENT_PAGE", payload: 1 });
   }, [filtered, sortingOption]);
+
+  useEffect(() => {
+    setLoadedItems(sorted.slice(0, itemPerPage));
+  }, [sorted, itemPerPage]);
+
+  const handleLoad = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoadedItems((pre) => [
+        ...pre,
+        ...sorted.slice(pre.length, pre.length + itemPerPage),
+      ]);
+      setLoading(false);
+    }, 1000);
+  };
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !loading && loadedItems.length < sorted.length) {
+          handleLoad();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    return () => {
+      if (elementRef.current) {
+        observer.unobserve(elementRef.current);
+      }
+    };
+  }, [loading, loadedItems.length, sorted.length]);
+
   return (
     <>
       <section className={parentClass}>
@@ -182,16 +259,33 @@ export default function Products1({ parentClass = "flat-spacing" }) {
           <div className="wrapper-control-shop">
             <FilterMeta productLength={sorted.length} allProps={allProps} />
 
-            {activeLayout == 1 ? (
+            {initialLoading ? (
+              <div className="text-center w-100 py-5">
+                <div className="load-more-btn btn-infinite-scroll tf-loading loading mx-auto"></div>
+              </div>
+            ) : activeLayout == 1 ? (
               <div className="tf-list-layout wrapper-shop" id="listLayout">
-                <Listview products={sorted} />
+                <Listview pagination={false} products={loadedItems} />
               </div>
             ) : (
               <div
                 className={`tf-grid-layout wrapper-shop tf-col-${activeLayout}`}
                 id="gridLayout"
               >
-                <GridView products={sorted} />
+                <GridView pagination={false} products={loadedItems} />
+              </div>
+            )}
+
+            {sorted.length > loadedItems.length && !initialLoading && (
+              <div className="wd-load d-flex justify-content-center mt-5">
+                <div
+                  ref={elementRef}
+                  className={`load-more-btn btn-infinite-scroll tf-loading ${
+                    loading ? "loading" : ""
+                  } `}
+                >
+                  {/* {loading ? "Loading..." : ""} */}
+                </div>
               </div>
             )}
           </div>

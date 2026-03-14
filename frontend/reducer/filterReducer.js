@@ -1,7 +1,7 @@
 import { productMain } from "@/data/products";
 
 export const initialState = {
-  price: [20, 300],
+  price: [0, 100000],
 
   availability: "All",
 
@@ -13,7 +13,7 @@ export const initialState = {
   sortingOption: "Sort by (Default)",
   sorted: productMain,
   currentPage: 1,
-  itemPerPage: 6,
+  itemPerPage: 4,
 };
 
 export function reducer(state, action) {
@@ -44,7 +44,7 @@ export function reducer(state, action) {
     case "CLEAR_FILTER":
       return {
         ...state,
-        price: [20, 300],
+        price: [0, 100000],
 
         availability: "All",
 

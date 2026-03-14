@@ -26,6 +26,31 @@ export default function Description({ product }) {
             <li className="font-2">Follow standard care instructions.</li>
           )}
         </ul>
+
+        {product?.warranty && (
+          <>
+            <div className="letter-1 text-btn-uppercase mb_12 mt_20">
+              WARRANTY
+            </div>
+            <p className="font-2 text-secondary mb_12">
+              {product.warranty}
+            </p>
+          </>
+        )}
+
+        {/* {product?.assemblyRequired !== undefined && (
+          <>
+            <div className="letter-1 text-btn-uppercase mb_12 mt_20">
+              ASSEMBLY
+            </div>
+            <p className="font-2 text-secondary mb_12">
+              {product.assemblyRequired 
+                ? "This product requires assembly. All necessary hardware and instructions are provided to ensure a smooth setup process." 
+                : "No assembly required. This product arrives fully assembled and ready for use."}
+            </p>
+          </>
+        )} */}
+
         <div className="d-flex gap-20 mb_12 list-icon-guideline">
           <div className="d-flex">
             <svg

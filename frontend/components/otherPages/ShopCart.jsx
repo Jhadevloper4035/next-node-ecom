@@ -139,7 +139,7 @@ export default function ShopCart() {
                         <tr key={i} className="tf-cart-item file-delete">
                           <td className="tf-cart-item_product">
                             <Link
-                              href={`/product-detail/${elm.id}`}
+                              href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
                               className="img-box"
                             >
                               <Image
@@ -151,7 +151,7 @@ export default function ShopCart() {
                             </Link>
                             <div className="cart-info">
                               <Link
-                                href={`/product-detail/${elm.id}`}
+                                href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
                                 className="cart-title link"
                               >
                                 {elm.title}

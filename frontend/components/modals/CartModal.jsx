@@ -37,7 +37,7 @@ export default function CartModal() {
               <div className="list-cart">
                 {products41.map((product, index) => (
                   <div className="list-cart-item" key={index}>
-                    <div className="image">
+                    <Link href={`/product-detail/${product.id}`} className="image">
                       <Image
                         className="lazyload"
                         data-src={product.imgSrc}
@@ -46,12 +46,12 @@ export default function CartModal() {
                         width={600}
                         height={800}
                       />
-                    </div>
+                    </Link>
                     <div className="content">
                       <div className="name">
                         <Link
                           className="link text-line-clamp-1"
-                          href="/product-detail"
+                          href={`/product-detail/${product.id}`}
                         >
                           {product.title}
                         </Link>
@@ -110,7 +110,7 @@ export default function CartModal() {
                             key={i}
                             className="tf-mini-cart-item file-delete"
                           >
-                            <div className="tf-mini-cart-image">
+                            <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="tf-mini-cart-image">
                               <Image
                                 className="lazyload"
                                 alt=""
@@ -118,12 +118,12 @@ export default function CartModal() {
                                 width={600}
                                 height={800}
                               />
-                            </div>
+                            </Link>
                             <div className="tf-mini-cart-info flex-grow-1">
                               <div className="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
                                 <div className="text-title">
                                   <Link
-                                    href={`/product-detail/${product.id}`}
+                                    href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`}
                                     className="link text-line-clamp-1"
                                   >
                                     {product.title}

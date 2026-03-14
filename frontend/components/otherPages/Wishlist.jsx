@@ -11,8 +11,9 @@ export default function Wishlist() {
   const { removeFromWishlist, wishList } = useAppState();
   const [items, setItems] = useState([]);
   useEffect(() => {
-    setItems([...allProducts.filter((elm) => wishList.includes(elm.id))]);
+    setItems(wishList);
   }, [wishList]);
+
   return (
     <section className="flat-spacing">
       <div className="container">

@@ -39,7 +39,8 @@ export default function ProductCard1({
           isNotImageRatio ? "aspect-ratio-0" : ""
         } ${radiusClass} `}
       >
-        <Link href={`/product/${product.slug || product.id}`} className="product-img">
+        <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="product-img">
+
           <Image
             className="lazyload img-product"
             src={currentImage}
@@ -186,7 +187,8 @@ export default function ProductCard1({
         )}
         <div className="list-product-btn">
           <a
-            onClick={() => addToWishlist(product.id)}
+            onClick={() => addToWishlist(product.id, product)}
+
             className="box-icon wishlist btn-icon-action"
           >
             <span className="icon icon-heart" />
@@ -243,7 +245,8 @@ export default function ProductCard1({
         </div>
       </div>
       <div className="card-product-info">
-        <Link href={`/product/${product.slug || product.id}`} className="title link">
+        <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="title link">
+
           {product.title}
         </Link>
         <span className="price">

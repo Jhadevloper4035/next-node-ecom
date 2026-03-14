@@ -239,7 +239,20 @@ export default function Details1({ product }) {
                           </span>
                         </a>
                         <a
-                          onClick={() => addToWishlist(product.id)}
+                          onClick={() => {
+                            const newProduct = {
+                              ...product,
+                              price: totalPrice,
+                              selectedOptions: [
+                                { label: "Size", value: selectedSize },
+                                { label: "Fabric", value: selectedFabric },
+                                { label: "Material", value: selectedMaterial },
+                                { label: "Foam", value: selectedFoam },
+                                { label: "Color", value: activeColor }
+                              ].filter(o => o.value)
+                            };
+                            addToWishlist(product.id, newProduct);
+                          }}
                           className="box-icon hover-tooltip text-caption-2 wishlist btn-icon-action"
                         >
                           <span className="icon icon-heart" />
@@ -249,6 +262,7 @@ export default function Details1({ product }) {
                               : "Wishlist"}
                           </span>
                         </a>
+
                       </div>
                       <a href="#" className="btn-style-3 text-btn-uppercase">
                         Buy it now

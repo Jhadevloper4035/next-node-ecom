@@ -58,8 +58,28 @@ export const useAppState = () => {
     dispatch(updateQuantity({ id, qty }));
   };
 
-  const addToWishlistHandler = (id) => {
-    dispatch(addToWishlist(id));
+  const addToWishlistHandler = (id, productFull = null) => {
+    let pObj = productFull;
+    if (!pObj) {
+      pObj = apiProducts.find((p) => p.id === id || p._id === id);
+    }
+    if (!pObj && selectedProduct && (selectedProduct.id === id || selectedProduct._id === id)) {
+      pObj = selectedProduct;
+    }
+
+    if (pObj) {
+      // Ensure the object has the fields expected by the UI
+      pObj = {
+        ...pObj,
+        id: pObj.id || pObj._id,
+        price: pObj.price !== undefined ? pObj.price : (pObj.basePrice || 0),
+        imgSrc: pObj.imgSrc || (pObj.images && pObj.images.length > 0 ? (typeof pObj.images[0] === 'string' ? pObj.images[0] : pObj.images[0].url) : "/images/placeholder.jpg"),
+        title: pObj.title || pObj.name || "Product"
+      };
+      dispatch(addToWishlist(pObj));
+    } else {
+      dispatch(addToWishlist({ id }));
+    }
     openWistlistModal();
   };
 
@@ -75,8 +95,9 @@ export const useAppState = () => {
     dispatch(removeFromCompare(id));
   };
 
-  const isAddedtoWishlist = (id) => wishList.includes(id);
+  const isAddedtoWishlist = (id) => wishList.some((elm) => (elm.id || elm._id) == id);
   const isAddedtoCompareItem = (id) => compareItem.includes(id);
+
 
   const setQuickView = (item) => dispatch(setQuickViewItem(item));
   const setQuickAdd = (val) => dispatch(setQuickAddItem(val));

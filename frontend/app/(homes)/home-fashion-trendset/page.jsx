@@ -21,7 +21,7 @@ export const metadata = {
 export default function HomeFashionTrendsetPage() {
   return (
     <>
-      <Header1 />
+      {/* <Header1 /> */}
       <Topbar2 />
       <Hero />
       <Products />

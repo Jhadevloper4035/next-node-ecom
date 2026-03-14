@@ -19,6 +19,13 @@ export default function CartModal() {
   };
 
   const [currentOpenPopup, setCurrentOpenPopup] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="modal fullRight fade modal-shopping-cart" id="shoppingCart">
@@ -30,7 +37,7 @@ export default function CartModal() {
               <div className="list-cart">
                 {products41.map((product, index) => (
                   <div className="list-cart-item" key={index}>
-                    <div className="image">
+                    <Link href={`/product-detail/${product.id}`} className="image">
                       <Image
                         className="lazyload"
                         data-src={product.imgSrc}
@@ -39,19 +46,19 @@ export default function CartModal() {
                         width={600}
                         height={800}
                       />
-                    </div>
+                    </Link>
                     <div className="content">
                       <div className="name">
                         <Link
                           className="link text-line-clamp-1"
-                          href="/product-detail"
+                          href={`/product-detail/${product.id}`}
                         >
                           {product.title}
                         </Link>
                       </div>
                       <div className="cart-item-bot">
                         <div className="text-button price">
-                          ${product.price.toFixed(2)}
+                          ₹{product.price?.toFixed(2) || "0.00"}
                         </div>
                         <a
                           className="link text-button"
@@ -103,7 +110,7 @@ export default function CartModal() {
                             key={i}
                             className="tf-mini-cart-item file-delete"
                           >
-                            <div className="tf-mini-cart-image">
+                            <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="tf-mini-cart-image">
                               <Image
                                 className="lazyload"
                                 alt=""
@@ -111,12 +118,12 @@ export default function CartModal() {
                                 width={600}
                                 height={800}
                               />
-                            </div>
+                            </Link>
                             <div className="tf-mini-cart-info flex-grow-1">
                               <div className="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">
                                 <div className="text-title">
                                   <Link
-                                    href={`/product-detail/${product.id}`}
+                                    href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`}
                                     className="link text-line-clamp-1"
                                   >
                                     {product.title}
@@ -130,10 +137,16 @@ export default function CartModal() {
                                 </div>
                               </div>
                               <div className="d-flex align-items-center justify-content-between flex-wrap gap-12">
-                                <div className="text-secondary-2">XL/Blue</div>
+                                <div className="text-secondary-2">
+                                  {product.selectedSize || product.selectedColor || product.selectedFabric || product.selectedMaterial || product.selectedFoam ? (
+                                    [product.selectedSize, product.selectedColor, product.selectedFabric, product.selectedMaterial, product.selectedFoam].filter(Boolean).join("/")
+                                  ) : (
+                                    "Standard"
+                                  )}
+                                </div>
                                 <div className="text-button">
-                                  {product.quantity} X $
-                                  {product.price.toFixed(2)}
+                                  {product.quantity} X ₹
+                                  {product.price?.toFixed(2) || "0.00"}
                                 </div>
                               </div>
                             </div>
@@ -268,7 +281,7 @@ export default function CartModal() {
                     <div className="tf-cart-totals-discounts">
                       <h5>Subtotal</h5>
                       <h5 className="tf-totals-total-value">
-                        ${totalPrice.toFixed(2)}
+                        ₹{totalPrice?.toFixed(2) || "0.00"}
                       </h5>
                     </div>
                     <div className="tf-cart-checkbox">

@@ -8,8 +8,8 @@ import React from "react";
 export default function ShopBreadcumbLeftPage() {
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
+      {/* <Topbar6 bgColor="bg-main" />
+      <Header1 /> */}
       <div className="breadcrumbs-default">
         <div className="container">
           <div className="breadcrumbs-content">

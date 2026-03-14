@@ -5,7 +5,6 @@ const auth = require("../middlewares/auth");
 
 const validate = require("../validators/index");
 const v = require("../validators/address.validator");
-const auth = require("../middlewares/auth");
 router.get("/", auth, ctrl.getAllAddresses);
 router.post("/", auth, v.createAddressValidator, validate, ctrl.createMyAddress);
 router.put("/:addressId", auth, v.updateAddressValidator, validate, ctrl.updateMyAddress);

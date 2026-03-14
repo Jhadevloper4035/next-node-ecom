@@ -23,8 +23,8 @@ export const metadata = {
 export default function HomePetStorePage() {
   return (
     <>
-      <Topbar6 bgColor=" has-line-bot bg-purple" />
-      <Header12 />
+      {/* <Topbar6 bgColor=" has-line-bot bg-purple" />
+      <Header12 /> */}
       <Benefits />
       <Hero />
       <Categories />

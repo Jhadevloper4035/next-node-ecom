@@ -1,36 +1,56 @@
 import React from "react";
 import Image from "next/image";
-export default function Description() {
+export default function Description({ product }) {
   return (
     <>
-      {" "}
       <div className="right">
         <div className="letter-1 text-btn-uppercase mb_12">
-          Stretch strap top
+          {product?.title || "Product Description"}
         </div>
         <p className="mb_12 text-secondary">
-          Nodding to retro styles, this Hyperbola T-shirt is defined by its
-          off-the-shoulder design. It's spun from a green stretch cotton jersey
-          and adorned with an embroidered AC logo on the front, a brand's
-          signature.
-        </p>
-        <p className="text-secondary">
-          Thick knitted fabric. Short design. Straight design. Rounded neck.
-          Sleeveless. Straps. Unclosed. Cable knit finish. Co-ord.
+          {product?.description || "No description available."}
         </p>
       </div>
       <div className="left">
         <div className="letter-1 text-btn-uppercase mb_12">
-          COMPOSITION, ORIGIN AND CARE GUIDELINES
+          CARE GUIDELINES
         </div>
         <ul className="list-text type-disc mb_12 gap-6">
-          <li className="font-2">
-            Composition: 55% polyester, 30% acrylic, 13% polyamide, 2% elastane
-          </li>
-          <li className="font-2">Designed in Barcelona</li>
-          <li className="font-2">Origin</li>
-          <li className="font-2">Manufacture: USA</li>
+          {product?.careInstructions?.length > 0 ? (
+            product.careInstructions.map((instruction, index) => (
+              <li key={index} className="font-2">
+                {instruction}
+              </li>
+            ))
+          ) : (
+            <li className="font-2">Follow standard care instructions.</li>
+          )}
         </ul>
+
+        {product?.warranty && (
+          <>
+            <div className="letter-1 text-btn-uppercase mb_12 mt_20">
+              WARRANTY
+            </div>
+            <p className="font-2 text-secondary mb_12">
+              {product.warranty}
+            </p>
+          </>
+        )}
+
+        {/* {product?.assemblyRequired !== undefined && (
+          <>
+            <div className="letter-1 text-btn-uppercase mb_12 mt_20">
+              ASSEMBLY
+            </div>
+            <p className="font-2 text-secondary mb_12">
+              {product.assemblyRequired 
+                ? "This product requires assembly. All necessary hardware and instructions are provided to ensure a smooth setup process." 
+                : "No assembly required. This product arrives fully assembled and ready for use."}
+            </p>
+          </>
+        )} */}
+
         <div className="d-flex gap-20 mb_12 list-icon-guideline">
           <div className="d-flex">
             <svg

@@ -48,18 +48,18 @@ export default function Header2() {
             <div className="col-xl-5 d-none d-xl-block">
               <ul className="header-list-categories">
                 <li className="categories-item active">
-                  <Link href={`/home-fashion-main`} className="text-uppercase">
-                    Women
+                  <Link href="/" className="text-uppercase">
+                    Track Order
                   </Link>
                 </li>
                 <li className="categories-item">
-                  <a href="#" className="text-uppercase">
-                    Men
+                  <a href="/about-us" className="text-uppercase">
+                    About Us
                   </a>
                 </li>
                 <li className="categories-item">
-                  <a href="#" className="text-uppercase">
-                    Kids
+                  <a href="/contact" className="text-uppercase">
+                    Customer Support 
                   </a>
                 </li>
               </ul>
@@ -88,9 +88,9 @@ export default function Header2() {
             <div className="col-xl-5 col-md-4 col-3">
               <div className="wrapper-header-right">
                 <div className="d-none d-xl-block">
-                  <div className="tf-currencies">
+                  {/* <div className="tf-currencies">
                     <CurrencySelect topStart />
-                  </div>
+                  </div> */}
                 </div>
                 <ul className="nav-icon d-flex justify-content-end align-items-center">
                   <li className="nav-search">

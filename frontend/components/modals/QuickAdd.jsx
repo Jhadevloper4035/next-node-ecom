@@ -47,12 +47,12 @@ export default function QuickAdd() {
                   <Link href={`/product-detail/${item.id}`}>{item.title}</Link>
                   <div className="tf-product-info-price">
                     <h5 className="price-on-sale font-2">
-                      ${item.price.toFixed(2)}
+                      ₹{item.price?.toFixed(2) || "0.00"}
                     </h5>
                     {item.oldPrice ? (
                       <>
                         <div className="compare-at-price font-2">
-                          ${item.oldPrice.toFixed(2)}
+                          ₹{item.oldPrice?.toFixed(2) || "0.00"}
                         </div>
                         <div className="badges-on-sale text-btn-uppercase">
                           -25%
@@ -98,14 +98,13 @@ export default function QuickAdd() {
                         &nbsp;
                       </span>
                       <span className="tf-qty-price total-price">
-                        $
+                        ₹
                         {isAddedToCartProducts(item.id)
                           ? (
-                              item.price *
-                              cartProducts.filter((elm) => elm.id == item.id)[0]
-                                .quantity
+                              (item.price || 0) *
+                              (cartProducts.find((elm) => elm.id == item.id)?.quantity || 1)
                             ).toFixed(2)
-                          : (item.price * quantity).toFixed(2)}
+                          : ((item.price || 0) * (quantity || 1)).toFixed(2)}
                       </span>
                     </a>
                     <a

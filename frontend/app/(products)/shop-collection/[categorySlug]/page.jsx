@@ -1,15 +1,16 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
-import Topbar6 from "@/components/headers/Topbar6";
-import Products1 from "@/components/products/Products1";
+import CategoryProducts from "@/components/products/CategoryProducts";
 import Link from "next/link";
 import React from "react";
 
-export default function ShopDefaultGridPage() {
+export default async function CategoryPage({ params }) {
+  const { categorySlug } = await params;
+
+  // Format titles for display
+  const categoryTitle = categorySlug.replace(/-/g, " ");
+
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
@@ -17,7 +18,7 @@ export default function ShopDefaultGridPage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Women</h3>
+              <h3 className="heading text-center text-capitalize">{categoryTitle}</h3>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
@@ -27,13 +28,17 @@ export default function ShopDefaultGridPage() {
                 <li>
                   <i className="icon-arrRight" />
                 </li>
-                <li>Women</li>
+                <li className="text-capitalize">{categoryTitle}</li>
               </ul>
             </div>
           </div>
         </div>
       </div>
-      <Products1 />
+
+      <CategoryProducts 
+        categorySlug={categorySlug} 
+      />
+      
       <Footer1 />
     </>
   );

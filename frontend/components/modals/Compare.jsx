@@ -99,7 +99,7 @@ export default function Compare() {
                             <Image
                               className="lazyload"
                               alt=""
-                              src={elm.imgSrc}
+                              src={elm.imgSrc || "/images/products/placeholder.jpg"}
                               width={600}
                               height={800}
                             />
@@ -114,7 +114,7 @@ export default function Compare() {
                               </Link>
                             </div>
                             <div className="text-button">
-                              ${elm.price.toFixed(2)}
+                              ₹{elm.price?.toFixed(2) || "0.00"}
                             </div>
                           </div>
                         </div>

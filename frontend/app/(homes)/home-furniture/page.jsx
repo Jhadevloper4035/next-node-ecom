@@ -22,8 +22,8 @@ export const metadata = {
 export default function HomeWomenPage() {
   return (
     <>
-      <Topbar3 />
-      <Header1 fullWidth />
+      {/* <Topbar3 />
+      <Header1 fullWidth /> */}
       <Hero />
       <MarqueeSection2 parentClass="tf-marquee bg-light-blue-4 border-0" />
       <Collections />

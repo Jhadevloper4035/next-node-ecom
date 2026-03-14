@@ -39,11 +39,12 @@ export default function ProductCard1({
           isNotImageRatio ? "aspect-ratio-0" : ""
         } ${radiusClass} `}
       >
-        <Link href={`/product-detail/${product.id}`} className="product-img">
+        <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="product-img">
+
           <Image
             className="lazyload img-product"
             src={currentImage}
-            alt={product.title}
+            alt={product.title || "Product image"}
             width={600}
             height={800}
           />
@@ -51,7 +52,7 @@ export default function ProductCard1({
           <Image
             className="lazyload img-hover"
             src={product.imgHover}
-            alt={product.title}
+            alt={product.title || "Product image hover"}
             width={600}
             height={800}
           />
@@ -186,7 +187,8 @@ export default function ProductCard1({
         )}
         <div className="list-product-btn">
           <a
-            onClick={() => addToWishlist(product.id)}
+            onClick={() => addToWishlist(product.id, product)}
+
             className="box-icon wishlist btn-icon-action"
           >
             <span className="icon icon-heart" />
@@ -243,14 +245,15 @@ export default function ProductCard1({
         </div>
       </div>
       <div className="card-product-info">
-        <Link href={`/product-detail/${product.id}`} className="title link">
-          {product.title}
+        <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="title link">
+
+          {product.title || "Unnamed Product"}
         </Link>
         <span className="price">
           {product.oldPrice && (
-            <span className="old-price">${product.oldPrice.toFixed(2)}</span>
+            <span className="old-price">₹{product.oldPrice.toFixed(2)}</span>
           )}{" "}
-          ${product.price?.toFixed(2)}
+          ₹{product.price?.toFixed(2)}
         </span>
         {product.colors && (
           <ul className="list-color-product">

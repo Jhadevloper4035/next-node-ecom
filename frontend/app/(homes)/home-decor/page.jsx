@@ -19,7 +19,7 @@ export const metadata = {
 export default function HomeDecorPage() {
   return (
     <>
-      <Header1 fullWidth />
+      {/* <Header1 fullWidth /> */}
       <Hero />
       <Collections />
       <ListCollections />

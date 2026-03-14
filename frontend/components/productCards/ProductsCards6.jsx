@@ -33,14 +33,14 @@ export default function ProductsCards6({ product }) {
           <Image
             className="lazyload img-product"
             src={currentImage}
-            alt={product.title}
+            alt={product.title || "Product image"}
             width={600}
             height={800}
           />
           <Image
             className="lazyload img-hover"
             src={product.imgHover}
-            alt={product.title}
+            alt={product.title || "Product image hover"}
             width={600}
             height={800}
           />
@@ -53,7 +53,7 @@ export default function ProductsCards6({ product }) {
       </div>
       <div className="card-product-info">
         <Link href={`/product-detail/${product.id}`} className="title link">
-          {product.title}
+          {product.title || "Unnamed Product"}
         </Link>
         <span className="price current-price">
           {product.oldPrice && (

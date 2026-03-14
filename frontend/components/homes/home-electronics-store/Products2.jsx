@@ -10,7 +10,7 @@ export default function Products2() {
       <div className="container">
         <div className="heading-section-4 wow fadeInUp">
           <h3 className="fw-7 font-5">Best Sellers</h3>
-          <Link href={`/shop-collection`} className="btn-line">
+          <Link href={`/all-products`} className="btn-line">
             View All Products
           </Link>
         </div>

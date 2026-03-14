@@ -22,8 +22,8 @@ export const metadata = {
 export default function HomeJeweleryPage2() {
   return (
     <>
-      <Topbar5 parentClass="tf-topbar style-2 line-bt" />
-      <Header1 />
+      {/* <Topbar5 parentClass="tf-topbar style-2 line-bt" /> */}
+      {/* <Header1 /> */}
       <Hero />
       <Categories />
       <Products1 parentClass="flat-spacing pt-0" />

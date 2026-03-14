@@ -22,8 +22,8 @@ export default async function ProductDetailPage({ params }) {
   const product = allProducts.filter((p) => p.id == id)[0] || allProducts[0];
   return (
     <>
-      <Topbar6 bgColor="bg-main" />
-      <Header1 />
+      {/* <Topbar6 bgColor="bg-main" />
+      <Header1 /> */}
       <Breadcumb product={product} />
       <Details1Special product={product} />
       <Descriptions1 />

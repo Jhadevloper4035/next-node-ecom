@@ -84,13 +84,13 @@ export default function QuickView() {
                 <div className="tf-product-info-desc">
                   <div className="tf-product-info-price">
                     <h5 className="price-on-sale font-2">
-                      ${quickViewItem.price.toFixed(2)}
+                      ₹{quickViewItem.price?.toFixed(2) || "0.00"}
                     </h5>
                     {quickViewItem.oldPrice ? (
                       <>
                         <div className="compare-at-price font-2">
                           {" "}
-                          ${quickViewItem.oldPrice.toFixed(2)}
+                          ₹{quickViewItem.oldPrice?.toFixed(2) || "0.00"}
                         </div>
                         <div className="badges-on-sale text-btn-uppercase">
                           -25%
@@ -153,15 +153,14 @@ export default function QuickView() {
                           : "Add to cart -"}
                       </span>
                       <span className="tf-qty-price total-price">
-                        $
+                        ₹
                         {isAddedToCartProducts(quickViewItem.id)
                           ? (
                               quickViewItem.price *
                               cartProducts.filter(
                                 (elm) => elm.id == quickViewItem.id
                               )[0].quantity
-                            ).toFixed(2)
-                          : (quickViewItem.price * quantity).toFixed(2)}
+                            ).toFixed(2) : ((quickViewItem.price || 0) * (quantity || 1)).toFixed(2)}
                       </span>
                     </a>
                     <a

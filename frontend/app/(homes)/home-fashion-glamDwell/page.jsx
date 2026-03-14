@@ -20,8 +20,8 @@ export const metadata = {
 export default function HomeFashionGlamdwellPage() {
   return (
     <>
-      <Topbar4 />
-      <Header1 />
+      {/* <Topbar4 />
+      <Header1 /> */}
       <Hero />
       <Collections />
       <Products3 parentClass="flat-spacing pt-0" />

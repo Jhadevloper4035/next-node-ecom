@@ -22,7 +22,7 @@ export const metadata = {
 export default function HomeCosmeticPage() {
   return (
     <>
-      <Header1 />
+      {/* <Header1 /> */}
       <Hero />
       <MarqueeSection2 />
       <Collections />

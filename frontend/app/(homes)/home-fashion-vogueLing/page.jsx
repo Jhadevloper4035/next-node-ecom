@@ -20,7 +20,7 @@ export const metadata = {
 export default function HomeFashionVoguelingPage() {
   return (
     <>
-      <Header1 fullWidth />
+      {/* <Header1 fullWidth /> */}
       <Hero />
       <MarqueeSection2 parentClass="tf-marquee py_23" />
 

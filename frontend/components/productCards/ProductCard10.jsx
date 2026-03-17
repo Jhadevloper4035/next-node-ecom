@@ -203,24 +203,12 @@ export default function ProductCard10({ product, gridClass = "" }) {
           </a>
         </div>
         <div className="list-btn-main">
-          <div className="list-btn-main">
-            <a
-              href="#quickView"
-              data-bs-toggle="modal"
-              onClick={() => setQuickViewItem(product)}
-              className="quick-view btn-main-product"
-            >
-              Quick View
-            </a>
-            <a
-              href="#quickAdd"
-              onClick={() => setQuickAddItem(product.id)}
-              data-bs-toggle="modal"
-              className="btn-main-product"
-            >
-              Quick Add
-            </a>
-          </div>
+          <Link
+            href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`}
+            className="btn-main-product"
+          >
+            View Product
+          </Link>
         </div>
       </div>
       <div className="card-product-info">

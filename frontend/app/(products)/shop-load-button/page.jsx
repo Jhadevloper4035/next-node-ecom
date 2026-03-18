@@ -1,5 +1,4 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
 import Topbar6 from "@/components/headers/Topbar6";
 
 import Products14 from "@/components/products/Products14";
@@ -10,7 +9,7 @@ export default function ShopLoadButtonPage() {
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" />
-      <Header1 /> */}
+       */}
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}

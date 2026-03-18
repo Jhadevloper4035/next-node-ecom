@@ -1,5 +1,4 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Products5 from "@/components/products/Products5";
 import Link from "next/link";
@@ -9,7 +8,7 @@ export default function ProductStylePage5() {
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" />
-      <Header1 /> */}
+       */}
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}

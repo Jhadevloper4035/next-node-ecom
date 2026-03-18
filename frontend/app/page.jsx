@@ -27,6 +27,8 @@ export default function HomePage() {
     <>
       <Hero />
 
+      
+
       <Collections />
 
       <Products title="Best Selling" filter="on-sale" parentClass="flat-spacing-3" />

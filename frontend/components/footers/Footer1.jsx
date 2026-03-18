@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import CurrencySelect from "../common/CurrencySelect";
-import LanguageSelect from "../common/LanguageSelect";
 import ToolbarBottom from "../headers/ToolbarBottom";
 import ScrollTop from "../common/ScrollTop";
 import { footerLinks, socialLinks } from "@/data/footerLinks";
@@ -98,34 +97,25 @@ export default function Footer1({
                           alt=""
                           src={
                             dark
-                              ? "/images/logo/logo-white.svg"
-                              : "/images/logo/logo.svg"
+                              ? "/images/logo/white-logo.png"
+                              : "/images/logo/white-logo.png"
                           }
                           width={127}
                           height={24}
-                          style={{ width: "auto", height: "auto" }}
+                          style={{ maxWidth: "240px", height: "auto"  }}
                         />
                       </Link>
                     </div>
                     <div className="footer-address">
                       <p>549 Oak St.Crystal Lake, IL 60014</p>
-                      <Link
-                        href={`/contact`}
-                        className={`tf-btn-default fw-6 ${
-                          dark ? "style-white" : ""
-                        } `}
-                      >
-                        GET DIRECTION
-                        <i className="icon-arrowUpRight" />
-                      </Link>
                     </div>
                     <ul className="footer-info">
                       <li>
-                        <i className="icon-mail" />
-                        <p>themesflat@gmail.com</p>
+                        <i className="icon-mail" style={{color : "#fff"}}  />
+                        <p>Info@curve-comfort.com</p>
                       </li>
                       <li>
-                        <i className="icon-phone" />
+                        <i className="icon-phone" style={{color : "#fff"}}  />
                         <p>315-666-6688</p>
                       </li>
                     </ul>
@@ -178,7 +168,44 @@ export default function Footer1({
                     ))}
                   </div>
                 </div>
+
                 <div className="col-lg-4">
+                  <div className="footer-menu">
+                    {footerLinks.map((section, sectionIndex) => (
+                      <div className="footer-col-block" key={sectionIndex}>
+                        <div className="footer-heading text-button footer-heading-mobile">
+                          {section.heading}
+                        </div>
+                        <div className="tf-collapse-content">
+                          <ul className="footer-menu-list">
+                            {section.items.map((item, itemIndex) => (
+                              <li className="text-caption-1" key={itemIndex}>
+                                {item.isLink ? (
+                                  <Link
+                                    href={item.href}
+                                    className="footer-menu_item"
+                                  >
+                                    {item.label}
+                                  </Link>
+                                ) : (
+                                  <a
+                                    href={item.href}
+                                    className="footer-menu_item"
+                                  >
+                                    {item.label}
+                                  </a>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+
+                {/* <div className="col-lg-4">
                   <div className="footer-col-block">
                     <div className="footer-heading text-button footer-heading-mobile">
                       Newletter
@@ -260,31 +287,22 @@ export default function Footer1({
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
+
+
+
               </div>
             </div>
           </div>
           <div className="footer-bottom">
-            <div className="container">
+            <div className="container-full2">
               <div className="row">
                 <div className="col-12">
                   <div className="footer-bottom-wrap">
                     <div className="left">
                       <p className="text-caption-1">
-                        ©{new Date().getFullYear()} Modave. All Rights Reserved.
+                        ©{new Date().getFullYear()} Curve & Comfort. All Rights Reserved.
                       </p>
-                      <div className="tf-cur justify-content-end">
-                        <div className="tf-currencies">
-                          <CurrencySelect light={dark ? true : false} />
-                        </div>
-                        <div className="tf-languages">
-                          <LanguageSelect
-                            parentClassName={`image-select center style-default type-languages ${
-                              dark ? "color-white" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
                     </div>
                     <div className="tf-payment">
                       <p className="text-caption-1">Payment:</p>

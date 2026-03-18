@@ -532,6 +532,8 @@ export const products42 = [
     filterSizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL"],
   },
 ];
+
+
 export const products2 = [
   {
     id: 9,

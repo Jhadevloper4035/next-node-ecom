@@ -48,18 +48,19 @@ export default function Header2() {
             <div className="col-xl-5 d-none d-xl-block">
               <ul className="header-list-categories">
                 <li className="categories-item active">
-                  <Link href="/" className="text-uppercase">
-                    Track Order
+                  <Link href="/privacy-policy" >
+                    Privacy Policy
                   </Link>
                 </li>
                 <li className="categories-item">
-                  <a href="/about-us" className="text-uppercase">
-                    About Us
+                  <a href="/term-of-use" >
+                    Terms & Conditions
                   </a>
                 </li>
+                {/* className="text-uppercase" */}
                 <li className="categories-item">
-                  <a href="/contact" className="text-uppercase">
-                    Customer Support 
+                  <a href="/refund-policy" >
+                   Refund Policy
                   </a>
                 </li>
               </ul>
@@ -79,7 +80,7 @@ export default function Header2() {
                 <Image
                   alt="logo"
                   className="logo"
-                  src="/images/logo/logo.svg"
+                  src="/images/logo/logo.png"
                   width={144}
                   height={25}
                 />

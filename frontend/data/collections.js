@@ -2,40 +2,39 @@
 
 export const collections = [
   {
-    imgSrc: "/images/furniture/circle/chairs.jpg",
-    alt: "collection-img",
-    title: "Chairs",
-    count: "18 items",
-  },
-  {
-    imgSrc: "/images/furniture/circle/sofas.jpg",
-    alt: "collection-img",
-    title: "Sofas",
-    count: "12 items",
-  },
-  {
-    imgSrc: "/images/furniture/circle/beds.jpg",
-    alt: "collection-img",
+    imgSrc: "/images/collections/beds.png",
+    alt: "beds-collection",
     title: "Beds",
     count: "10 items",
+    link: "/shop/beds",
   },
   {
-    imgSrc: "/images/furniture/circle/tables.jpg",
-    alt: "collection-img",
-    title: "Tables",
+    imgSrc: "/images/collections/ottoman.jpg",
+    alt: "ottomans-collection",
+    title: "Ottomans",
+    count: "8 items",
+    link: "/shop/chairs-ottomans",
+  },
+  {
+    imgSrc: "/images/collections/sofas.jpg",
+    alt: "sofas-collection",
+    title: "Sofas",
+    count: "12 items",
+    link: "/shop/sofas",
+  },
+  {
+    imgSrc: "/images/collections/book.jpg",
+    alt: "bookshelves-collection",
+    title: "Book Shelves",
+    count: "9 items",
+    link: "/shop/wall-decor",
+  },
+  {
+    imgSrc: "/images/collections/tables.jpg",
+    alt: "coffee-tables-collection",
+    title: "Coffee Tables",
     count: "15 items",
-  },
-  {
-    imgSrc: "/images/furniture/circle/storage.jpg",
-    alt: "collection-img",
-    title: "Storage",
-    count: "14 items",
-  },
-  {
-    imgSrc: "/images/furniture/circle/lighting.jpg",
-    alt: "collection-img",
-    title: "Lighting",
-    count: "11 items",
+    link: "/shop/coffee-tables",
   },
 ];
 

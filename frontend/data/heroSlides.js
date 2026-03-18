@@ -1,17 +1,24 @@
 export const slides = [
   {
-    imgSrc: "/images/slider/slider-Women1.jpg",
-    alt: "fashion-slideshow",
-    subheading: "BIKINIS & SWIMSUITS",
-    heading: "Flash Sale Madness",
+    imgSrc: "/images/banner/banner1.png",
+    alt: "furniture-slideshow",
+    subheading: "Modern Living",
+    heading: "Elegant Furniture\nFor Every Home",
     btnText: "Explore Collection",
   },
   {
-    imgSrc: "/images/slider/slider-Women2.jpg",
-    alt: "fashion-slideshow",
-    subheading: "BIKINIS & SWIMSUITS",
-    heading: "Find Your\nSignature Style",
-    btnText: "Explore Collection",
+    imgSrc: "/images/banner/banner2.png",
+    alt: "furniture-slideshow",
+    subheading: "Comfort & Style",
+    heading: "Relax In Style\nLive In Comfort",
+    btnText: "Shop Now",
+  }, 
+  {
+    imgSrc: "/images/banner/banner3.png",
+    alt: "furniture-slideshow",
+    subheading: "Premium Designs",
+    heading: "Timeless Pieces\nBuilt To Last",
+    btnText: "Discover More",
   },
 ];
 

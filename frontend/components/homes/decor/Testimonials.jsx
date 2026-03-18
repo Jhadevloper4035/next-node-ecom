@@ -1,15 +1,95 @@
 "use client";
 import Image from "next/image";
-import { testimonialsWithProduct2 } from "@/data/products";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useAppState } from "@/context/useAppState";
 import { Pagination } from "swiper/modules";
 
+
+
 export default function Testimonials() {
+
+
+
+  const testimonials = [
+    {
+      id: 1,
+      imgSrc: "/images/testimonial/tes-7.jpg",
+      alt: "beds-testimonial",
+      testimonialText:
+        "The bed quality is excellent and very comfortable. Gives a premium feel at home.",
+      author: "Rahul Sharma",
+      avatarSrc: "/images/products/furniture/furniture32.jpg",
+      title: "Modern Wooden Bed",
+      price: 18999,
+      wowDelay: "0s",
+    },
+    {
+      id: 2,
+      imgSrc: "/images/testimonial/tes-8.jpg",
+      alt: "chairs-testimonial",
+      testimonialText:
+        "Very sturdy chair with great comfort. Ottoman is perfect for relaxing.",
+      author: "Priya Verma",
+      avatarSrc: "/images/products/furniture/furniture9.jpg",
+      title: "Chair & Ottoman Set",
+      price: 7999,
+      wowDelay: "0.1s",
+    },
+    {
+      id: 3,
+      imgSrc: "/images/testimonial/tes-9.jpg",
+      alt: "coffee-table-testimonial",
+      testimonialText:
+        "Stylish coffee table. Looks amazing in my living room.",
+      author: "Amit Singh",
+      avatarSrc: "/images/products/furniture/furniture1.jpg",
+      title: "Coffee Table",
+      price: 4999,
+      wowDelay: "0.2s",
+    },
+    {
+      id: 4,
+      imgSrc: "/images/testimonial/tes-7.jpg",
+      alt: "console-table-testimonial",
+      testimonialText:
+        "Console table fits perfectly in my entry space. Solid build quality.",
+      author: "Neha Gupta",
+      avatarSrc: "/images/products/furniture/furniture32.jpg",
+      title: "Console Table",
+      price: 6999,
+      wowDelay: "0.3s",
+    },
+    {
+      id: 5,
+      imgSrc: "/images/testimonial/tes-8.jpg",
+      alt: "nesting-table-testimonial",
+      testimonialText:
+        "Very useful nesting tables. Space-saving and modern design.",
+      author: "Karan Mehta",
+      avatarSrc: "/images/products/furniture/furniture9.jpg",
+      title: "Nesting Tables",
+      price: 5999,
+      wowDelay: "0.4s",
+    },
+    {
+      id: 6,
+      imgSrc: "/images/testimonial/tes-9.jpg",
+      alt: "sofa-testimonial",
+      testimonialText:
+        "Super comfortable sofa with premium fabric. Worth every rupee!",
+      author: "Sneha Kapoor",
+      avatarSrc: "/images/products/furniture/furniture1.jpg",
+      title: "Luxury Sofa",
+      price: 25999,
+      wowDelay: "0.5s",
+    },
+  ];
+
+
   const { setQuickViewItem } = useAppState();
   return (
-    <section className="flat-spacing pt-0">
-      <div className="container">
+    <section className="flat-spacing">
+      <div className="  container-full2 ">
         <div className="heading-section text-center wow fadeInUp">
           <h3 className="heading">Customer Say!</h3>
           <p className="subheading">
@@ -39,7 +119,7 @@ export default function Testimonials() {
             el: ".spd21",
           }}
         >
-          {testimonialsWithProduct2.map((testimonial, index) => (
+          {testimonials.map((testimonial, index) => (
             <SwiperSlide key={index} className="swiper-slide">
               <div
                 className="testimonial-item style-row hover-img wow fadeInUp"
@@ -114,24 +194,7 @@ export default function Testimonials() {
                       </svg>
                     </div>
                   </div>
-                  <div className="box-avt">
-                    <div className="avatar avt-60 round">
-                      <Image
-                        alt="avt"
-                        src={testimonial.avatarSrc}
-                        width={600}
-                        height={800}
-                      />
-                    </div>
-                    <div className="box-price">
-                      <p className="text-title text-line-clamp-1">
-                        {testimonial.title}
-                      </p>
-                      <div className="text-button price">
-                        ${testimonial.price.toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
+
                 </div>
               </div>
             </SwiperSlide>

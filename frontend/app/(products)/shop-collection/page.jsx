@@ -11,7 +11,7 @@ export default function ShopCollectionPage() {
        */}
       <div
         className="page-title"
-        style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=900&auto=format&fit=crop')" }}
       >
         <div className="container-full">
           <div className="row">

@@ -2,11 +2,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
+import { useSelector } from "react-redux";
 import CurrencySelect from "../common/CurrencySelect";
 import ToolbarBottom from "../headers/ToolbarBottom";
 import ScrollTop from "../common/ScrollTop";
-import { footerLinks, socialLinks } from "@/data/footerLinks";
+import { footerLinks, footerLinks2, socialLinks } from "@/data/footerLinks";
 import axios from "axios";
 export default function Footer1({
   border = true,
@@ -15,7 +15,7 @@ export default function Footer1({
 }) {
   const [success, setSuccess] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
-
+  const { categories, loading } = useSelector((state) => state.category);
   const handleShowMessage = () => {
     setShowMessage(true);
     setTimeout(() => {
@@ -32,7 +32,7 @@ export default function Footer1({
         "https://express-brevomail.vercel.app/api/contacts",
         {
           email,
-        }
+        },
       );
 
       if ([200, 201].includes(response.status)) {
@@ -77,6 +77,21 @@ export default function Footer1({
       });
     };
   }, []); // Empty dependency array means this will run only once on mount
+
+  const dynamicFooterLinks2 = footerLinks2.map((section) => {
+    if (section.heading === "Categories") {
+      return {
+        ...section,
+        items:
+          categories?.map((cat) => ({
+            label: cat.name, // adjust based on API
+            href: `/shop-collection/${cat.slug}`, // adjust
+            isLink: true,
+          })) || [],
+      };
+    }
+    return section;
+  });
   return (
     <>
       <footer
@@ -102,7 +117,7 @@ export default function Footer1({
                           }
                           width={127}
                           height={24}
-                          style={{ maxWidth: "240px", height: "auto"  }}
+                          style={{ maxWidth: "240px", height: "auto" }}
                         />
                       </Link>
                     </div>
@@ -111,11 +126,11 @@ export default function Footer1({
                     </div>
                     <ul className="footer-info">
                       <li>
-                        <i className="icon-mail" style={{color : "#fff"}}  />
+                        <i className="icon-mail" style={{ color: "#fff" }} />
                         <p>Info@curve-comfort.com</p>
                       </li>
                       <li>
-                        <i className="icon-phone" style={{color : "#fff"}}  />
+                        <i className="icon-phone" style={{ color: "#fff" }} />
                         <p>315-666-6688</p>
                       </li>
                     </ul>
@@ -171,7 +186,7 @@ export default function Footer1({
 
                 <div className="col-lg-4">
                   <div className="footer-menu">
-                    {footerLinks.map((section, sectionIndex) => (
+                    {dynamicFooterLinks2.map((section, sectionIndex) => (
                       <div className="footer-col-block" key={sectionIndex}>
                         <div className="footer-heading text-button footer-heading-mobile">
                           {section.heading}
@@ -203,7 +218,6 @@ export default function Footer1({
                     ))}
                   </div>
                 </div>
-
 
                 {/* <div className="col-lg-4">
                   <div className="footer-col-block">
@@ -288,9 +302,6 @@ export default function Footer1({
                     </div>
                   </div>
                 </div> */}
-
-
-
               </div>
             </div>
           </div>
@@ -301,7 +312,8 @@ export default function Footer1({
                   <div className="footer-bottom-wrap">
                     <div className="left">
                       <p className="text-caption-1">
-                        ©{new Date().getFullYear()} Curve & Comfort. All Rights Reserved.
+                        ©{new Date().getFullYear()} Curve & Comfort. All Rights
+                        Reserved.
                       </p>
                     </div>
                     <div className="tf-payment">

@@ -1,7 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProductsStart, fetchProductsSuccess, appendProducts, fetchProductsFailure } from "@/redux/productSlice";
+import {
+  fetchProductsStart,
+  fetchProductsSuccess,
+  appendProducts,
+  fetchProductsFailure,
+} from "@/redux/productSlice";
 import { getProductsByCategory } from "@/services/product/product.service";
 import ProductCard1 from "@/components/productCards/ProductCard1";
 import { useRef } from "react";
@@ -24,11 +29,11 @@ export default function CategoryProducts({ categorySlug }) {
     const fetchProds = async () => {
       dispatch(fetchProductsStart());
       try {
-        const response = await getProductsByCategory(categorySlug, { 
-          page: currentPage, 
-          limit 
+        const response = await getProductsByCategory(categorySlug, {
+          page: currentPage,
+          limit,
         });
-        
+
         const newProducts = response.data || [];
         if (currentPage === 1) {
           dispatch(fetchProductsSuccess(newProducts));
@@ -40,7 +45,9 @@ export default function CategoryProducts({ categorySlug }) {
           setHasMore(false);
         }
       } catch (error) {
-        dispatch(fetchProductsFailure(error?.message || "Failed to fetch products"));
+        dispatch(
+          fetchProductsFailure(error?.message || "Failed to fetch products"),
+        );
       }
     };
     if (categorySlug) {
@@ -55,7 +62,7 @@ export default function CategoryProducts({ categorySlug }) {
           setCurrentPage((prev) => prev + 1);
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     if (observerTarget.current) {
@@ -73,7 +80,7 @@ export default function CategoryProducts({ categorySlug }) {
     ...p,
     id: p._id,
     price: p.basePrice,
-    imgSrc: p.images?.[0] || "/images/placeholder.jpg", 
+    imgSrc: p.images?.[0] || "/images/placeholder.jpg",
     imgHover: p.images?.[1] || p.images?.[0] || "/images/placeholder.jpg",
   }));
 
@@ -82,32 +89,36 @@ export default function CategoryProducts({ categorySlug }) {
   return (
     <div className="container py-5">
       <div className="tf-grid-layout tf-col-2 lg-col-3 xl-col-4">
-        {mappedProducts.length > 0 ? (
-          mappedProducts.map((product, i) => (
-            <ProductCard1 key={i} product={product} />
-          ))
-        ) : !loading && (
-          <div className="text-center w-100 py-5">No products found for this category.</div>
-        )}
+        {mappedProducts.length > 0
+          ? mappedProducts.map((product, i) => (
+              <ProductCard1 key={i} product={product} />
+            ))
+          : !loading && (
+              <div className="text-center w-100 py-5">
+                No products found for this category.
+              </div>
+            )}
       </div>
 
       {/* Scroll Target for Infinite Loading */}
       {hasMore && (
-        <div ref={observerTarget} className="wd-load d-flex justify-content-center mt-5">
+        <div
+          ref={observerTarget}
+          className="wd-load d-flex justify-content-center mt-5"
+        >
           <div
             className={`load-more-btn btn-infinite-scroll tf-loading ${
               loading ? "loading" : ""
             } `}
-          >
-          </div>
+          ></div>
         </div>
       )}
 
-      {!hasMore && mappedProducts.length > 0 && (
+      {/* {!hasMore && mappedProducts.length > 0 && (
         <div className="text-center py-4 text-muted mt-5">
           No more products to show.
         </div>
-      )}
+      )} */}
     </div>
   );
 }

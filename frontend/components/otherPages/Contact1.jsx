@@ -95,6 +95,14 @@ export default function Contact1() {
                   required
                 />
               </fieldset>
+               <fieldset>
+                <input
+                  type="text"
+                  placeholder="Subject*"
+                  name="subject"
+                  required
+                />
+              </fieldset>
             </div>
 
             <fieldset>

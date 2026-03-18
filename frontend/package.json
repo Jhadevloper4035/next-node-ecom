@@ -22,5 +22,10 @@
     "react-redux": "^9.2.0",
     "sass": "^1.82.0",
     "swiper": "^11.1.15"
+  },
+  "devDependencies": {
+    "@types/node": "25.5.0",
+    "@types/react": "19.2.14",
+    "typescript": "5.9.3"
   }
 }

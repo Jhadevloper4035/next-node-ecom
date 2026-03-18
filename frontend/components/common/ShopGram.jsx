@@ -13,8 +13,8 @@ export default function ShopGram({ parentClass = "" }) {
 
   return (
     
-    <section className={parentClass}>
-      <div className=" container-full2 ">
+    <section className={parentClass + " flat-spacing" }>
+      <div className=" container-full2  ">
         <div className="heading-section text-center">
           <h3 className="heading wow fadeInUp">Shop Instagram</h3>
           <p className="subheading text-secondary wow fadeInUp">
@@ -78,5 +78,8 @@ export default function ShopGram({ parentClass = "" }) {
         </Swiper>
       </div>
     </section>
+
+
+
   );
 }

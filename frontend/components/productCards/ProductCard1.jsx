@@ -223,25 +223,12 @@ export default function ProductCard1({
           </a>
         </div>
         <div className="list-btn-main">
-          {product.addToCart == "Quick Add" ? (
-            <a
-              className="btn-main-product"
-              href="#quickAdd"
-              onClick={() => setQuickAddItem(product.id)}
-              data-bs-toggle="modal"
-            >
-              Quick Add
-            </a>
-          ) : (
-            <a
-              className="btn-main-product"
-              onClick={() => addProductToCart(product.id)}
-            >
-              {isAddedToCartProducts(product.id)
-                ? "Already Added"
-                : "ADD TO CART"}
-            </a>
-          )}
+          <Link
+            href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`}
+            className="btn-main-product"
+          >
+            View Product
+          </Link>
         </div>
       </div>
       <div className="card-product-info">

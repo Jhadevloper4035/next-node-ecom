@@ -244,12 +244,12 @@ export default function ProductCard11({ product, gridClass = "" }) {
             ))}
           </ul>
         )}
-        <a
+        <Link
           className="btn-main-product"
-          onClick={() => addProductToCart(product.id)}
+          href={`/product-detail/${product.id}`}
         >
-          {isAddedToCartProducts(product.id) ? "Already Added" : "ADD TO CART"}
-        </a>
+          View Product
+        </Link>
       </div>
     </div>
   );

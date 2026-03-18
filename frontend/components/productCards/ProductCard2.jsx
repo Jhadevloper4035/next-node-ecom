@@ -53,14 +53,12 @@ export default function ProductCard2({
           <span className="on-sale-item">{product.saleText}</span>
         </div>
         <div className="list-btn-main">
-          <a
-            href="#quickView"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
+          <Link
+            href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`}
             className="btn-main-product"
           >
-            Quick View
-          </a>
+            View Product
+          </Link>
         </div>
       </div>
       <div className="card-product-info">

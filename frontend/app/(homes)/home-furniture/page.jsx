@@ -2,7 +2,6 @@ import Features from "@/components/common/Features";
 import MarqueeSection2 from "@/components/common/MarqueeSection2";
 import Products6 from "@/components/common/Products6";
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
 
 import Topbar3 from "@/components/headers/Topbar3";
 import Collections from "@/components/homes/Women/Collections";
@@ -23,7 +22,7 @@ export default function HomeWomenPage() {
   return (
     <>
       {/* <Topbar3 />
-      <Header1 fullWidth /> */}
+       */}
       <Hero />
       <MarqueeSection2 parentClass="tf-marquee bg-light-blue-4 border-0" />
       <Collections />

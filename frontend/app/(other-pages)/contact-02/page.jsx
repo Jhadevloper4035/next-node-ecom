@@ -1,5 +1,4 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Contact3 from "@/components/otherPages/Contact3";
 import StoreLocations3 from "@/components/otherPages/StoreLocations3";
@@ -14,7 +13,7 @@ export default function ContactPage2() {
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" />
-      <Header1 /> */}
+       */}
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}

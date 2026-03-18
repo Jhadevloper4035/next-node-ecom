@@ -99,14 +99,12 @@ export default function ProductsCards6({ product }) {
             </div>
           )}
           <div className="list-product-btn">
-            <a
-              onClick={() => addProductToCart(product.id)}
+            <Link
+              href={`/product-detail/${product.id}`}
               className="btn-main-product"
             >
-              {isAddedToCartProducts(product.id)
-                ? "Already Added"
-                : "Add To cart"}
-            </a>
+              View Product
+            </Link>
             <a
               onClick={() => addToWishlist(product.id)}
               className="box-icon wishlist btn-icon-action"

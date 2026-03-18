@@ -1,5 +1,4 @@
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Testimonials2 from "@/components/otherPages/Testimonials2";
 import React from "react";

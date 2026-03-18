@@ -175,13 +175,13 @@ export default function ProductCard7({ product, gridClass = "" }) {
           ""
         )}
         <div className="list-product-btn">
-          <a
-            onClick={() => addProductToCart(product.id)}
+          <Link
+            href={`/product-detail/${product.id}`}
             className="box-icon quickadd"
           >
-            <span className="icon icon-ShoppingBagOpen" />
-            <span className="tooltip">Add To Cart</span>
-          </a>
+            <span className="icon icon-eye" />
+            <span className="tooltip">View Product</span>
+          </Link>
           <a
             onClick={() => addToWishlist(product.id)}
             className="box-icon wishlist btn-icon-action"

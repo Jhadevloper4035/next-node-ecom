@@ -212,16 +212,12 @@ export default function ProductCard5({ product = products34[0] }) {
           </a>
         </div>
         <div className="list-btn-main">
-          <a
-            href="#shoppingCart"
-            data-bs-toggle="modal"
+          <Link
+            href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`}
             className="btn-main-product"
-            onClick={() => addProductToCart(product.id)}
           >
-            {isAddedToCartProducts(product.id)
-              ? "Already Added"
-              : "ADD TO CART"}
-          </a>
+            View Product
+          </Link>
         </div>
       </div>
       <div className="card-product-info">

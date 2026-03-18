@@ -1,6 +1,5 @@
 import Features from "@/components/common/Features";
 import Footer1 from "@/components/footers/Footer1";
-import Header1 from "@/components/headers/Header1";
 import Banner from "@/components/homes/decor/Banner";
 import Collections from "@/components/homes/decor/Collections";
 import Hero from "@/components/homes/decor/Hero";
@@ -19,7 +18,7 @@ export const metadata = {
 export default function HomeDecorPage() {
   return (
     <>
-      {/* <Header1 fullWidth /> */}
+      {/*  */}
       <Hero />
       <Collections />
       <ListCollections />

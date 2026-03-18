@@ -1,8 +1,9 @@
 "use client";
 import React, { useRef, useState } from "react";
-import emailjs from "@emailjs/browser";
-
+import { submitContact } from "@/services/contact/contact.service";
+import { useRouter } from "next/navigation";
 export default function Contact2() {
+  const router = useRouter();
   const formRef = useRef();
   const [success, setSuccess] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
@@ -14,28 +15,27 @@ export default function Contact2() {
     }, 2000);
   };
 
-  const sendMail = (e) => {
+  const sendMail = async (e) => {
     e.preventDefault();
+    
+    const formData = new FormData(formRef.current);
+    const payload = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      mobileNumber: formData.get("phone"),
+      message: formData.get("message"),
+    };
 
-    emailjs
-      .sendForm("service_noj8796", "template_fs3xchn", formRef.current, {
-        publicKey: "iG4SCmR-YtJagQ4gV",
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setSuccess(true);
-          handleShowMessage();
-          formRef.current.reset();
-        } else {
-          setSuccess(false);
-          handleShowMessage();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setSuccess(false);
-        handleShowMessage();
-      });
+    try {
+      await submitContact(payload);
+      setSuccess(true);
+      formRef.current.reset();
+      router.push("/contact-success");
+    } catch (error) {
+      console.log(error);
+      setSuccess(false);
+      handleShowMessage();
+    }
   };
 
   return (

@@ -6,6 +6,7 @@ import "react-range-slider-input/dist/style.css";
 import "../public/css/image-compare-viewer.min.css";
 import { useEffect, useState } from "react";
 import ScrollTop from "@/components/common/ScrollTop";
+
 // Redux Toolkit provider only
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
@@ -24,7 +25,7 @@ import RtlToggler from "@/components/common/RtlToggler";
 import AccountSidebar from "@/components/modals/AccountSidebar";
 import AuthHydrator from "@/components/common/AuthHydrator";
 import { ToastProvider } from "@/components/common/ToastContext";
-import Header2 from "@/components/headers/Header2";
+import Header from "@/components/headers/Header2";
 import GlobalSpinner from "@/components/common/GlobalSpinner";
 
 export default function RootLayout({ children }) {
@@ -124,10 +125,11 @@ export default function RootLayout({ children }) {
       <body className="preload-wrapper popup-loader">
         <Provider store={store}>
           <ToastProvider>
+
             <GlobalSpinner />
             <AuthHydrator />
             <RtlToggler />
-            <Header2 />
+            <Header />
             <div id="wrapper">{children}</div>
             <CartModal />
             <QuickView />
@@ -135,7 +137,9 @@ export default function RootLayout({ children }) {
             <Compare />
             <MobileMenu />
 
-            <NewsLetterModal />
+            {/* <NewsLetterModal /> */}
+
+
             <SearchModal />
             <SizeGuide />
             <Wishlist />

@@ -7891,8 +7891,7 @@ input.style-line-bottom::placeholder {
   gap: 4px;
 }
 .collection-position-2.style-7 .content {
-  top: 32px;
-  bottom: unset !important;
+  bottom: 32px;
 }
 .collection-position-2 .on-sale-wrap {
   position: absolute;
@@ -12914,7 +12913,7 @@ ul.breadcrumbs i {
 }
 .blog-detail-wrap > .image {
   height: 568px;
-  background-image: url(./../images/blog/blog-details-1.jpg);
+  background-image: url(./../images/banner/banner-baby.jpg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -13952,7 +13951,7 @@ ul.list-text.type-number {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background-image: url(./../images/section/coming-soon.jpg);
+  background-image: url(./../images/banner/chair-ottons.jpg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -17696,6 +17695,7 @@ ul.list-text.type-number {
   display: flex;
   align-items: center;
   justify-content: center;
+  display: none !important;
 }
 
 .rtl .testimonial-item-2 .content-top {

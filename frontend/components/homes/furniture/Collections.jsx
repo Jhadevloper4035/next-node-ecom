@@ -1,6 +1,6 @@
 "use client";
 
-import { collections8 } from "@/data/collections";
+import { collections } from "@/data/collections";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,7 +43,7 @@ export default function Collections() {
               nextEl: ".snbn10",
             }}
           >
-            {collections8.map((item, index) => (
+            {collections.map((item, index) => (
               <SwiperSlide key={index}>
                 <div className="collection-circle hover-img">
                   <Link href={`/shop-collection`} className="img-style">

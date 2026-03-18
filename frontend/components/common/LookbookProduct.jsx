@@ -1,10 +1,14 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { useAppState } from "@/context/useAppState";
+
 export default function LookbookProduct({ product, styleClass = "style-row" }) {
+
   const { setQuickViewItem } = useAppState();
+
   return (
     <div className={`loobook-product ${styleClass} `}>
       <div className="img-style">
@@ -18,7 +22,7 @@ export default function LookbookProduct({ product, styleClass = "style-row" }) {
           >
             {product.title}
           </Link>
-          <div className="price text-button">${product.price.toFixed(2)}</div>
+          <div className="price text-button">₹{product.price.toFixed(2)}</div>
         </div>
         <a
           href="#quickView"

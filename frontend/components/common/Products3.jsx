@@ -1,5 +1,6 @@
 "use client";
-import ProductCard1 from "@/components/productCards/ProductCard1";
+
+import ProductCard from "@/components/productCards/ProductCard1";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +10,7 @@ import { getAllProducts } from "@/services/product/product.service";
 const tabItems = ["New Arrivals", "Best Seller", "Top Trending"];
 
 export default function Products3({ parentClass = "flat-spacing-3" }) {
+
   const [activeItem, setActiveItem] = useState(tabItems[0]); // Default the first item as active
   const [selectedItems, setSelectedItems] = useState([]);
   
@@ -27,6 +29,8 @@ export default function Products3({ parentClass = "flat-spacing-3" }) {
     };
     fetchProds();
   }, [dispatch]);
+
+
 
   useEffect(() => {
     if (!products || products.length === 0) return;
@@ -90,7 +94,7 @@ export default function Products3({ parentClass = "flat-spacing-3" }) {
                   <div className="text-center w-100">Loading products...</div>
                 ) : selectedItems.length > 0 ? (
                   selectedItems.map((product, i) => (
-                    <ProductCard1 key={i} product={product} />
+                    <ProductCard key={i} product={product} />
                   ))
                 ) : (
                   <div className="text-center w-100">No products found.</div>

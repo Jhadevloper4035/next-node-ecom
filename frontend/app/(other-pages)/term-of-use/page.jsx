@@ -4,9 +4,8 @@ import Terms from "@/components/otherPages/Terms";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
-  title:
-    "Terms of Use || Modave - Multipurpose React Nextjs eCommerce Template",
-  description: "Modave - Multipurpose React Nextjs eCommerce Template",
+  title: "Terms & Conditions || Curve & Comfort - Premium Furniture Store",
+  description: "Read the Terms and Conditions for Curve & Comfort (curve-comfort.com). Understand our policies on orders, payments via Cashfree, shipping, returns, and more.",
 };
 
 export default function TermsOfUsePage() {
@@ -19,11 +18,11 @@ export default function TermsOfUsePage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Terms of use</h3>
+              <h3 className="heading text-center">Terms & Conditions</h3>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
-                    Homepage
+                    Home
                   </Link>
                 </li>
                 <li>
@@ -37,7 +36,7 @@ export default function TermsOfUsePage() {
                 <li>
                   <i className="icon-arrRight" />
                 </li>
-                <li>Terms of use</li>
+                <li>Terms & Conditions</li>
               </ul>
             </div>
           </div>

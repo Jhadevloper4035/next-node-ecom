@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import axios from "axios";
+
+
 export default function NewsLetterModal() {
   const pathname = usePathname();
   const modalElement = useRef();

@@ -3,13 +3,11 @@ import Terms from "@/components/otherPages/Refund";
 import React from "react";
 import Link from "next/link";
 
-
 export const metadata = {
-  title: "Privacy Policy || Curve & Comfort - Premium Furniture Store",
+  title: "Refund & Return Policy || Curve & Comfort - Premium Furniture Store",
   description:
-    "Learn how Curve & Comfort (curve-comfort.com) collects, uses, and protects your personal data. Compliant with DPDPA 2023 and IT Act 2000.",
-};
-
+    "Curve & Comfort offers a 7-day refund and return policy. Learn about cancellations, refund timelines via Cashfree Payments, and how to initiate a return.",
+}
 
 
 export default function TermsOfUsePage() {
@@ -22,7 +20,7 @@ export default function TermsOfUsePage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Privacy Policy</h3>
+              <h3 className="heading text-center">Refund & Return Policy</h3>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
@@ -40,7 +38,7 @@ export default function TermsOfUsePage() {
                 <li>
                   <i className="icon-arrRight" />
                 </li>
-                <li>Privacy Policy</li>
+                <li>Refund & Return Policy</li>
               </ul>
             </div>
           </div>

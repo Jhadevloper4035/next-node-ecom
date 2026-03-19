@@ -6,35 +6,35 @@ export const collections = [
     alt: "beds-collection",
     title: "Beds",
     count: "10 items",
-    link: "/shop/beds",
+    link: "/shop-collection/beds",
   },
   {
     imgSrc: "/images/collections/ottoman.jpg",
     alt: "ottomans-collection",
     title: "Ottomans",
     count: "8 items",
-    link: "/shop/chairs-ottomans",
+    link: "/shop-collection/chairs-ottomans",
   },
   {
     imgSrc: "/images/collections/sofas.jpg",
     alt: "sofas-collection",
     title: "Sofas",
     count: "12 items",
-    link: "/shop/sofas",
+    link: "/shop-collection/sofas",
   },
   {
     imgSrc: "/images/collections/book.jpg",
     alt: "bookshelves-collection",
     title: "Book Shelves",
     count: "9 items",
-    link: "/shop/wall-decor",
+    link: "/shop-collection/wall-decor",
   },
   {
     imgSrc: "/images/collections/tables.jpg",
     alt: "coffee-tables-collection",
     title: "Coffee Tables",
     count: "15 items",
-    link: "/shop/coffee-tables",
+    link: "/shop-collection/coffee-tables",
   },
 ];
 
@@ -48,6 +48,7 @@ export const collections2 = [
   { imgSrc: "/images/furniture/banner/outdoor.jpg", alt: "banner-cls", text: "Outdoor" },
   { imgSrc: "/images/furniture/banner/decor.jpg", alt: "banner-cls", text: "Home Decor" },
 ];
+
 
 /* ================= HERO COLLECTION ================= */
 

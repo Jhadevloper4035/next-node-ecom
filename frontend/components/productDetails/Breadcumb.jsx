@@ -11,7 +11,7 @@ export default function Breadcumb({ product }) {
         <div className="tf-breadcrumb-wrap">
           <div className="tf-breadcrumb-list">
             <Link href={`/`} className="text text-caption-1">
-              Homepage
+              Home
             </Link>
 
             {product?.category && (

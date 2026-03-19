@@ -168,3 +168,40 @@ footer .footer-infor {
 
     padding-left: 20px;
 }
+
+
+/* NAV ITEM */
+.nav-item {
+  position: relative;
+}
+
+/* DROPDOWN MENU */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+
+  /* Smooth visibility instead of display:none */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+
+  transition: all 0.25s ease;
+  z-index: 999;
+
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+.page-title .heading {
+  color: #fff !important;
+}
+
+.page-title ul.breadcrumbs li {
+    color: #ffffff;
+}
+

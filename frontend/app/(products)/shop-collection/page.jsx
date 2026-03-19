@@ -29,7 +29,7 @@ export default async function ShopCollectionPage({ searchParams }) {
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
-                    Homepage
+                    Home
                   </Link>
                 </li>
                 <li>

@@ -27,7 +27,7 @@ export default function OrderTrackingPage() {
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
-                    Homepage
+                    Home
                   </Link>
                 </li>
                 <li>

@@ -5,14 +5,17 @@ export const setToken = (token) => {
     const expirationDate = new Date();
     expirationDate.setTime(expirationDate.getTime() + 7 * 24 * 60 * 60 * 1000);
     const expires = "expires=" + expirationDate.toUTCString();
-    document.cookie = `authToken=${token}; ${expires}; path=/; SameSite=Lax`;
+    const isSecure = window.location.protocol === "https:";
+    document.cookie = `authToken=${token}; ${expires}; path=/; SameSite=Lax${isSecure ? "; Secure" : ""}`;
   }
 };
+
 // Clear auth cookies
 export const clearAuth = () => {
   if (typeof window !== "undefined") {
     // Delete by setting expiration to past date
-    document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    const isSecure = window.location.protocol === "https:";
+    document.cookie = `authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/${isSecure ? "; Secure" : ""}`;
   }
 };
 

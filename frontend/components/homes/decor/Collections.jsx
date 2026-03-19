@@ -35,7 +35,7 @@ export default function Collections() {
             {collections.map((collection, index) => (
               <SwiperSlide key={index}>
                 <div className="collection-position-2 style-7 hover-img">
-                  <Link href={`/shop-collection`} className="img-style">
+                  <Link href={collection.link} className="img-style">
                     <Image
                       className="lazyload"
                       data-src={collection.imgSrc}
@@ -48,7 +48,7 @@ export default function Collections() {
                   <div className="content text-center">
                     <h4 className="title">
                       <Link
-                        href={`/shop-collection`}
+                        href={collection.link}
                         className="link text-white"
                       >
                         {collection.title}

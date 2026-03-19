@@ -10,7 +10,7 @@ export default function Topbar7() {
     <div className="tf-topbar style-2 type-space-lg topbar-fullwidth-2 bg-blue-4">
       <div className="row align-items-center">
         <div className="col-xl-3 d-none d-xl-block">
-          <div className="tf-cur">
+          {/* <div className="tf-cur">
             <div className="tf-currencies">
               <CurrencySelect light topStart />
             </div>
@@ -20,7 +20,7 @@ export default function Topbar7() {
                 parentClassName="image-select center style-default type-languages color-white"
               />
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="col-xl-6 col-12 text-center">
           <Swiper

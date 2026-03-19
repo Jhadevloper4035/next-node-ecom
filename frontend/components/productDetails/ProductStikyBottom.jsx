@@ -19,7 +19,7 @@ export default function ProductStikyBottom() {
     <div className="tf-sticky-btn-atc">
       <div className="container">
         <div className="row">
-          <div className="col-12">
+          {/* <div className="col-12">
             <form
               className="form-sticky-atc"
               onSubmit={(e) => e.preventDefault()}
@@ -97,7 +97,7 @@ export default function ProductStikyBottom() {
                 </div>
               </div>
             </form>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

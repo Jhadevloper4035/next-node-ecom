@@ -158,8 +158,8 @@ export default function ShopCart() {
                               </Link>
                               <div className="variant-box">
                                 <div className="text-secondary-2">
-                                  {elm.selectedSize || elm.selectedColor || elm.selectedFabric || elm.selectedMaterial || elm.selectedFoam ? (
-                                    [elm.selectedSize, elm.selectedColor, elm.selectedFabric, elm.selectedMaterial, elm.selectedFoam].filter(Boolean).join("/")
+                                  {elm.selectedColor || elm.selectedFabric || elm.selectedMaterial || elm.selectedFoam ? (
+                                    [elm.selectedColor, elm.selectedFabric, elm.selectedMaterial, elm.selectedFoam].filter(Boolean).join("/")
                                   ) : (
                                     "Standard"
                                   )}

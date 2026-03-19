@@ -31,7 +31,7 @@ export default function Topbar11() {
             <p className="text-white text-caption-1 d-none d-md-block">
               Order Tracking
             </p>
-            <div className="tf-currencies">
+            {/* <div className="tf-currencies">
               <CurrencySelect topStart light />
             </div>
             <div className="tf-languages">
@@ -39,7 +39,7 @@ export default function Topbar11() {
                 parentClassName="image-select center style-default type-languages color-white"
                 topStart
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

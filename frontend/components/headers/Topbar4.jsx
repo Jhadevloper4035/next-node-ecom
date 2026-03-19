@@ -70,7 +70,7 @@ export default function Topbar4() {
             </Swiper>
           </div>
           <div className="col-xl-3 d-none d-xl-block">
-            <div className="tf-cur justify-content-end">
+            {/* <div className="tf-cur justify-content-end">
               <div className="tf-currencies">
                 <CurrencySelect topStart />
               </div>
@@ -80,7 +80,7 @@ export default function Topbar4() {
                   topStart
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

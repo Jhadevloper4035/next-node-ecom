@@ -18,7 +18,7 @@ export default function ProductOptionSelector({
   selectedValue, 
   onSelect 
 }) {
-  if (!options || options.length === 0) return null;
+  if (!options || options.length === 0 || label.toLowerCase() === "size") return null;
 
   return (
     <div className={styles.optionGroup}>

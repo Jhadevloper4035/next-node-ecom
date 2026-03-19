@@ -11,7 +11,7 @@ export default function Topbar10() {
       <div className="row">
         <div className="col-lg-3 col-3 d-none align-items-center d-xl-flex">
           <div className="topbar-left">
-            <div className="tf-cur justify-content-start">
+            {/* <div className="tf-cur justify-content-start">
               <div className="tf-currencies">
                 <CurrencySelect topStart />
               </div>
@@ -21,7 +21,7 @@ export default function Topbar10() {
                   topStart
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="col-xl-6 col-12 text-center align-items-center d-flex">

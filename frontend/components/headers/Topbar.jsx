@@ -28,7 +28,7 @@ export default function Topbar() {
             </li>
           </ul>
           <div className="topbar-right d-none d-xl-block">
-            <div className="tf-cur justify-content-end">
+            {/* <div className="tf-cur justify-content-end">
               <div className="tf-currencies">
                 <CurrencySelect light topStart />
               </div>
@@ -38,7 +38,7 @@ export default function Topbar() {
                   topStart={true}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

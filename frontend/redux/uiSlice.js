@@ -5,6 +5,7 @@ const initialState = {
   quickViewItem: allProducts[0] || null,
   quickAddItem: 1,
   loadingCount: 0,
+  isInitialLoading: true,
 };
 
 const uiSlice = createSlice({
@@ -24,13 +25,17 @@ const uiSlice = createSlice({
         state.loadingCount = Math.max(0, state.loadingCount - 1);
       }
     },
+    setInitialLoading(state, action) {
+      state.isInitialLoading = action.payload;
+    },
     resetLoading(state) {
       state.loadingCount = 0;
+      state.isInitialLoading = false;
     }
   },
 });
 
-export const { setQuickViewItem, setQuickAddItem, setIsLoading, resetLoading } = uiSlice.actions;
+export const { setQuickViewItem, setQuickAddItem, setIsLoading, setInitialLoading, resetLoading } = uiSlice.actions;
 export const selectIsLoading = (state) => state.ui.loadingCount > 0;
 export default uiSlice.reducer;
 

@@ -1,6 +1,7 @@
 import Footer1 from "@/components/footers/Footer1";
 import Topbar6 from "@/components/headers/Topbar6";
 import SubcategoryProducts from "@/components/products/SubcategoryProducts";
+import { getCategoryImage } from "@/data/categoryData";
 import Link from "next/link";
 import React from "react";
 
@@ -10,6 +11,7 @@ export default async function SubcategoryPage({ params }) {
   // Format titles for display
   const categoryTitle = categorySlug.replace(/-/g, " ");
   const subcategoryTitle = subcategorySlug.replace(/-/g, " ");
+  const backgroundImage = getCategoryImage(categorySlug);
 
   return (
     <>
@@ -17,7 +19,7 @@ export default async function SubcategoryPage({ params }) {
        */}
       <div
         className="page-title"
-        style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
+        style={{ backgroundImage }}
       >
         <div className="container-full">
           <div className="row">

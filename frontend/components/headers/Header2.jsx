@@ -258,18 +258,18 @@ export default function Header2() {
               </ul>
               <ul className="header-list-categories d-xl-none justify-content-center">
                 <li className="categories-item active">
-                  <Link href={`/home-fashion-main`} className="text-uppercase">
-                    Women
+                  <Link href={`/privacy-policy`} className="text-uppercase">
+                    Privacy Policy
                   </Link>
                 </li>
                 <li className="categories-item">
-                  <Link href={`/home-fashion-men`} className="text-uppercase">
-                    Men
+                  <Link href={`/term-of-use`} className="text-uppercase">
+                    Terms & Conditions
                   </Link>
                 </li>
                 <li className="categories-item">
-                  <Link href={`/home-fashion-kid`} className="text-uppercase">
-                    Kids
+                  <Link href={`/refund-policy`} className="text-uppercase">
+                    Refund Policy
                   </Link>
                 </li>
               </ul>

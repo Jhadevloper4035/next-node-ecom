@@ -2,15 +2,15 @@
 # docker-compose.prod.yml — production overrides
 #
 # Usage:
-#   cp .env.production.example .env.production
-#   cp frontend/.env.production.example frontend/.env.production
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 #
 # Changes vs dev:
 #   • backend/frontend use production images (no bind-mounts)
 #   • NODE_ENV forced to production
-#   • mongo/redis ports not exposed
-#   • mailpit disabled (use real SMTP in .env.production)
+#   • mongo/redis ports NOT exposed to public
+#   • mailpit disabled (real SMTP used via .env.production)
+#   • frontend reads from frontend/.env.production (not root .env)
+#   • mongo removed (using MongoDB Atlas via MONGODB_URI in .env.production)
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -18,29 +18,66 @@ services:
     build:
       context: ./backend
       target: production
+    container_name: ecom_backend
+    restart: unless-stopped
     command: node src/server.js
+    ports:
+      - "5000:5000"
     env_file:
       - ./.env.production
     environment:
       NODE_ENV: production
       COOKIE_SECURE: "true"
+      TRUST_PROXY: "true"
     volumes: []
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks: [app_network]
 
   frontend:
     build:
       context: ./frontend
       target: runner
+    container_name: ecom_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
     env_file:
-      - ./frontend/.env.production
+      - ./.env.production
     environment:
       NODE_ENV: production
     volumes: []
+    depends_on:
+      - backend
+    networks: [app_network]
 
-  mongo:
-    ports: []
 
   redis:
-    ports: []
+    image: redis:7-alpine
+    container_name: ecom_redis
+    restart: unless-stopped
+    # No ports exposed — only accessible inside Docker network
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks: [app_network]
+
+
+  # mongo is NOT needed in prod — using MongoDB Atlas (MONGODB_URI in .env.production)
+  mongo:
+    profiles: ["donotstart"]
+
+  # mongo-express is NOT needed in prod — never expose DB UI publicly
+  mongo-express:
+    profiles: ["donotstart"]
+
 
   mailpit:
     profiles: ["donotstart"]

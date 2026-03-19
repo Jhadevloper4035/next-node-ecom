@@ -72,7 +72,22 @@ services:
 
   # mongo is NOT needed in prod — using MongoDB Atlas (MONGODB_URI in .env.production)
   mongo:
-    profiles: ["donotstart"]
+    image: mongo:7
+    container_name: ecom_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: node_auth_mvc
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks: [app_network]
 
   # mongo-express is NOT needed in prod — never expose DB UI publicly
   mongo-express:

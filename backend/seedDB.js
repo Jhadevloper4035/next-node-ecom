@@ -36,7 +36,7 @@ function slugify(str) {
 }
 
 async function connectDB() {
-  const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/node_auth_mvc";
+  const uri = "mongodb+srv://jhanavrojlookout:sVvfJfxKxT3gnApO@learning.kudymrn.mongodb.net/?appName=learning"
   if (!uri) throw new Error("❌ MONGODB_URI missing in .env");
   await mongoose.connect(uri);
   console.log("✅ MongoDB connected");

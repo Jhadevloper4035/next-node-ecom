@@ -20,52 +20,48 @@ export default function Slider1({
   }
 
   useEffect(() => {
-    // Function to initialize Drift
-    const imageZoom = () => {
-      const driftAll = document.querySelectorAll(".tf-image-zoom");
-      const pane = document.querySelector(".tf-zoom-main");
+  const isMobile = window.innerWidth <= 768;
 
-      driftAll.forEach((el) => {
-        new Drift(el, {
-          zoomFactor: 2,
-          paneContainer: pane,
-          inlinePane: false,
-          handleTouch: false,
-          hoverBoundingBox: true,
-          containInline: true,
-        });
-      });
-    };
-    imageZoom();
-    const zoomElements = document.querySelectorAll(".tf-image-zoom");
+  if (isMobile) return; // ✅ disable zoom on mobile
 
-    const handleMouseOver = (event) => {
-      const parent = event.target.closest(".section-image-zoom");
-      if (parent) {
-        parent.classList.add("zoom-active");
-      }
-    };
+  const driftAll = document.querySelectorAll(".tf-image-zoom");
+  const pane = document.querySelector(".tf-zoom-main");
 
-    const handleMouseLeave = (event) => {
-      const parent = event.target.closest(".section-image-zoom");
-      if (parent) {
-        parent.classList.remove("zoom-active");
-      }
-    };
-
-    zoomElements.forEach((element) => {
-      element.addEventListener("mouseover", handleMouseOver);
-      element.addEventListener("mouseleave", handleMouseLeave);
+  driftAll.forEach((el) => {
+    new Drift(el, {
+      zoomFactor: 2,
+      paneContainer: pane,
+      inlinePane: false,
+      handleTouch: false,
+      hoverBoundingBox: true,
+      containInline: true,
     });
+  });
 
-    // Cleanup event listeners on component unmount
-    return () => {
-      zoomElements.forEach((element) => {
-        element.removeEventListener("mouseover", handleMouseOver);
-        element.removeEventListener("mouseleave", handleMouseLeave);
-      });
-    };
-  }, []); // Empty dependency array to run only once on mount
+  const zoomElements = document.querySelectorAll(".tf-image-zoom");
+
+  const handleMouseOver = (event) => {
+    const parent = event.target.closest(".section-image-zoom");
+    if (parent) parent.classList.add("zoom-active");
+  };
+
+  const handleMouseLeave = (event) => {
+    const parent = event.target.closest(".section-image-zoom");
+    if (parent) parent.classList.remove("zoom-active");
+  };
+
+  zoomElements.forEach((element) => {
+    element.addEventListener("mouseover", handleMouseOver);
+    element.addEventListener("mouseleave", handleMouseLeave);
+  });
+
+  return () => {
+    zoomElements.forEach((element) => {
+      element.removeEventListener("mouseover", handleMouseOver);
+      element.removeEventListener("mouseleave", handleMouseLeave);
+    });
+  };
+}, []); // Empty dependency array to run only once on mount
 
   const lightboxRef = useRef(null);
   useEffect(() => {
@@ -118,6 +114,8 @@ export default function Slider1({
         slidesPerView={thumbSlidePerView}
         onSwiper={setThumbsSwiper}
         modules={[Thumbs]}
+        touchStartPreventDefault={false}
+  touchMoveStopPropagation={false}
         initialSlide={1}
         breakpoints={{
           0: {

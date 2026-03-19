@@ -2,16 +2,13 @@ import Features from "@/components/common/Features";
 import MarqueeSection2 from "@/components/common/MarqueeSection2";
 import Products6 from "@/components/common/Products6";
 import Footer1 from "@/components/footers/Footer1";
-
-import Topbar3 from "@/components/headers/Topbar3";
-import Collections from "@/components/homes/Women/Collections";
-import Collections2 from "@/components/homes/Women/Collections2";
-import Hero from "@/components/homes/Women/Hero";
-import Lookbook from "@/components/homes/Women/Lookbook";
-import Products from "@/components/homes/Women/Products";
-import ShopGram from "@/components/homes/Women/ShopGram";
-import Testimonials from "@/components/homes/Women/Testimonials";
-import React from "react";
+import Collections from "@/components/homes/furniture/Collections";
+import Collections2 from "@/components/homes/furniture/Collections2";
+import Hero from "@/components/homes/furniture/Hero";
+import Lookbook from "@/components/homes/furniture/Lookbook";
+import Products from "@/components/homes/furniture/Products";
+import ShopGram from "@/components/homes/furniture/ShopGram";
+import Testimonials from "@/components/homes/furniture/Testimonials";
 
 export const metadata = {
   title: "Home Women || Modave - Multipurpose React Nextjs eCommerce Template",

@@ -1,5 +1,4 @@
 import Footer1 from "@/components/footers/Footer1";
-import Topbar6 from "@/components/headers/Topbar6";
 import Collections from "@/components/products/Collections";
 import { getCategoryImage } from "@/data/categoryData";
 import Link from "next/link";
@@ -7,7 +6,7 @@ import React from "react";
 
 export default async function ShopCollectionPage({ searchParams }) {
   const resolvedSearchParams = await searchParams;
-  const category = resolvedSearchParams?.category;
+  const category = resolvedSearchParams?.category ?? "collection";
   
   // Get the background image based on the category
   const backgroundImage = getCategoryImage(category);

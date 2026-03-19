@@ -4,7 +4,7 @@ import "../public/scss/main.scss";
 import "photoswipe/style.css";
 import "react-range-slider-input/dist/style.css";
 import "../public/css/image-compare-viewer.min.css";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import ScrollTop from "@/components/common/ScrollTop";
 
 // Redux Toolkit provider only
@@ -130,7 +130,9 @@ export default function RootLayout({ children }) {
           <ToastProvider>
 
             <GlobalSpinner />
-            <AuthHydrator />
+            <Suspense fallback={null}>
+              <AuthHydrator />
+            </Suspense>
             <RtlToggler />
             <Header />
             <div id="wrapper">{children}</div>

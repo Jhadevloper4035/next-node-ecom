@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { verifyOtp } from "@/services/auth/otp.service";
@@ -8,7 +8,7 @@ import { loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
 import styles from "@/components/otherPages/Login.module.css";
 
-export default function OtpVerificationPage() {
+function OtpVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
@@ -121,5 +121,13 @@ export default function OtpVerificationPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function OtpVerificationPage() {
+  return (
+    <Suspense fallback={null}>
+      <OtpVerificationContent />
+    </Suspense>
   );
 }

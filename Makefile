@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-COMPOSE := docker compose
+COMPOSE := docker-compose
 
 .PHONY: help env-dev env-prod dev-up dev-down dev-logs dev-rebuild prod-up prod-down prod-logs prod-rebuild clean ps backend-sh frontend-sh
 

@@ -1,5 +1,6 @@
 import Footer1 from "@/components/footers/Footer1";
 import CategoryProducts from "@/components/products/CategoryProducts";
+import { getCategoryImage } from "@/data/categoryData";
 import Link from "next/link";
 import React from "react";
 
@@ -8,12 +9,13 @@ export default async function CategoryPage({ params }) {
 
   // Format titles for display
   const categoryTitle = categorySlug.replace(/-/g, " ");
+  const backgroundImage = getCategoryImage(categorySlug);
 
   return (
     <>
       <div
         className="page-title"
-        style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
+        style={{ backgroundImage }}
       >
         <div className="container-full">
           <div className="row">

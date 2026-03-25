@@ -51,7 +51,7 @@ export default function Description({ product }) {
           </>
         )} */}
 
-        <div className="d-flex gap-20 mb_12 list-icon-guideline">
+        {/* <div className="d-flex gap-20 mb_12 list-icon-guideline">
           <div className="d-flex">
             <svg
               width={24}
@@ -235,7 +235,7 @@ export default function Description({ product }) {
         </div>
         <div className="text-caption-2">
           MACHINE WASHING MAX 30°C / 85ºF SHORT SPIN DRY
-        </div>
+        </div> */}
       </div>
     </>
   );

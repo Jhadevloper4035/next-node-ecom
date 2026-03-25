@@ -20,11 +20,11 @@ export default function RelatedProducts() {
               Ralated Products
             </a>
           </li>
-          <li className="nav-tab-item" role="presentation">
+          {/* <li className="nav-tab-item" role="presentation">
             <a href="#recentlyViewed" data-bs-toggle="tab">
               Recently Viewed
             </a>
-          </li>
+          </li> */}
         </ul>
         <div className="tab-content">
           <div

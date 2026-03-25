@@ -21,12 +21,12 @@ export default function Descriptions1({ product }) {
                 >
                   <span className="inner">Description</span>
                 </li>
-                <li
+                {/* <li
                   className={`item-title ${activeTab == 2 ? "active" : ""} `}
                   onClick={() => setActiveTab(2)}
                 >
                   <span className="inner">Customer Reviews</span>
-                </li>
+                </li> */}
                 <li
                   className={`item-title ${activeTab == 3 ? "active" : ""} `}
                   onClick={() => setActiveTab(3)}

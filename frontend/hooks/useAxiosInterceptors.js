@@ -11,22 +11,30 @@ export const useAxiosInterceptors = () => {
   useEffect(() => {
     const requestInterceptor = api.interceptors.request.use(
       (config) => {
-        dispatch(setIsLoading(true));
+        if (!config.silent) {
+          dispatch(setIsLoading(true));
+        }
         return config;
       },
       (error) => {
-        dispatch(setIsLoading(false));
+        if (!error.config?.silent) {
+          dispatch(setIsLoading(false));
+        }
         return Promise.reject(error);
       }
     );
 
     const responseInterceptor = api.interceptors.response.use(
       (response) => {
-        dispatch(setIsLoading(false));
+        if (!response.config?.silent) {
+          dispatch(setIsLoading(false));
+        }
         return response;
       },
       (error) => {
-        dispatch(setIsLoading(false));
+        if (!error.config?.silent) {
+          dispatch(setIsLoading(false));
+        }
         return Promise.reject(error);
       }
     );

@@ -8,7 +8,7 @@ import { Pagination } from "swiper/modules";
 export default function RecentProducts() {
   return (
     <section className="flat-spacing pt-0">
-      <div className="container">
+      {/* <div className="container">
         <div className="heading-section text-center wow fadeInUp">
           <h4 className="heading">You may also like</h4>
         </div>
@@ -36,7 +36,7 @@ export default function RecentProducts() {
 
           <div className="sw-pagination-latest sw-dots type-circle justify-content-center spd79" />
         </Swiper>
-      </div>
+      </div> */}
     </section>
   );
 }

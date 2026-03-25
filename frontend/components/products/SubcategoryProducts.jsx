@@ -36,6 +36,7 @@ export default function SubcategoryProducts({ categorySlug, subcategorySlug }) {
             page: currentPage,
             limit,
           },
+          { silent: currentPage > 1 }
         );
 
         const newProducts = response.data || [];

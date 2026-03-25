@@ -134,9 +134,9 @@ export default function QuickAdd() {
                       </span>
                     </a>
                   </div>
-                  <a href="#" className="btn-style-3 text-btn-uppercase">
+                  {/* <a href="#" className="btn-style-3 text-btn-uppercase">
                     Buy it now
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>

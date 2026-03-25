@@ -29,10 +29,14 @@ export default function CategoryProducts({ categorySlug }) {
     const fetchProds = async () => {
       dispatch(fetchProductsStart());
       try {
-        const response = await getProductsByCategory(categorySlug, {
-          page: currentPage,
-          limit,
-        });
+        const response = await getProductsByCategory(
+          categorySlug,
+          {
+            page: currentPage,
+            limit,
+          },
+          { silent: currentPage > 1 }
+        );
 
         const newProducts = response.data || [];
         if (currentPage === 1) {

@@ -92,14 +92,14 @@ export default function SearchModal() {
               </li>
             </ul>
           </div>
-          <div>
+          {/* <div>
             <h6 className="mb_16">Recently viewed products</h6>
             <div className="tf-grid-layout tf-col-2 lg-col-3 xl-col-4">
               {loadedItems.map((product, i) => (
                 <ProductCard1 product={product} key={i} />
               ))}
             </div>
-          </div>
+          </div> */}
           {/* Load Item */}
 
           {productMain.length == loadedItems.length ? (

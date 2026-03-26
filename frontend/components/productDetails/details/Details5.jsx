@@ -175,9 +175,9 @@ export default function Details5({ product = allProducts[0] }) {
                           </span>
                         </a>
                       </div>
-                      <a href="#" className="btn-style-3 text-btn-uppercase">
+                      {/* <a href="#" className="btn-style-3 text-btn-uppercase">
                         Buy it now
-                      </a>
+                      </a> */}
                     </div>
                     <div className="tf-product-info-help">
                       <div className="tf-product-info-extra-link">

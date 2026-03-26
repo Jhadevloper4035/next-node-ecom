@@ -32,7 +32,7 @@ export default function ProductCard1({
     <div
       className={`${parentClass} ${gridClass} ${
         product.isOnSale ? "on-sale" : ""
-      } ${product.sizes ? "card-product-size" : ""}`}
+      } ${product.sizes ? "" : ""}`}
     >
       <div
         className={`card-product-wrapper ${
@@ -154,17 +154,7 @@ export default function ProductCard1({
             <span className="on-sale-item">-{product.salePercentage}</span>
           </div>
         )}
-        {product.sizes && (
-          <div className="variant-wrap size-list">
-            <ul className="variant-box">
-              {product.sizes.map((size) => (
-                <li key={size} className="size-item">
-                  {size}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+
         {product.countdown && (
           <div className="variant-wrap countdown-wrap">
             <div className="variant-box">

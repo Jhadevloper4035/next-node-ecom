@@ -8,7 +8,7 @@ export const categories = [
   { name: "Uncategorized", count: 14, active: false },
 ];
 
-export const sizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+export const sizes = [];
 
 export const colors = [
   { name: "Pink", className: "bg-light-pink-2" },

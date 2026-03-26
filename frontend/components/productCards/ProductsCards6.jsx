@@ -89,15 +89,7 @@ export default function ProductsCards6({ product }) {
               ))}
             </ul>
           )}
-          {product.sizes && (
-            <div className="size-box list-product-btn">
-              <span className="size-item box-icon">S</span>
-              <span className="size-item box-icon">M</span>
-              <span className="size-item box-icon">L</span>
-              <span className="size-item box-icon">XL</span>
-              <span className="size-item box-icon disable">XXL</span>
-            </div>
-          )}
+
           <div className="list-product-btn">
             <Link
               href={`/product-detail/${product.id}`}

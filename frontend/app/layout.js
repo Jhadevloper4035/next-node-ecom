@@ -33,6 +33,7 @@ import GlobalSpinner from "@/components/common/GlobalSpinner";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Import the script only on the client side
@@ -44,10 +45,12 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     const handleScroll = () => {
       const header = document.querySelector("header");
-      if (window.scrollY > 100) {
-        header.classList.add("header-bg");
-      } else {
-        header.classList.remove("header-bg");
+      if (header) { // Safeguard header exists
+        if (window.scrollY > 100) {
+          header.classList.add("header-bg");
+        } else {
+          header.classList.remove("header-bg");
+        }
       }
     };
 
@@ -125,7 +128,7 @@ export default function RootLayout({ children }) {
   }, [pathname]);
   return (
     <html lang="en">
-      <body className="preload-wrapper popup-loader">
+      <body className="">
         <Provider store={store}>
           <ToastProvider>
 

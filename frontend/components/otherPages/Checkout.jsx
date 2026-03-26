@@ -433,7 +433,6 @@ export default function Checkout() {
                             {elm.title}
                           </Link>
                           <div className="variant text-caption-1 text-secondary">
-                            <span className="size">XL</span>/
                             <span className="color">Blue</span>
                           </div>
                         </div>

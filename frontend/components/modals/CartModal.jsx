@@ -138,8 +138,8 @@ export default function CartModal() {
                               </div>
                               <div className="d-flex align-items-center justify-content-between flex-wrap gap-12">
                                 <div className="text-secondary-2">
-                                  {product.selectedSize || product.selectedColor || product.selectedFabric || product.selectedMaterial || product.selectedFoam ? (
-                                    [product.selectedSize, product.selectedColor, product.selectedFabric, product.selectedMaterial, product.selectedFoam].filter(Boolean).join("/")
+                                  {product.selectedColor || product.selectedFabric || product.selectedMaterial || product.selectedFoam ? (
+                                    [product.selectedColor, product.selectedFabric, product.selectedMaterial, product.selectedFoam].filter(Boolean).join("/")
                                   ) : (
                                     "Standard"
                                   )}

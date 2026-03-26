@@ -13,12 +13,13 @@ export const getAllProducts = async (params = {}) => {
     }
 };
 
-export const getProductsByCategory = async (categorySlug, params = {}) => {
+export const getProductsByCategory = async (categorySlug, params = {}, options = {}) => {
     try {
         const { page = 1, limit = 10 } = params;
         const response = await api.get(`/v1/product/category/${categorySlug}`, {
             params: { page, limit },
             skipAuth: true,
+            ...options,
         });
         return response.data;
     } catch (error) {
@@ -37,12 +38,13 @@ export const getProductBySlug = async (slug) => {
     }
 };
 
-export const getProductsByCategoryAndSubcategory = async (categorySlug, subcategorySlug, params = {}) => {
+export const getProductsByCategoryAndSubcategory = async (categorySlug, subcategorySlug, params = {}, options = {}) => {
     try {
         const { page = 1, limit = 10 } = params;
         const response = await api.get(`/v1/product/category/${categorySlug}/subcategory/${subcategorySlug}`, {
             params: { page, limit },
             skipAuth: true,
+            ...options,
         });
         return response.data;
     } catch (error) {

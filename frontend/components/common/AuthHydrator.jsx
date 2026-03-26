@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { hydrate, updateUser } from "@/redux/authSlice";
+import { setInitialLoading } from "@/redux/uiSlice";
 import { useAxiosInterceptors } from "@/hooks/useAxiosInterceptors";
 import { useRouteLoadingState } from "@/hooks/useRouteLoadingState";
 import { getMe } from "@/services/user/me.service";
@@ -14,6 +15,15 @@ export default function AuthHydrator() {
 
   useAxiosInterceptors();
   useRouteLoadingState();
+
+  useEffect(() => {
+    // Mark initial loading as complete after some time
+    // This gives enough time for AuthHydrator and initial page components to trigger their API calls
+    const timer = setTimeout(() => {
+      dispatch(setInitialLoading(false));
+    }, 2000); // Increased to 2 seconds to be safe
+    return () => clearTimeout(timer);
+  }, [dispatch]);
 
   useEffect(() => {
     // 1. First, hydrate auth state (token) from cookies/storage

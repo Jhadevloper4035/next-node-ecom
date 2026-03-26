@@ -94,17 +94,26 @@ export default function SubcategoryProducts({ categorySlug, subcategorySlug }) {
 
   return (
     <div className="container py-5">
-      <div className="tf-grid-layout tf-col-2 lg-col-3 xl-col-4">
-        {mappedProducts.length > 0
-          ? mappedProducts.map((product, i) => (
+      {loading && currentPage === 1 ? (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: "400px" }}
+        >
+          <div className="tf-loading loading"></div>
+        </div>
+      ) : (
+        <div className="tf-grid-layout tf-col-2 lg-col-3 xl-col-4">
+          {mappedProducts.length > 0 ? (
+            mappedProducts.map((product, i) => (
               <ProductCard1 key={i} product={product} />
             ))
-          : !loading && (
-              <div className="text-center w-100 py-5">
-                No products found for this selection.
-              </div>
-            )}
-      </div>
+          ) : (
+            <div className="text-center w-100 py-5">
+              No products found for this selection.
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Scroll Target for Infinite Loading */}
       {hasMore && (

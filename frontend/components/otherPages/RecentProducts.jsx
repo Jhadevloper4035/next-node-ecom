@@ -1,14 +1,40 @@
 "use client";
 
-import { products } from "@/data/products";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ProductCard1 from "../productCards/ProductCard1";
 import { Pagination } from "swiper/modules";
 
 export default function RecentProducts() {
+  const [recentProducts, setRecentProducts] = useState([]);
+
+  useEffect(() => {
+    const loadRecent = () => {
+      const stored = JSON.parse(
+        localStorage.getItem("recentlyVisitedProducts") || "[]"
+      );
+      setRecentProducts(stored);
+    };
+
+    loadRecent();
+
+    const handleStorage = (e) => {
+      if (e.key === "recentlyVisitedProducts") loadRecent();
+    };
+
+    window.addEventListener("recentlyVisitedUpdated", loadRecent);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("recentlyVisitedUpdated", loadRecent);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
+  if (recentProducts.length === 0) return null;
+
   return (
     <section className="flat-spacing pt-0">
-      {/* <div className="container">
+      <div className="container">
         <div className="heading-section text-center wow fadeInUp">
           <h4 className="heading">You may also like</h4>
         </div>
@@ -28,15 +54,15 @@ export default function RecentProducts() {
             el: ".spd79",
           }}
         >
-          {products.slice(4).map((product, i) => (
-            <SwiperSlide key={i} className="swiper-slide">
+          {recentProducts.map((product, i) => (
+            <SwiperSlide key={product.id || i} className="swiper-slide">
               <ProductCard1 product={product} />
             </SwiperSlide>
           ))}
 
           <div className="sw-pagination-latest sw-dots type-circle justify-content-center spd79" />
         </Swiper>
-      </div> */}
+      </div>
     </section>
   );
 }

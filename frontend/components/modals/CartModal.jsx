@@ -20,12 +20,34 @@ export default function CartModal() {
 
   const [currentOpenPopup, setCurrentOpenPopup] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [recentProducts, setRecentProducts] = useState([]);
 
   useEffect(() => {
     setMounted(true);
+    const loadRecent = () => {
+      const stored = JSON.parse(
+        localStorage.getItem("recentlyVisitedProducts") || "[]"
+      );
+      setRecentProducts(stored);
+    };
+
+    loadRecent();
+
+    const handleStorage = (e) => {
+      if (e.key === "recentlyVisitedProducts") loadRecent();
+    };
+
+    window.addEventListener("recentlyVisitedUpdated", loadRecent);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("recentlyVisitedUpdated", loadRecent);
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   if (!mounted) return null;
+
+  const displayProducts = recentProducts.length > 0 ? recentProducts : products41;
 
   return (
     <div className="modal fullRight fade modal-shopping-cart" id="shoppingCart">
@@ -35,14 +57,20 @@ export default function CartModal() {
             <h6 className="title">You May Also Like</h6>
             <div className="wrap-recommendations">
               <div className="list-cart">
-                {products41.map((product, index) => (
+                {displayProducts.map((product, index) => (
                   <div className="list-cart-item" key={index}>
-                    <Link href={`/product-detail/${product.id}`} className="image">
+                    <Link
+                      href={
+                        product.slug
+                          ? `/product/${product.slug}`
+                          : `/product-detail/${product.id}`
+                      }
+                      className="image"
+                    >
                       <Image
                         className="lazyload"
-                        data-src={product.imgSrc}
-                        alt={product.alt}
-                        src={product.imgSrc}
+                        alt={product.title || "product"}
+                        src={product.imgSrc || "/images/placeholder.jpg"}
                         width={600}
                         height={800}
                       />
@@ -51,7 +79,11 @@ export default function CartModal() {
                       <div className="name">
                         <Link
                           className="link text-line-clamp-1"
-                          href={`/product-detail/${product.id}`}
+                          href={
+                            product.slug
+                              ? `/product/${product.slug}`
+                              : `/product-detail/${product.id}`
+                          }
                         >
                           {product.title}
                         </Link>
@@ -63,7 +95,13 @@ export default function CartModal() {
                         <a
                           className="link text-button"
                           onClick={() =>
-                            dispatch(addProduct({ id: product.id, qty: 1 }))
+                            dispatch(
+                              addProduct({
+                                ...product,
+                                id: product.id,
+                                qty: 1,
+                              })
+                            )
                           }
                         >
                           {isAddedToCartProducts(product.id)

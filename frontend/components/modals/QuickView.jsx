@@ -7,8 +7,6 @@ import Grid5 from "../productDetails/grids/Grid5";
 import { useAppState } from "@/context/useAppState";
 import QuantitySelect from "../productDetails/QuantitySelect";
 export default function QuickView() {
-  const [activeColor, setActiveColor] = useState("gray");
-  const [quantity, setQuantity] = useState(1); // Initial quantity is 1
   const {
     quickViewItem,
     addProductToCart,
@@ -20,6 +18,29 @@ export default function QuickView() {
     cartProducts,
     updateQuantity,
   } = useAppState();
+
+  const [activeColor, setActiveColor] = useState("");
+  const [quantity, setQuantity] = useState(1); // Initial quantity is 1
+
+  React.useEffect(() => {
+    // Try tags first
+    const colorTags = quickViewItem.tags
+      ?.filter(tag => typeof tag === 'string' && tag.startsWith("color:"))
+      .map(tag => tag.split(":")[1].trim());
+
+    if (colorTags?.length > 0) {
+      setActiveColor(colorTags[0].toLowerCase().replace(/\s+/g, "-"));
+    } else if (quickViewItem?.colors?.length > 0) {
+      const firstColor = quickViewItem.colors[0];
+      setActiveColor(
+        typeof firstColor === 'string' 
+          ? firstColor.toLowerCase().replace(/\s+/g, "-") 
+          : (firstColor.color || firstColor.bgColor?.replace("bg-", "") || "")
+      );
+    } else {
+      setActiveColor("");
+    }
+  }, [quickViewItem]);
 
   const openModalSizeChoice = () => {
     const bootstrap = require("bootstrap"); // dynamically import bootstrap
@@ -118,6 +139,22 @@ export default function QuickView() {
                 <ColorSelect
                   activeColor={activeColor}
                   setActiveColor={setActiveColor}
+                  colorOptions={quickViewItem.colors?.map((c, i) => {
+                    if (typeof c === "string") {
+                      return {
+                        id: `quickview-values-${c.toLowerCase().replace(/\s+/g, "-")}`,
+                        value: c,
+                        color: c.toLowerCase().replace(/\s+/g, "-"),
+                      };
+                    }
+                    const colorName = c.name || c.value || c.color || c.bgColor?.replace("bg-", "") || "Color";
+                    const colorValue = c.color || c.bgColor?.replace("bg-", "") || colorName.toLowerCase().replace(/\s+/g, "-");
+                    return {
+                      id: `quickview-values-${colorValue}-${i}`,
+                      value: colorName,
+                      color: colorValue,
+                    };
+                  })}
                 />
                 <SizeSelect />
                 <div className="tf-product-info-quantity">
@@ -144,7 +181,7 @@ export default function QuickView() {
                     <a
                       className="btn-style-2 flex-grow-1 text-btn-uppercase fw-6 show-shopping-cart"
                       onClick={() =>
-                        addProductToCart(quickViewItem.id, quantity)
+                        addProductToCart(quickViewItem.id, quantity, true, { ...quickViewItem, selectedColor: activeColor })
                       }
                     >
                       <span>

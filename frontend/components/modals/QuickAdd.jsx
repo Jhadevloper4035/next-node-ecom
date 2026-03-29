@@ -9,6 +9,7 @@ import SizeSelect from "../productDetails/SizeSelect";
 import QuantitySelect from "../productDetails/QuantitySelect";
 export default function QuickAdd() {
   const [quantity, setQuantity] = useState(1);
+  const [activeColor, setActiveColor] = useState("");
   const {
     quickAddItem,
     addProductToCart,
@@ -24,7 +25,25 @@ export default function QuickAdd() {
   useEffect(() => {
     const filtered = allProducts.filter((el) => el.id == quickAddItem);
     if (filtered) {
-      setItem(filtered[0]);
+      const item = filtered[0];
+      setItem(item);
+
+      const colorTags = item.tags
+        ?.filter(tag => typeof tag === 'string' && tag.startsWith("color:"))
+        .map(tag => tag.split(":")[1].trim());
+
+      if (colorTags?.length > 0) {
+        setActiveColor(colorTags[0].toLowerCase().replace(/\s+/g, "-"));
+      } else if (item.colors?.length > 0) {
+        const firstColor = item.colors[0];
+        setActiveColor(
+          typeof firstColor === 'string' 
+            ? firstColor.toLowerCase().replace(/\s+/g, "-") 
+            : (firstColor.color || firstColor.bgColor?.replace("bg-", "") || "")
+        );
+      } else {
+        setActiveColor("");
+      }
     }
   }, [quickAddItem]);
   return (
@@ -65,7 +84,26 @@ export default function QuickAdd() {
                 </div>
               </div>
               <div className="tf-product-info-choose-option">
-                <ColorSelect />
+                <ColorSelect 
+                  activeColor={activeColor} 
+                  setActiveColor={setActiveColor} 
+                  colorOptions={item.colors?.map((c, i) => {
+                    if (typeof c === "string") {
+                      return {
+                        id: `quick-values-${c.toLowerCase().replace(/\s+/g, "-")}`,
+                        value: c,
+                        color: c.toLowerCase().replace(/\s+/g, "-"),
+                      };
+                    }
+                    const colorName = c.name || c.value || c.color || c.bgColor?.replace("bg-", "") || "Color";
+                    const colorValue = c.color || c.bgColor?.replace("bg-", "") || colorName.toLowerCase().replace(/\s+/g, "-");
+                    return {
+                      id: `quick-values-${colorValue}-${i}`,
+                      value: colorName,
+                      color: colorValue,
+                    };
+                  })}
+                />
                 <SizeSelect />
                 <div className="tf-product-info-quantity">
                   <div className="title mb_12">Quantity:</div>
@@ -89,7 +127,7 @@ export default function QuickAdd() {
                   <div className="tf-product-info-by-btn mb_10">
                     <a
                       className="btn-style-2 flex-grow-1 text-btn-uppercase fw-6 show-shopping-cart"
-                      onClick={() => addProductToCart(item.id, quantity)}
+                      onClick={() => addProductToCart(item.id, quantity, true, { ...item, selectedColor: activeColor })}
                     >
                       <span>
                         {isAddedToCartProducts(item.id)

@@ -59,11 +59,11 @@ export default function RelatedProducts({ currentProductId, categorySlug, subcat
           data-wow-delay="0s"
           role="tablist"
         >
-          <li className="nav-tab-item" role="presentation">
+          {relatedProducts.length > 0 && <li className="nav-tab-item" role="presentation">
             <a href="#ralatedProducts" className="active" data-bs-toggle="tab">
                Related Products
             </a>
-          </li>
+          </li>}
         </ul>
         <div className="tab-content">
           <div
@@ -98,7 +98,7 @@ export default function RelatedProducts({ currentProductId, categorySlug, subcat
                 <div className="sw-pagination-latest spd4  sw-dots type-circle justify-content-center" />
               </Swiper>
             ) : (
-                <div className="text-center py-5">No related products found.</div>
+                null
             )}
           </div>
         </div>

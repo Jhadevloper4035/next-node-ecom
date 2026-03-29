@@ -11,6 +11,26 @@ import ProductOptionSelector from "../ProductOptionSelector";
 export default function Details1({ product }) {
   const [activeColor, setActiveColor] = useState("gray");
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    // Try tags first
+    const colorTags = product.tags
+      ?.filter(tag => typeof tag === 'string' && tag.startsWith("color:"))
+      .map(tag => tag.split(":")[1].trim());
+
+    if (colorTags?.length > 0) {
+      setActiveColor(colorTags[0].toLowerCase().replace(/\s+/g, "-"));
+    } else if (product.colors?.[0]) {
+      const firstColor = product.colors[0];
+      setActiveColor(
+        typeof firstColor === 'string' 
+          ? firstColor.toLowerCase().replace(/\s+/g, "-") 
+          : (firstColor.color || firstColor.bgColor?.replace("bg-", "") || "")
+      );
+    } else {
+      setActiveColor("");
+    }
+  }, [product]);
   const {
     addProductToCart,
     isAddedToCartProducts,

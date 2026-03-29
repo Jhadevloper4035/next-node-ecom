@@ -83,19 +83,21 @@ export default function Slider4({
   const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef(null);
   useEffect(() => {
-    if (!(items[activeIndex].variant == activeVarient)) {
-      const slideIndex =
-        items.filter((elm) => elm.variant == activeVarient)[0]?.id - 1;
-      swiperRef.current.slideTo(slideIndex);
+    if (items[activeIndex]?.variant !== activeVarient) {
+      const targetItem = items.find((elm) => elm.variant === activeVarient);
+      if (targetItem && swiperRef.current) {
+        swiperRef.current.slideTo(targetItem.id - 1);
+      }
     }
-  }, [activeVarient]);
+  }, [activeVarient, activeIndex, items]);
   useEffect(() => {
     setTimeout(() => {
       if (swiperRef.current) {
         swiperRef.current.slideTo(1);
-        swiperRef.current.slideTo(
-          items.filter((elm) => elm.variant == activeVarient)[0]?.id - 1
-        );
+        const targetItem = items.find((elm) => elm.variant === activeVarient);
+        if (targetItem) {
+          swiperRef.current.slideTo(targetItem.id - 1);
+        }
       }
     });
   }, []);
@@ -149,7 +151,10 @@ export default function Slider4({
         onSlideChange={(swiper) => {
           if (items[swiper.activeIndex]) {
             setActiveIndex(swiper.activeIndex);
-            setActiveVarient(items[swiper.activeIndex]?.variant.toLowerCase());
+            const variant = items[swiper.activeIndex]?.variant;
+            if (variant && typeof variant === "string") {
+              setActiveVarient(variant.toLowerCase());
+            }
           }
         }}
       >

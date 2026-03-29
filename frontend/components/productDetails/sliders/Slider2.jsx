@@ -16,48 +16,48 @@ export default function Slider2({
   items[0].src = firstItem ?? items[0].src;
 
   useEffect(() => {
-  const isMobile = window.innerWidth <= 768;
+    const isMobile = window.innerWidth <= 768;
 
-  if (isMobile) return; // ✅ disable zoom on mobile
+    if (isMobile) return; // ✅ disable zoom on mobile
 
-  const driftAll = document.querySelectorAll(".tf-image-zoom");
-  const pane = document.querySelector(".tf-zoom-main");
+    const driftAll = document.querySelectorAll(".tf-image-zoom");
+    const pane = document.querySelector(".tf-zoom-main");
 
-  driftAll.forEach((el) => {
-    new Drift(el, {
-      zoomFactor: 2,
-      paneContainer: pane,
-      inlinePane: false,
-      handleTouch: false,
-      hoverBoundingBox: true,
-      containInline: true,
+    driftAll.forEach((el) => {
+      new Drift(el, {
+        zoomFactor: 2,
+        paneContainer: pane,
+        inlinePane: false,
+        handleTouch: false,
+        hoverBoundingBox: true,
+        containInline: true,
+      });
     });
-  });
 
-  const zoomElements = document.querySelectorAll(".tf-image-zoom");
+    const zoomElements = document.querySelectorAll(".tf-image-zoom");
 
-  const handleMouseOver = (event) => {
-    const parent = event.target.closest(".section-image-zoom");
-    if (parent) parent.classList.add("zoom-active");
-  };
+    const handleMouseOver = (event) => {
+      const parent = event.target.closest(".section-image-zoom");
+      if (parent) parent.classList.add("zoom-active");
+    };
 
-  const handleMouseLeave = (event) => {
-    const parent = event.target.closest(".section-image-zoom");
-    if (parent) parent.classList.remove("zoom-active");
-  };
+    const handleMouseLeave = (event) => {
+      const parent = event.target.closest(".section-image-zoom");
+      if (parent) parent.classList.remove("zoom-active");
+    };
 
-  zoomElements.forEach((element) => {
-    element.addEventListener("mouseover", handleMouseOver);
-    element.addEventListener("mouseleave", handleMouseLeave);
-  });
-
-  return () => {
     zoomElements.forEach((element) => {
-      element.removeEventListener("mouseover", handleMouseOver);
-      element.removeEventListener("mouseleave", handleMouseLeave);
+      element.addEventListener("mouseover", handleMouseOver);
+      element.addEventListener("mouseleave", handleMouseLeave);
     });
-  };
-}, []);
+
+    return () => {
+      zoomElements.forEach((element) => {
+        element.removeEventListener("mouseover", handleMouseOver);
+        element.removeEventListener("mouseleave", handleMouseLeave);
+      });
+    };
+  }, []);
 
   const lightboxRef = useRef(null);
   useEffect(() => {
@@ -83,19 +83,21 @@ export default function Slider2({
   const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef(null);
   useEffect(() => {
-    if (!(items[activeIndex].color == activeColor)) {
-      const slideIndex =
-        items.filter((elm) => elm.color == activeColor)[0]?.id - 1;
-      swiperRef.current.slideTo(slideIndex);
+    if (items[activeIndex]?.color !== activeColor) {
+      const targetItem = items.find((elm) => elm.color === activeColor);
+      if (targetItem && swiperRef.current) {
+        swiperRef.current.slideTo(targetItem.id - 1);
+      }
     }
-  }, [activeColor]);
+  }, [activeColor, activeIndex, items]);
   useEffect(() => {
     setTimeout(() => {
       if (swiperRef.current) {
         swiperRef.current.slideTo(1);
-        swiperRef.current.slideTo(
-          items.filter((elm) => elm.color == activeColor)[0]?.id - 1
-        );
+        const targetItem = items.find((elm) => elm.color === activeColor);
+        if (targetItem) {
+          swiperRef.current.slideTo(targetItem.id - 1);
+        }
       }
     });
   }, []);
@@ -114,12 +116,15 @@ export default function Slider2({
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Thumbs, Navigation]}
         touchStartPreventDefault={false}
-  touchMoveStopPropagation={false}
+        touchMoveStopPropagation={false}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         onSlideChange={(swiper) => {
           if (items[swiper.activeIndex]) {
             setActiveIndex(swiper.activeIndex);
-            setActiveColor(items[swiper.activeIndex]?.color.toLowerCase());
+            const color = items[swiper.activeIndex]?.color;
+            if (color && typeof color === "string") {
+              setActiveColor(color.toLowerCase());
+            }
           }
         }}
       >

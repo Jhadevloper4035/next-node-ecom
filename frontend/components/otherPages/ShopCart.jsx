@@ -139,30 +139,49 @@ export default function ShopCart() {
                         <tr key={i} className="tf-cart-item file-delete">
                           <td className="tf-cart-item_product">
                             <Link
-                              href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
+                              href={
+                                elm.slug
+                                  ? `/product/${elm.slug}`
+                                  : `/product-detail/${elm.id}`
+                              }
                               className="img-box"
                             >
                               <Image
                                 alt="product"
-                                src={elm.imgSrc || "/images/products/placeholder.jpg"}
+                                src={
+                                  elm.imgSrc ||
+                                  "/images/products/placeholder.jpg"
+                                }
                                 width={600}
                                 height={800}
                               />
                             </Link>
                             <div className="cart-info">
                               <Link
-                                href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
+                                href={
+                                  elm.slug
+                                    ? `/product/${elm.slug}`
+                                    : `/product-detail/${elm.id}`
+                                }
                                 className="cart-title link"
                               >
                                 {elm.title}
                               </Link>
                               <div className="variant-box">
                                 <div className="text-secondary-2">
-                                  {elm.selectedColor || elm.selectedFabric || elm.selectedMaterial || elm.selectedFoam ? (
-                                    [elm.selectedColor, elm.selectedFabric, elm.selectedMaterial, elm.selectedFoam].filter(Boolean).join("/")
-                                  ) : (
-                                    "Standard"
-                                  )}
+                                  {elm.selectedColor ||
+                                  elm.selectedFabric ||
+                                  elm.selectedMaterial ||
+                                  elm.selectedFoam
+                                    ? [
+                                        elm.selectedColor,
+                                        elm.selectedFabric,
+                                        elm.selectedMaterial,
+                                        elm.selectedFoam,
+                                      ]
+                                        .filter(Boolean)
+                                        .join("/")
+                                    : "Standard"}
                                 </div>
                               </div>
                             </div>
@@ -210,7 +229,10 @@ export default function ShopCart() {
                             className="tf-cart-item_total text-center"
                           >
                             <div className="cart-total text-button total-price">
-                              ₹{((elm.price || 0) * (elm.quantity || 0)).toFixed(2)}
+                              ₹
+                              {((elm.price || 0) * (elm.quantity || 0)).toFixed(
+                                2,
+                              )}
                             </div>
                           </td>
                           <td
@@ -278,7 +300,9 @@ export default function ShopCart() {
                   <h5 className="title">Order Summary</h5>
                   <div className="subtotal text-button d-flex justify-content-between align-items-center">
                     <span>Subtotal</span>
-                    <span className="total">₹{totalPrice?.toFixed(2) || "0.00"}</span>
+                    <span className="total">
+                      ₹{totalPrice?.toFixed(2) || "0.00"}
+                    </span>
                   </div>
                   <div className="discount text-button d-flex justify-content-between align-items-center">
                     <span>Discounts</span>

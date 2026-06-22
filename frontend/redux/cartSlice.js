@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { allProducts } from "@/data/products";
 
 // helper to compute total price
 const calculateTotal = (cartProducts) =>
@@ -28,13 +27,13 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addProduct(state, action) {
-  const { id, qty = 1, product = null } = action.payload;
+      const { id, qty = 1, product = null } = action.payload;
       const exists = state.cartProducts.find((p) => p.id === id);
       if (!exists) {
-        const productData = product || allProducts.find((p) => p.id === id);
-        if (productData) {
+        if (product) {
           const item = {
-            ...productData,
+            ...product,
+            id: product.id || product._id || id,
             quantity: qty,
           };
           // Make sure price is a number to avoid checkout issues

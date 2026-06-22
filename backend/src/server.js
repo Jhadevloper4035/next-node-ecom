@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const { connectDB } = require("./config/db");
 const { env } = require("./config/env");
+const { closeRedis } = require("./config/redis");
 const { initRateLimitStore } = require("./middlewares/rateLimiters");
 
 const server = http.createServer(app);
@@ -16,7 +17,16 @@ async function bootstrap() {
   server.listen(env.port, () => console.log(`${env.appName} running on port ${env.port}`));
 }
 
-process.on("SIGINT", async () => { server.close(); await mongoose.connection.close(false); process.exit(0); });
-process.on("SIGTERM", async () => { server.close(); await mongoose.connection.close(false); process.exit(0); });
+const shutdown = async () => {
+  server.close();
+  await Promise.all([
+    mongoose.connection.close(false),
+    closeRedis(),
+  ]);
+  process.exit(0);
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 
 bootstrap().catch((err) => { console.error("Bootstrap failed:", err.message); process.exit(1); });

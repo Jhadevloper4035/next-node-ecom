@@ -1,6 +1,6 @@
 "use client";
 import { useAppState } from "@/context/useAppState";
-import { allProducts } from "@/data/products";
+import { mapProductForCard } from "@/utlis/productMapper";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -14,7 +14,11 @@ export default function ProductCompare() {
   } = useAppState();
   const [items, setItems] = useState([]);
   useEffect(() => {
-    setItems([...allProducts.filter((elm) => compareItem.includes(elm.id))]);
+    setItems(
+      compareItem
+        .filter((item) => typeof item === "object" && item !== null)
+        .map(mapProductForCard)
+    );
   }, [compareItem]);
   return (
     <section className="flat-spacing">
@@ -39,12 +43,12 @@ export default function ProductCompare() {
                   <div className="tf-compare-item">
                     <Link
                       className="tf-compare-image"
-                      href={`/product-detail/${elm.id}`}
+                      href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
                     >
                       <Image
                         className="lazyload"
                         alt="img-compare"
-                        src={elm.imgSrc}
+                        src={elm.imgSrc || "/images/placeholder.jpg"}
                         width={600}
                         height={800}
                       />
@@ -52,7 +56,7 @@ export default function ProductCompare() {
                     <div className="tf-compare-content">
                       <Link
                         className="link text-title text-line-clamp-1"
-                        href={`/product-detail/${elm.id}`}
+                        href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
                       >
                         {elm.title}
                       </Link>

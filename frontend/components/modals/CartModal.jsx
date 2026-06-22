@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
-import { products41 } from "@/data/products";
 import { addProduct } from "@/redux/cartSlice";
 import { removeProduct } from "@/redux/cartSlice";
+import { getAllProducts } from "@/services/product/product.service";
+import { loadRecentlyViewedProducts, mapProductsForCards } from "@/utlis/productMapper";
 export default function CartModal() {
   const dispatch = useDispatch();
   const cartProducts = useSelector((state) => state.cart.cartProducts);
@@ -21,14 +22,12 @@ export default function CartModal() {
   const [currentOpenPopup, setCurrentOpenPopup] = useState("");
   const [mounted, setMounted] = useState(false);
   const [recentProducts, setRecentProducts] = useState([]);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
   useEffect(() => {
     setMounted(true);
     const loadRecent = () => {
-      const stored = JSON.parse(
-        localStorage.getItem("recentlyVisitedProducts") || "[]"
-      );
-      setRecentProducts(stored);
+      setRecentProducts(loadRecentlyViewedProducts());
     };
 
     loadRecent();
@@ -45,9 +44,22 @@ export default function CartModal() {
     };
   }, []);
 
+  useEffect(() => {
+    const loadRecommended = async () => {
+      try {
+        const response = await getAllProducts({ page: 1, limit: 8 });
+        setRecommendedProducts(mapProductsForCards(response?.data || []));
+      } catch (error) {
+        console.error("Failed to fetch cart recommendations:", error);
+      }
+    };
+
+    loadRecommended();
+  }, []);
+
   if (!mounted) return null;
 
-  const displayProducts = recentProducts.length > 0 ? recentProducts : products41;
+  const displayProducts = recentProducts.length > 0 ? recentProducts : recommendedProducts;
 
   return (
     <div className="modal fullRight fade modal-shopping-cart" id="shoppingCart">
@@ -149,13 +161,13 @@ export default function CartModal() {
                             className="tf-mini-cart-item file-delete"
                           >
                             <Link href={product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`} className="tf-mini-cart-image">
-                              <Image
-                                className="lazyload"
-                                alt=""
-                                src={product.imgSrc}
-                                width={600}
-                                height={800}
-                              />
+              <Image
+                className="lazyload"
+                alt=""
+                src={product.imgSrc || "/images/placeholder.jpg"}
+                width={600}
+                height={800}
+              />
                             </Link>
                             <div className="tf-mini-cart-info flex-grow-1">
                               <div className="mb_12 d-flex align-items-center justify-content-between flex-wrap gap-12">

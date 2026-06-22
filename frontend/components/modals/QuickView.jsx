@@ -23,6 +23,8 @@ export default function QuickView() {
   const [quantity, setQuantity] = useState(1); // Initial quantity is 1
 
   React.useEffect(() => {
+    if (!quickViewItem) return;
+
     // Try tags first
     const colorTags = quickViewItem.tags
       ?.filter(tag => typeof tag === 'string' && tag.startsWith("color:"))
@@ -41,6 +43,8 @@ export default function QuickView() {
       setActiveColor("");
     }
   }, [quickViewItem]);
+
+  if (!quickViewItem) return null;
 
   const openModalSizeChoice = () => {
     const bootstrap = require("bootstrap"); // dynamically import bootstrap
@@ -202,7 +206,7 @@ export default function QuickView() {
                     </a>
                     <a
                       href="#compare"
-                      onClick={() => addToCompareItem(quickViewItem.id)}
+                      onClick={() => addToCompareItem(quickViewItem.id, quickViewItem)}
                       data-bs-toggle="offcanvas"
                       aria-controls="compare"
                       className="box-icon hover-tooltip compare btn-icon-action show-compare"
@@ -216,7 +220,7 @@ export default function QuickView() {
                       </span>
                     </a>
                     <a
-                      onClick={() => addToWishlist(quickViewItem.id)}
+                      onClick={() => addToWishlist(quickViewItem.id, quickViewItem)}
                       className="box-icon hover-tooltip text-caption-2 wishlist btn-icon-action"
                     >
                       <span className="icon icon-heart" />

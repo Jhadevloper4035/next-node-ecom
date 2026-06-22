@@ -1,8 +1,16 @@
 import axios from "axios";
 import { getToken, setToken, clearAuth } from "@/utlis/auth.utlis";
 
+const normalizeApiBaseUrl = (url) => {
+  const fallback = "http://localhost:5000/api";
+  const raw = (url || fallback).replace(/\/+$/, "");
+  return raw.endsWith("/v1") ? raw.slice(0, -3) : raw;
+};
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://curve-comfort:5000/api",
+  baseURL: normalizeApiBaseUrl(
+    process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL
+  ),
   withCredentials: true
 });
 

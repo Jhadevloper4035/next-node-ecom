@@ -3,44 +3,51 @@ import React from "react";
 export default function ReturnPolicies() {
   return (
     <>
-      {" "}
       <div className="text-btn-uppercase mb_12">Return Policies</div>
       <p className="mb_12 text-secondary">
-        At Modave, we stand behind the quality of our products. If you're not
-        completely satisfied with your purchase, we offer hassle-free returns
-        within 30 days of delivery.
+        At Curve &amp; Comfort, return and replacement requests are reviewed by
+        our support team so we can resolve genuine delivery issues, product
+        defects, and order mismatches fairly.
       </p>
-      <div className="text-btn-uppercase mb_12">Easy Exchanges or Refunds</div>
+      <div className="text-btn-uppercase mb_12">Eligible Returns</div>
       <ul className="list-text type-disc mb_12 gap-6">
         <li className="text-secondary font-2">
-          Exchange your item for a different size, color, or style, or receive a
-          full refund.
+          Faulty, damaged, or non-operational products may qualify for return,
+          replacement, or repair after inspection.
         </li>
         <li className="text-secondary font-2">
-          All returned items must be unworn, in their original packaging, and
-          with tags attached.
+          If the delivered product does not match the product description or
+          confirmed order, please raise a request with supporting photographs.
+        </li>
+        <li className="text-secondary font-2">
+          Damage must be reported at the time of delivery or assembly. Damage
+          caused after delivery, including relocation or misuse, is not covered.
         </li>
       </ul>
       <div className="text-btn-uppercase mb_12">Simple Process</div>
       <ul className="list-text type-number">
         <li className="text-secondary font-2">
-          Initiate your return online or contact our customer service team for
-          assistance.
+          Contact Curve &amp; Comfort support with your order number, reason for
+          return, and clear photos or videos of the product and packaging.
         </li>
         <li className="text-secondary font-2">
-          Pack your item securely and include the original packing slip.
+          Our team will review the request and may arrange a technician visit
+          or ask for additional details before approving the return.
         </li>
         <li className="text-secondary font-2">
-          Ship your return back to us using our prepaid shipping label.
+          Keep the original packaging, accessories, manuals, and documents
+          ready. Items must be packed securely for pickup or return shipping.
         </li>
         <li className="text-secondary font-2">
-          Once received, your refund will be processed promptly.
+          Once the returned item is received and inspected, eligible refunds are
+          processed to the original payment method within 7-21 working days, or
+          a replacement may be offered.
         </li>
       </ul>
       <p className="text-secondary font-2">
-        For any questions or concerns regarding returns, don't hesitate to reach
-        out to our dedicated customer service team. Your satisfaction is our
-        priority.
+        Return shipping charges may apply unless the return is due to a damaged,
+        defective, or incorrectly delivered product. Approval of all return and
+        replacement requests remains at the discretion of Curve &amp; Comfort.
       </p>
     </>
   );

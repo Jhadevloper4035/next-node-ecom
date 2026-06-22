@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import LanguageSelect from "../common/LanguageSelect";
 import CurrencySelect from "../common/CurrencySelect";
 import {
@@ -15,12 +16,49 @@ import {
   shopLayout,
   swatchLinks,
 } from "@/data/menu";
-import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
+import ProductSearchSuggestions from "@/components/search/ProductSearchSuggestions";
+import useProductSearch from "@/hooks/useProductSearch";
 
 export default function MobileMenu() {
+  const router = useRouter();
   const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState("");
   const { categories, loading, error } = useSelector((state) => state.category);
+  const {
+    canSearch,
+    hasError: suggestionsError,
+    isLoading: suggestionsLoading,
+    normalizedQuery: trimmedSearchQuery,
+    products: suggestions,
+  } = useProductSearch(searchQuery);
+
+  const closeMobileMenu = () => {
+    const bootstrap = require("bootstrap");
+    const mobileMenu = document.getElementById("mobileMenu");
+    bootstrap.Offcanvas.getInstance(mobileMenu)?.hide();
+  };
+
+  const resetSearch = () => {
+    setSearchQuery("");
+  };
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+
+    const query = trimmedSearchQuery;
+    if (!query) return;
+
+    closeMobileMenu();
+    resetSearch();
+    router.push(`/search-result?q=${encodeURIComponent(query)}`);
+  };
+
+  const handleSuggestionClick = () => {
+    closeMobileMenu();
+    resetSearch();
+  };
+
   return (
     <div className="offcanvas offcanvas-start canvas-mb" id="mobileMenu">
       <span
@@ -31,15 +69,20 @@ export default function MobileMenu() {
       <div className="mb-canvas-content">
         <div className="mb-body">
           <div className="mb-content-top">
-            <form className="form-search" onSubmit={(e) => e.preventDefault()}>
+            <form className="form-search" onSubmit={handleSearch}>
               <fieldset className="text">
                 <input
                   type="text"
                   placeholder="What are you looking for?"
                   className=""
-                  name="text"
+                  name="q"
                   tabIndex={0}
-                  defaultValue=""
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  autoComplete="off"
+                  aria-autocomplete="list"
+                  aria-controls="mobile-search-suggestions"
+                  aria-expanded={canSearch}
                   aria-required="true"
                   required
                 />
@@ -67,6 +110,17 @@ export default function MobileMenu() {
                 </svg>
               </button>
             </form>
+            {canSearch && (
+              <ProductSearchSuggestions
+                id="mobile-search-suggestions"
+                query={trimmedSearchQuery}
+                products={suggestions}
+                isLoading={suggestionsLoading}
+                hasError={suggestionsError}
+                onSelectProduct={handleSuggestionClick}
+                onViewAll={handleSearch}
+              />
+            )}
             <ul className="nav-ul-mb" id="wrapper-menu-navigation">
               <li className="nav-mb-item active">
                 <a

@@ -257,7 +257,7 @@ export default function Details1({ product }) {
                           href="#compare"
                           data-bs-toggle="offcanvas"
                           aria-controls="compare"
-                          onClick={() => addToCompareItem(product.id)}
+                          onClick={() => addToCompareItem(product.id, product)}
                           className="box-icon hover-tooltip compare btn-icon-action"
                         >
                           <span className="icon icon-gitDiff" />
@@ -337,7 +337,7 @@ export default function Details1({ product }) {
                           <i className="icon-timer" />
                         </div>
                         <p className="text-caption-1">
-                          Estimated Delivery:&nbsp;&nbsp;<span>3-6 days</span>
+                          Estimated Delivery:&nbsp;&nbsp;<span>Shown at checkout</span>
                         </p>
                       </div>
                       <div className="tf-product-info-return">
@@ -345,7 +345,7 @@ export default function Details1({ product }) {
                           <i className="icon-arrowClockwise" />
                         </div>
                         <p className="text-caption-1">
-                          Return within <span>45 days</span> of purchase.
+                          Returns subject to <span>inspection and approval</span>.
                         </p>
                       </div>
                     </div>
@@ -356,7 +356,7 @@ export default function Details1({ product }) {
                       </li>
                       <li>
                         <p className="text-caption-1">Vendor:</p>
-                        <p className="text-caption-1 text-1">Modave</p>
+                        <p className="text-caption-1 text-1">Curve &amp; Comfort</p>
                       </li>
                       <li>
                         <p className="text-caption-1">Available:</p>
@@ -454,7 +454,7 @@ export default function Details1({ product }) {
           </div>
         </div>
       </div>
-      <ProductStikyBottom />
+      <ProductStikyBottom product={{ ...product, price: totalPrice }} />
     </section>
   );
 }

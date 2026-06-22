@@ -1,13 +1,22 @@
 /* eslint-disable no-console */
-require("dotenv").config();
-const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
 const Category = require("./src/models/category.model");
 const Product = require("./src/models/product.model");
 
+const defaultEnvFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+const envPath = process.env.SEED_ENV_FILE
+  ? path.resolve(process.cwd(), process.env.SEED_ENV_FILE)
+  : path.resolve(__dirname, "..", defaultEnvFile);
 
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+} else {
+  dotenv.config();
+}
 
 // ---------- helpers ----------
 const uniq = (arr) => [...new Set(arr)];
@@ -36,10 +45,10 @@ function slugify(str) {
 }
 
 async function connectDB() {
-  const uri = "mongodb+srv://jhanavrojlookout:sVvfJfxKxT3gnApO@learning.kudymrn.mongodb.net/?appName=learning"
+  const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error("❌ MONGODB_URI missing in .env");
   await mongoose.connect(uri);
-  console.log("✅ MongoDB connected");
+  console.log(`✅ MongoDB connected: ${mongoose.connection.host}/${mongoose.connection.name}`);
 }
 
 /**

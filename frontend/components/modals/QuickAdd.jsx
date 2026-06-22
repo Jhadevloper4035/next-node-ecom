@@ -1,6 +1,6 @@
 "use client";
 import { useAppState } from "@/context/useAppState";
-import { allProducts } from "@/data/products";
+import { mapProductForCard } from "@/utlis/productMapper";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -21,11 +21,10 @@ export default function QuickAdd() {
     cartProducts,
     updateQuantity,
   } = useAppState();
-  const [item, setItem] = useState(allProducts[0]);
+  const [item, setItem] = useState(null);
   useEffect(() => {
-    const filtered = allProducts.filter((el) => el.id == quickAddItem);
-    if (filtered) {
-      const item = filtered[0];
+    if (quickAddItem && typeof quickAddItem === "object") {
+      const item = mapProductForCard(quickAddItem);
       setItem(item);
 
       const colorTags = item.tags
@@ -44,8 +43,13 @@ export default function QuickAdd() {
       } else {
         setActiveColor("");
       }
+    } else {
+      setItem(null);
     }
   }, [quickAddItem]);
+
+  if (!item) return null;
+
   return (
     <div className="modal fade modal-quick-add" id="quickAdd">
       <div className="modal-dialog modal-dialog-centered">
@@ -63,7 +67,9 @@ export default function QuickAdd() {
                   <Image alt="" src={item.imgSrc} width={600} height={800} />
                 </div>
                 <div className="content">
-                  <Link href={`/product-detail/${item.id}`}>{item.title}</Link>
+                  <Link href={item.slug ? `/product/${item.slug}` : `/product-detail/${item.id}`}>
+                    {item.title}
+                  </Link>
                   <div className="tf-product-info-price">
                     <h5 className="price-on-sale font-2">
                       ₹{item.price?.toFixed(2) || "0.00"}
@@ -147,7 +153,7 @@ export default function QuickAdd() {
                     </a>
                     <a
                       href="#compare"
-                      onClick={() => addToCompareItem(item.id)}
+                      onClick={() => addToCompareItem(item.id, item)}
                       data-bs-toggle="offcanvas"
                       aria-controls="compare"
                       className="box-icon hover-tooltip compare btn-icon-action show-compare"
@@ -161,7 +167,7 @@ export default function QuickAdd() {
                       </span>
                     </a>
                     <a
-                      onClick={() => addToWishlist(item.id)}
+                      onClick={() => addToWishlist(item.id, item)}
                       className="box-icon hover-tooltip text-caption-2 wishlist btn-icon-action"
                     >
                       <span className="icon icon-heart" />

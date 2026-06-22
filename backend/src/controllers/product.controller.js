@@ -1,6 +1,11 @@
 
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
+const {
+  buildSearchFilter,
+  scoreProductSearch,
+} = require("../services/product-search.service");
+const { invalidateNamespaces } = require("../services/cache.service");
 
 /**
  * Helpers
@@ -60,6 +65,7 @@ exports.createProduct = async (req, res, next) => {
     if (payload.optionPricing) payload.optionPricing = sanitizeOptionPricing(payload.optionPricing);
 
     const product = await Product.create(payload);
+    await invalidateNamespaces(["products"]);
 
     res.status(201).json({
       success: true,
@@ -99,6 +105,8 @@ exports.updateProduct = async (req, res, next) => {
     if (!updated) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
+
+    await invalidateNamespaces(["products"]);
 
     res.json({
       success: true,
@@ -145,7 +153,7 @@ exports.getBySlug = async (req, res, next) => {
  *  - category, subcategory (ObjectId)
  *  - minPrice, maxPrice
  *  - inStock, isActive
- *  - q (title search)
+ *  - q (product, category, tag, and option search)
  *  - sort (newest, price_asc, price_desc, rating)
  */
 exports.listProducts = async (req, res, next) => {
@@ -184,19 +192,50 @@ exports.listProducts = async (req, res, next) => {
 
 
     if (q) {
-      filter.$or = [
-        { title: { $regex: q, $options: "i" } },
-        { description: { $regex: q, $options: "i" } },
-      ];
+      const searchFilter = await buildSearchFilter(q);
+      if (searchFilter) {
+        Object.assign(filter, searchFilter);
+      }
     }
 
     const skip = (Number(page) - 1) * Number(limit);
+    const numericLimit = Number(limit);
+
+    if (q) {
+      const matchingItems = await Product.find(filter)
+        .sort(buildSort(sort))
+        .limit(300)
+        .populate("category", "_id name slug")
+        .populate("subcategories", "_id name slug");
+
+      const rankedItems = matchingItems
+        .map((product) => ({
+          product,
+          score: scoreProductSearch(product, q),
+        }))
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return new Date(b.product.createdAt) - new Date(a.product.createdAt);
+        })
+        .map(({ product }) => product);
+
+      return res.json({
+        success: true,
+        meta: {
+          page: Number(page),
+          limit: numericLimit,
+          total: rankedItems.length,
+          totalPages: Math.ceil(rankedItems.length / numericLimit),
+        },
+        data: rankedItems.slice(skip, skip + numericLimit),
+      });
+    }
 
     const [items, total] = await Promise.all([
       Product.find(filter)
         .sort(buildSort(sort))
         .skip(skip)
-        .limit(Number(limit))
+        .limit(numericLimit)
         .populate("category", "_id name slug")
         .populate("subcategories", "_id name slug"),
       Product.countDocuments(filter),
@@ -238,12 +277,13 @@ exports.getByCategorySlug = async (req, res, next) => {
     };
 
     const skip = (Number(page) - 1) * Number(limit);
+    const numericLimit = Number(limit);
 
     const [items, total] = await Promise.all([
       Product.find(filter)
         .sort(buildSort(sort))
         .skip(skip)
-        .limit(Number(limit))
+        .limit(numericLimit)
         .populate("category", "name slug")
         .populate("subcategories", "name slug"),
       Product.countDocuments(filter),
@@ -254,9 +294,9 @@ exports.getByCategorySlug = async (req, res, next) => {
       meta: {
         category: { _id: category._id, slug: category.slug, name: category.name },
         page: Number(page),
-        limit: Number(limit),
+        limit: numericLimit,
         total,
-        totalPages: Math.ceil(total / Number(limit)),
+        totalPages: Math.ceil(total / numericLimit),
       },
       data: items,
     });
@@ -335,6 +375,7 @@ exports.softDeleteProduct = async (req, res, next) => {
     }
 
     await product.softDelete();
+    await invalidateNamespaces(["products"]);
 
     res.json({ success: true, message: "Product deleted (soft)" });
   } catch (err) {

@@ -3,13 +3,17 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAppState } from "@/context/useAppState";
-import { allProducts } from "@/data/products";
+import { mapProductForCard } from "@/utlis/productMapper";
 export default function Compare() {
   const { removeFromCompareItem, compareItem, setCompareItem } =
     useAppState();
   const [items, setItems] = useState([]);
   useEffect(() => {
-    setItems([...allProducts.filter((elm) => compareItem.includes(elm.id))]);
+    setItems(
+      compareItem
+        .filter((item) => typeof item === "object" && item !== null)
+        .map(mapProductForCard)
+    );
   }, [compareItem]);
 
   return (
@@ -93,7 +97,7 @@ export default function Compare() {
                             onClick={() => removeFromCompareItem(elm.id)}
                           />
                           <Link
-                            href={`/product-detail/${elm.id}`}
+                            href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
                             className="image"
                           >
                             <Image
@@ -108,7 +112,7 @@ export default function Compare() {
                             <div className="text-title">
                               <Link
                                 className="link text-line-clamp-2"
-                                href={`/product-detail/${elm.id}`}
+                                href={elm.slug ? `/product/${elm.slug}` : `/product-detail/${elm.id}`}
                               >
                                 {elm.title}
                               </Link>

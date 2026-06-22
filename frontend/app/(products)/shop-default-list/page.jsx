@@ -7,12 +7,15 @@ import React from "react";
 
 export default async function ShopDefaultListPage({ searchParams }) {
   const resolvedSearchParams = await searchParams;
-  const category = resolvedSearchParams?.category;
+  const category = resolvedSearchParams?.category || "products";
   
   // Get the background image based on the category
   const backgroundImage = getCategoryImage(category);
   // Capitalize the first letter for display
-  const categoryDisplayTitle = category.charAt(0).toUpperCase() + category.slice(1);
+  const categoryDisplayTitle =
+    category === "products"
+      ? "Products"
+      : category.charAt(0).toUpperCase() + category.slice(1);
 
   return (
     <>

@@ -1,17 +1,20 @@
 SHELL := /bin/bash
-COMPOSE := docker-compose
+COMPOSE ?= docker compose
+PROD_COMPOSE := $(COMPOSE) -f docker-compose.prod.yml --env-file .env.production
 
-.PHONY: help env-dev env-prod dev-up dev-down dev-logs dev-rebuild prod-up prod-down prod-logs prod-rebuild clean ps backend-sh frontend-sh
+.PHONY: help env-dev env-prod dev-up dev-down dev-logs dev-rebuild dev-seed prod-pull prod-up prod-down prod-logs prod-rebuild clean ps backend-sh frontend-sh
 
 help:
 	@echo "Targets:"
 	@echo "  env-dev        Create .env.development + frontend/.env.development from examples (won't overwrite)."
-	@echo "  env-prod       Create .env.production + frontend/.env.production from examples (won't overwrite)."
+	@echo "  env-prod       Create .env.production from its example (won't overwrite)."
 	@echo "  dev-up         Start development stack (build if needed)."
 	@echo "  dev-down       Stop development stack."
 	@echo "  dev-logs       Tail dev logs."
 	@echo "  dev-rebuild    Rebuild and restart dev."
-	@echo "  prod-up        Start production stack (build if needed)."
+	@echo "  dev-seed       Seed the running development database."
+	@echo "  prod-pull      Pull production images configured in the environment."
+	@echo "  prod-up        Start the production image stack."
 	@echo "  prod-down      Stop production stack."
 	@echo "  prod-logs      Tail prod logs."
 	@echo "  prod-rebuild   Rebuild and restart prod."
@@ -27,7 +30,6 @@ env-dev:
 
 env-prod:
 	@test -f .env.production || cp .env.production.example .env.production
-	@test -f frontend/.env.production || cp frontend/.env.production.example frontend/.env.production
 	@echo "✅ Prod env ready."
 
 dev-up: 
@@ -43,18 +45,24 @@ dev-rebuild: env-dev
 	$(COMPOSE) down
 	$(COMPOSE) up -d --build
 
+dev-seed:
+	$(COMPOSE) exec -T backend node seedDB.js
+
+prod-pull: env-prod
+	$(PROD_COMPOSE) pull
+
 prod-up: env-prod
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+	$(PROD_COMPOSE) up -d --remove-orphans --wait
 
 prod-down:
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml down
+	$(PROD_COMPOSE) down
 
 prod-logs:
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml logs -f --tail=200
+	$(PROD_COMPOSE) logs -f --tail=200
 
 prod-rebuild: env-prod
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml down
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+	$(PROD_COMPOSE) pull
+	$(PROD_COMPOSE) up -d --remove-orphans --wait
 
 ps:
 	$(COMPOSE) ps

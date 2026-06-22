@@ -7,10 +7,10 @@ import GridView from "./GridView";
 import { useEffect, useReducer, useRef, useState } from "react";
 import FilterModal from "./FilterModal";
 import { initialState, reducer } from "@/reducer/filterReducer";
-import { productMain } from "@/data/products";
 import FilterMeta from "./FilterMeta";
 
 import { getAllProducts } from "@/services/product/product.service";
+import { mapProductsForCards } from "@/utlis/productMapper";
 
 export default function Products1({ parentClass = "flat-spacing" }) {
   const [activeLayout, setActiveLayout] = useState(4);
@@ -40,19 +40,7 @@ export default function Products1({ parentClass = "flat-spacing" }) {
     const fetchProds = async () => {
       try {
         const response = await getAllProducts({ page: 1, limit: 100 });
-        const mapped = (response.data || []).map((p) => ({
-          ...p,
-          id: p._id,
-          title: p.title || "Product", // Use p.title as defined in backend model
-          price: p.basePrice,
-          imgSrc: p.images?.[0] ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].url) : "/images/placeholder.jpg",
-          imgHover: p.images?.[1] ? (typeof p.images[1] === 'string' ? p.images[1] : p.images[1].url) : (p.images?.[0] ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].url) : "/images/placeholder.jpg"),
-          filterColor: p.colors || [],
-          filterSizes: p.sizes || [],
-          filterBrands: p.brand ? [p.brand] : [],
-          inStock: p.stock > 0,
-        }));
-        setApiProducts(mapped);
+        setApiProducts(mapProductsForCards(response.data || []));
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {

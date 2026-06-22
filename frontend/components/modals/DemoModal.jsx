@@ -2,8 +2,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { demoItems } from "@/data/menu";
 import { usePathname } from "next/navigation";
+import { demoItems } from "@/data/menu";
 export default function DemoModal() {
   const pathname = usePathname();
   return (

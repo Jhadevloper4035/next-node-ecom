@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import ProductCard1 from "../productCards/ProductCard1";
 import Pagination from "../common/Pagination";
 import Link from "next/link";
-import { allProducts } from "@/data/products";
 
 export default function Wishlist() {
   const { removeFromWishlist, wishList } = useAppState();

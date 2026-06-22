@@ -1,9 +1,11 @@
 const slugify = require("slugify");
 const Category = require("../models/category.model");
 const { sendSuccess, sendError, isDuplicateErr } = require("../helper/request");
+const { invalidateNamespaces } = require("../services/cache.service");
 
 
 const makeSlug = (name) => slugify(name, { lower: true, strict: true, trim: true });
+const invalidateCatalogCache = () => invalidateNamespaces(["categories", "products"]);
 
 // ---------- CATEGORY ----------
 
@@ -30,6 +32,8 @@ exports.createCategory = async (req, res) => {
       parent: parent && parent !== "null" && parent !== "" ? parent : null,
       ...rest,
     });
+
+    await invalidateCatalogCache();
 
     return sendSuccess(
       res,
@@ -69,6 +73,8 @@ exports.updateCategory = async (req, res) => {
     );
 
     if (!doc) return sendError(res, "Category not found", 404);
+
+    await invalidateCatalogCache();
 
     return sendSuccess(res, doc, "Category updated successfully");
   } catch (error) {
@@ -150,6 +156,7 @@ exports.deleteCategory = async (req, res) => {
     doc.isActive = false;
 
     await doc.save();
+    await invalidateCatalogCache();
     return sendSuccess(res, doc, "Category deleted successfully");
   } catch (error) {
     return sendError(res, error.message, 400);
@@ -166,6 +173,7 @@ exports.restoreCategory = async (req, res) => {
     doc.isActive = true;
 
     await doc.save();
+    await invalidateCatalogCache();
     return sendSuccess(res, doc, "Category restored successfully");
   } catch (error) {
     return sendError(res, error.message, 400);
@@ -225,6 +233,8 @@ exports.bulkUpdateCategories = async (req, res) => {
       { $set: updateData }
     );
 
+    await invalidateCatalogCache();
+
     return sendSuccess(res, result, `${result.modifiedCount} categories updated`);
   } catch (error) {
     return sendError(res, error.message, 400);
@@ -239,6 +249,8 @@ exports.bulkDeleteCategories = async (req, res) => {
       { _id: { $in: ids }, isDeleted: false },
       { $set: { isDeleted: true, deletedAt: new Date(), isActive: false } }
     );
+
+    await invalidateCatalogCache();
 
     return sendSuccess(res, result, `${result.modifiedCount} categories deleted`);
   } catch (error) {
@@ -270,7 +282,7 @@ exports.createSubcategory = async (req, res) => {
       ...rest,
     });
 
-
+    await invalidateCatalogCache();
 
     return sendSuccess(res, doc, "Subcategory created successfully", 201);
   } catch (error) {
@@ -324,6 +336,7 @@ exports.moveSubcategory = async (req, res) => {
 
     sub.parent = newParentId;
     await sub.save();
+    await invalidateCatalogCache();
 
     return sendSuccess(res, sub, "Subcategory moved successfully");
   } catch (error) {
@@ -344,9 +357,9 @@ exports.reorderSubcategories = async (req, res) => {
     }));
 
     const result = await Category.bulkWrite(ops);
+    await invalidateCatalogCache();
     return sendSuccess(res, result, "Subcategories reordered successfully");
   } catch (error) {
     return sendError(res, error.message, 400);
   }
 };
-

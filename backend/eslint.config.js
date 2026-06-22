@@ -14,6 +14,9 @@ module.exports = [
         require: "readonly",
         exports: "readonly",
         console: "readonly",
+        Buffer: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
       },
     },
     rules: {

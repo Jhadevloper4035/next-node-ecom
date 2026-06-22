@@ -1,11 +1,11 @@
 import api from "../../api/api.config";
 
-export const getAllProducts = async (params = {}) => {
+export const getAllProducts = async (params = {}, options = {}) => {
     try {
-        const { page = 1, limit = 10, sort = 'newest' } = params;
         const response = await api.get(`/v1/product/`, {
-            params: { page, limit, sort },
+            params: { page: 1, limit: 10, sort: "newest", ...params },
             skipAuth: true,
+            ...options,
         });
         return response.data;
     } catch (error) {

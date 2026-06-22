@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import ProductCard1 from "../productCards/ProductCard1";
 import { getProductsByCategory, getProductsByCategoryAndSubcategory } from "@/services/product/product.service";
+import { mapProductsForCards } from "@/utlis/productMapper";
 
 export default function RelatedProducts({ currentProductId, categorySlug, subcategorySlug }) {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -16,34 +17,28 @@ export default function RelatedProducts({ currentProductId, categorySlug, subcat
       if (!categorySlug) return;
       setLoading(true);
       try {
-        let response;
+        let rawProducts = [];
         if (categorySlug && subcategorySlug) {
-          response = await getProductsByCategoryAndSubcategory(
+          const response = await getProductsByCategoryAndSubcategory(
             categorySlug,
             subcategorySlug,
             { limit: 10 }
           );
-        } else if (categorySlug) {
-          response = await getProductsByCategory(categorySlug, { limit: 10 });
+          rawProducts = response?.data || [];
         }
 
-        if (response && response.data) {
-          const rawProducts = Array.isArray(response.data) ? response.data : (response.data.data || []);
-          
-          // Exclude current product and map to what ProductCard1 expects
-          const filtered = rawProducts
-            .filter((p) => String(p._id || p.id) !== String(currentProductId))
-            .map((p) => ({
-              ...p,
-              id: p._id || p.id,
-              price: p.basePrice || p.price,
-              imgSrc: p.images?.[0] || "/images/placeholder.jpg",
-              imgHover: p.images?.[1] || p.images?.[0] || "/images/placeholder.jpg",
-            }));
-          setRelatedProducts(filtered);
+        if (rawProducts.length <= 1 && categorySlug) {
+          const response = await getProductsByCategory(categorySlug, { limit: 10 });
+          rawProducts = response?.data || [];
         }
+
+        const filtered = mapProductsForCards(rawProducts).filter(
+          (p) => String(p.id) !== String(currentProductId)
+        );
+        setRelatedProducts(filtered);
       } catch (error) {
         console.error("Failed to fetch related products:", error);
+        setRelatedProducts([]);
       } finally {
         setLoading(false);
       }

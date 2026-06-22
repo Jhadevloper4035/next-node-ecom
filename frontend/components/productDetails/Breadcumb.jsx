@@ -1,10 +1,8 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { allProducts } from "@/data/products";
-import { usePathname } from "next/navigation";
+
 export default function Breadcumb({ product }) {
-  const pathname = usePathname();
   return (
     <div className="tf-breadcrumb">
       <div className="container">

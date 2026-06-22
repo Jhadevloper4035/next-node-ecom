@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ProductCard1 from "../productCards/ProductCard1";
 import { Pagination } from "swiper/modules";
+import { loadRecentlyViewedProducts } from "@/utlis/productMapper";
 
-export default function RecentProducts() {
+export default function RecentProducts({ currentProductId }) {
   const [recentProducts, setRecentProducts] = useState([]);
 
   useEffect(() => {
     const loadRecent = () => {
-      const stored = JSON.parse(
-        localStorage.getItem("recentlyVisitedProducts") || "[]"
+      const stored = loadRecentlyViewedProducts().filter(
+        (product) => String(product.id) !== String(currentProductId)
       );
       setRecentProducts(stored);
     };
@@ -28,7 +29,7 @@ export default function RecentProducts() {
       window.removeEventListener("recentlyVisitedUpdated", loadRecent);
       window.removeEventListener("storage", handleStorage);
     };
-  }, []);
+  }, [currentProductId]);
 
   if (recentProducts.length === 0) return null;
 
@@ -36,7 +37,7 @@ export default function RecentProducts() {
     <section className="flat-spacing pt-0">
       <div className="container">
         <div className="heading-section text-center wow fadeInUp">
-          <h4 className="heading">You may also like</h4>
+          <h4 className="heading">Recently Viewed Products</h4>
         </div>
         <Swiper
           className="swiper tf-sw-latest"

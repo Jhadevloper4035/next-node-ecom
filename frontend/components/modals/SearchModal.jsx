@@ -1,22 +1,86 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { productMain } from "@/data/products";
 import ProductCard1 from "../productCards/ProductCard1";
+import { getAllProducts } from "@/services/product/product.service";
+import { loadRecentlyViewedProducts, mapProductsForCards } from "@/utlis/productMapper";
+
 export default function SearchModal() {
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [loadedItems, setLoadedItems] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(8);
+  const [recentProducts, setRecentProducts] = useState([]);
 
-  const [loadedItems, setLoadedItems] = useState(productMain.slice(0, 8));
+  useEffect(() => {
+    const loadRecent = () => setRecentProducts(loadRecentlyViewedProducts());
+
+    loadRecent();
+    window.addEventListener("recentlyVisitedUpdated", loadRecent);
+    window.addEventListener("storage", loadRecent);
+
+    return () => {
+      window.removeEventListener("recentlyVisitedUpdated", loadRecent);
+      window.removeEventListener("storage", loadRecent);
+    };
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await getAllProducts(
+          {
+            page: 1,
+            limit: 24,
+            ...(query.trim() ? { q: query.trim() } : {}),
+          },
+          { silent: true, signal: controller.signal },
+        );
+        setLoadedItems(mapProductsForCards(response?.data || []));
+        setVisibleCount(8);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error("Failed to search products:", error);
+          setLoadedItems([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+
+    const timeout = setTimeout(fetchProducts, query.trim() ? 250 : 0);
+
+    return () => {
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [query]);
+
+  const displayItems = query.trim()
+    ? loadedItems.slice(0, visibleCount)
+    : recentProducts.slice(0, visibleCount);
+  const totalItems = query.trim() ? loadedItems.length : recentProducts.length;
+
   const handleLoad = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoadedItems((pre) => [
-        ...pre,
-        ...productMain.slice(pre.length, pre.length + 4),
-      ]);
-      setLoading(false);
-    }, 1000);
+    setVisibleCount((count) => count + 4);
   };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const nextQuery = query.trim();
+    if (!nextQuery) return;
+
+    const modalElement = document.getElementById("search");
+    const modal = window.bootstrap?.Modal?.getInstance(modalElement);
+    modal?.hide();
+
+    window.location.href = `/search-result?q=${encodeURIComponent(nextQuery)}`;
+  };
+
   return (
     <div className="modal fade modal-search" id="search">
       <div className="modal-dialog modal-dialog-centered">
@@ -28,17 +92,17 @@ export default function SearchModal() {
               data-bs-dismiss="modal"
             />
           </div>
-          <form className="form-search" onSubmit={(e) => e.preventDefault()}>
+          <form className="form-search" onSubmit={handleSubmit}>
             <fieldset className="text">
               <input
                 type="text"
-                placeholder="Searching..."
+                placeholder="Search products..."
                 className=""
                 name="text"
                 tabIndex={0}
-                defaultValue=""
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
                 aria-required="true"
-                required
               />
             </fieldset>
             <button className="" type="submit">
@@ -67,7 +131,7 @@ export default function SearchModal() {
               </svg>
             </button>
           </form>
-          <div>
+          {/* <div>
             <h5 className="mb_16">Feature keywords Today</h5>
             <ul className="list-tags">
               <li>
@@ -91,18 +155,34 @@ export default function SearchModal() {
                 </a>
               </li>
             </ul>
-          </div>
-          {/* <div>
-            <h6 className="mb_16">Recently viewed products</h6>
+          </div> */}
+          <div>
+            <h6 className="mb_16">
+              {query.trim() ? "Search Results" : "Recently viewed products"}
+            </h6>
+            {loading && query.trim() && (
+              <div
+                className="d-flex justify-content-center align-items-center py-3"
+                role="status"
+                aria-label="Searching products"
+              >
+                <div className="tf-loading loading" />
+              </div>
+            )}
             <div className="tf-grid-layout tf-col-2 lg-col-3 xl-col-4">
-              {loadedItems.map((product, i) => (
+              {displayItems.map((product, i) => (
                 <ProductCard1 product={product} key={i} />
               ))}
+              {!loading && displayItems.length === 0 && (
+                <div className="text-secondary-2">
+                  {query.trim() ? "No products found." : "No recently viewed products yet."}
+                </div>
+              )}
             </div>
-          </div> */}
+          </div>
           {/* Load Item */}
 
-          {productMain.length == loadedItems.length ? (
+          {visibleCount >= totalItems ? (
             ""
           ) : (
             <div

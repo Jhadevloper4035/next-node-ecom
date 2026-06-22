@@ -1,9 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { allProducts } from "@/data/products";
 
 const initialState = {
-  quickViewItem: allProducts[0] || null,
-  quickAddItem: 1,
+  quickViewItem: null,
+  quickAddItem: null,
   loadingCount: 0,
   isInitialLoading: true,
 };
@@ -38,4 +37,3 @@ const uiSlice = createSlice({
 export const { setQuickViewItem, setQuickAddItem, setIsLoading, setInitialLoading, resetLoading } = uiSlice.actions;
 export const selectIsLoading = (state) => state.ui.loadingCount > 0;
 export default uiSlice.reducer;
-

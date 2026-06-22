@@ -1,25 +1,29 @@
 "use client";
-import { useSelector, useDispatch } from "react-redux";
-import { addProduct, updateQuantity } from "@/redux/cartSlice";
-import { products41 } from "@/data/products";
 import Image from "next/image";
 import React, { useState } from "react";
 import QuantitySelect from "./QuantitySelect";
-import SizeSelect2 from "./SideSelect2";
+import { useAppState } from "@/context/useAppState";
 
-export default function ProductStikyBottom() {
-  const dispatch = useDispatch();
-  const cartProducts = useSelector((state) => state.cart.cartProducts);
+export default function ProductStikyBottom({ product }) {
   const [quantity, setQuantity] = useState(1); // Initial quantity is 1
+  const {
+    addProductToCart,
+    isAddedToCartProducts,
+    cartProducts,
+    updateQuantity,
+  } = useAppState();
 
-  const isAddedToCartProducts = (id) =>
-    cartProducts.some((elm) => elm.id === id);
+  if (!product) return null;
+
+  const cartItem = cartProducts.find((elm) => elm.id == product.id);
+  const activeQuantity = cartItem?.quantity || quantity;
+  const price = Number(product.price || product.basePrice || 0);
 
   return (
     <div className="tf-sticky-btn-atc">
       <div className="container">
         <div className="row">
-          {/* <div className="col-12">
+          <div className="col-12">
             <form
               className="form-sticky-atc"
               onSubmit={(e) => e.preventDefault()}
@@ -28,39 +32,33 @@ export default function ProductStikyBottom() {
                 <div className="image">
                   <Image
                     className="lazyload"
-                    alt=""
-                    src={products41[2].imgSrc}
+                    alt={product.title || "Product"}
+                    src={product.imgSrc || "/images/placeholder.jpg"}
                     width={600}
                     height={800}
                   />
                 </div>
                 <div className="content">
-                  <div className="text-title">{products41[2].title}</div>
+                  <div className="text-title">{product.title}</div>
                   <div className="text-caption-1 text-secondary-2">
-                    Green, XS, Cotton
+                    {product.category?.name || "Product"}
                   </div>
                   <div className="text-title">
-                    ${products41[2].price.toFixed(2)}
+                    ₹{price.toLocaleString()}
                   </div>
                 </div>
               </div>
               <div className="tf-sticky-atc-infos">
-                <SizeSelect2 />
                 <div className="tf-sticky-atc-quantity d-flex gap-12 align-items-center">
                   <div className="tf-sticky-atc-infos-title text-title">
                     Quantity:
                   </div>
                   <QuantitySelect
                     styleClass="style-1"
-                    quantity={
-                      isAddedToCartProducts(products41[2].id)
-                        ? cartProducts.find((elm) => elm.id == products41[2].id)
-                            .quantity
-                        : quantity
-                    }
+                    quantity={activeQuantity}
                     setQuantity={(qty) => {
-                      if (isAddedToCartProducts(products41[2].id)) {
-                        dispatch(updateQuantity({ id: products41[2].id, qty }));
+                      if (isAddedToCartProducts(product.id)) {
+                        updateQuantity(product.id, qty);
                       } else {
                         setQuantity(qty);
                       }
@@ -70,34 +68,24 @@ export default function ProductStikyBottom() {
                 <div className="tf-sticky-atc-btns">
                   <a
                     onClick={() =>
-                      dispatch(
-                        addProduct({ id: products41[2].id, qty: quantity }),
-                      )
+                      addProductToCart(product.id, quantity, true, product)
                     }
                     className="tf-btn w-100 btn-reset radius-4 btn-add-to-cart"
                   >
                     <span className="text text-btn-uppercase">
                       {" "}
-                      {isAddedToCartProducts(products41[2].id)
+                      {isAddedToCartProducts(product.id)
                         ? "Already Added"
                         : "Add to cart -"}
                     </span>
                     <span className="tf-qty-price total-price">
-                      $
-                      {isAddedToCartProducts(products41[2].id)
-                        ? (
-                            products41[2].price *
-                            cartProducts.find(
-                              (elm) => elm.id == products41[2].id,
-                            ).quantity
-                          ).toFixed(2)
-                        : (products41[2].price * quantity).toFixed(2)}
+                      ₹{(price * activeQuantity).toLocaleString()}
                     </span>
                   </a>
                 </div>
               </div>
             </form>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

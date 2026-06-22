@@ -11,6 +11,8 @@ import Details1 from "@/components/productDetails/details/Details1";
 import Breadcumb from "@/components/productDetails/Breadcumb";
 import Descriptions1 from "@/components/productDetails/descriptions/Descriptions1";
 import RelatedProducts from "@/components/productDetails/RelatedProducts";
+import RecentProducts from "@/components/otherPages/RecentProducts";
+import { mapProductForCard, saveRecentlyViewedProduct } from "@/utlis/productMapper";
 
 export default function ProductDetailsBySlug({ slug }) {
   const dispatch = useDispatch();
@@ -45,20 +47,12 @@ export default function ProductDetailsBySlug({ slug }) {
 
   const mappedProduct = selectedProduct
     ? {
-        ...selectedProduct,
-        id: selectedProduct._id,
-        price: selectedProduct.basePrice,
-        imgSrc: selectedProduct.images?.[0] || "/images/placeholder.jpg",
-        imgHover:
-          selectedProduct.images?.[1] ||
-          selectedProduct.images?.[0] ||
-          "/images/placeholder.jpg",
-        title: selectedProduct.title,
+        ...mapProductForCard(selectedProduct),
         color: getColorsFromTags(selectedProduct.tags),
         slideItems:
           selectedProduct.images?.map((img, index) => ({
             id: index + 1,
-            src: img,
+            src: typeof img === "string" ? img : img.url,
             alt: selectedProduct.title,
             width: 600,
             height: 800,
@@ -69,14 +63,7 @@ export default function ProductDetailsBySlug({ slug }) {
 
   useEffect(() => {
     if (selectedProduct && mappedProduct) {
-      const recentlyVisited = JSON.parse(
-        localStorage.getItem("recentlyVisitedProducts") || "[]",
-      );
-      const filtered = recentlyVisited.filter((p) => p.id !== mappedProduct.id);
-      const updated = [mappedProduct, ...filtered].slice(0, 10);
-      localStorage.setItem("recentlyVisitedProducts", JSON.stringify(updated));
-      // Dispatch custom event to notify other components
-      window.dispatchEvent(new Event("recentlyVisitedUpdated"));
+      saveRecentlyViewedProduct(mappedProduct);
     }
   }, [selectedProduct, mappedProduct?.id]);
 
@@ -96,6 +83,7 @@ export default function ProductDetailsBySlug({ slug }) {
         categorySlug={selectedProduct?.category?.slug}
         subcategorySlug={selectedProduct?.subcategories?.[0]?.slug}
       />
+      <RecentProducts currentProductId={selectedProduct?._id} />
     </>
   );
 }

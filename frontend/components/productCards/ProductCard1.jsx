@@ -192,7 +192,7 @@ export default function ProductCard1({
             href="#compare"
             data-bs-toggle="offcanvas"
             aria-controls="compare"
-            onClick={() => addToCompareItem(product.id)}
+            onClick={() => addToCompareItem(product.id, product)}
             className="box-icon compare btn-icon-action"
           >
             <span className="icon icon-gitDiff" />

@@ -15,6 +15,13 @@ const env = {
 
   mongoUri: need("MONGODB_URI"),
   redisUrl: process.env.REDIS_URL || null,
+  cacheEnabled: process.env.CACHE_ENABLED !== "false" && Boolean(process.env.REDIS_URL),
+  cachePrefix: process.env.CACHE_PREFIX || "curve-comfort:v1",
+  cacheDefaultTtlSeconds: Number(process.env.CACHE_DEFAULT_TTL_SECONDS || 300),
+  cacheProductListTtlSeconds: Number(process.env.CACHE_PRODUCT_LIST_TTL_SECONDS || 60),
+  cacheProductTtlSeconds: Number(process.env.CACHE_PRODUCT_TTL_SECONDS || 300),
+  cacheCategoryTtlSeconds: Number(process.env.CACHE_CATEGORY_TTL_SECONDS || 600),
+  cacheOperationTimeoutMs: Number(process.env.CACHE_OPERATION_TIMEOUT_MS || 100),
 
   corsOrigin:      (process.env.CORS_ORIGIN || "").split(",").map(s => s.trim()).filter(Boolean),
   corsCredentials: process.env.CORS_CREDENTIALS !== "false",

@@ -3,66 +3,47 @@ import React from "react";
 export default function Shipping() {
   return (
     <>
-      {" "}
       <div className="w-100">
-        <div className="text-btn-uppercase mb_12">We've got your back</div>
-        <p className="mb_12">
-          One delivery fee to most locations (check our Orders &amp; Delivery
-          page)
-        </p>
-        <p className="">
-          Free returns within 14 days (excludes final sale and made-to-order
-          items, face masks and certain products containing hazardous or
-          flammable materials, such as fragrances and aerosols)
+        <div className="text-btn-uppercase mb_12">Order Processing</div>
+        <p className="mb_12 text-secondary font-2">
+          Once your Curve &amp; Comfort order is confirmed, we begin processing
+          it within 24-48 hours. Expected delivery is within 3 to 7 days, and
+          you will receive order details and tracking updates when they are
+          available.
         </p>
       </div>
       <div className="w-100">
-        <div className="text-btn-uppercase mb_12">
-          Import duties information
-        </div>
-        <p>
-          Let us handle the legwork. Delivery duties are included in the item
-          price when shipping to all EU countries (excluding the Canary
-          Islands), plus The United Kingdom, USA, Canada, China Mainland,
-          Australia, New Zealand, Puerto Rico, Switzerland, Singapore, Republic
-          Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan
-          Region, Thailand, U.A.E., Japan, Brazil, Isle of Man, San Marino,
-          Colombia, Chile, Argentina, Egypt, Lebanon, Hong Kong SAR, Bahrain and
-          Turkey. All import duties are included in your order – the price you
-          see is the price you pay.
+        <div className="text-btn-uppercase mb_12">Delivery Area &amp; Charges</div>
+        <p className="mb_12 text-secondary font-2">
+          We deliver to serviceable locations across India. Delivery charges,
+          if applicable, are calculated based on your location, product size,
+          and order weight, and are shown during checkout.
         </p>
       </div>
       <div className="w-100">
-        <div className="text-btn-uppercase mb_12">Estimated delivery</div>
-        <p className="mb_6 font-2">Express: May 10 - May 17</p>
-        <p className="font-2">Sending from USA</p>
+        <div className="text-btn-uppercase mb_12">Estimated Delivery</div>
+        <p className="mb_12 text-secondary font-2">
+          Estimated delivery timelines are shown on the product page or at
+          checkout. Timelines may vary because of weather, traffic, operational
+          delays, or remote delivery locations.
+        </p>
       </div>
       <div className="w-100">
-        <div className="text-btn-uppercase mb_12">Need more information?</div>
-        <div>
-          <a
-            href="#"
-            className="link text-secondary text-decoration-underline mb_6 font-2"
-          >
-            Orders &amp; delivery
-          </a>
-        </div>
-        <div>
-          <a
-            href="#"
-            className="link text-secondary text-decoration-underline mb_6 font-2"
-          >
-            Returns &amp; refunds
-          </a>
-        </div>
-        <div>
-          <a
-            href="#"
-            className="link text-secondary text-decoration-underline font-2"
-          >
-            Duties &amp; taxes
-          </a>
-        </div>
+        <div className="text-btn-uppercase mb_12">Delivery Appointment</div>
+        <p className="mb_12 text-secondary font-2">
+          Large furniture items may require a scheduled delivery appointment.
+          Please make sure someone is available at the delivery address to
+          receive and inspect the product.
+        </p>
+      </div>
+      <div className="w-100">
+        <div className="text-btn-uppercase mb_12">Delivery Acceptance</div>
+        <p className="text-secondary font-2">
+          Please inspect the packaging and product at delivery. If the package
+          is damaged or tampered with, note it with the delivery partner, take
+          clear photographs, and contact Curve &amp; Comfort support as soon as
+          possible.
+        </p>
       </div>
     </>
   );

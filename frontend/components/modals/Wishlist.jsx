@@ -35,7 +35,7 @@ export default function Wishlist() {
                             <Image
                               className="lazyload"
                               alt=""
-                              src={elm.imgSrc || "/images/products/placeholder.jpg"}
+                              src={elm.imgSrc || "/images/placeholder.svg"}
                               width={600}
                               height={800}
                             />
@@ -73,7 +73,7 @@ export default function Wishlist() {
                     <div className="p-4">
                       Your wishlist is empty. Start adding your favorite
                       products to save them for later!{" "}
-                      <Link className="btn-line" href="/shop-default-grid">
+                      <Link className="btn-line" href="/all-products">
                         Explore Products
                       </Link>
                     </div>
@@ -88,7 +88,7 @@ export default function Wishlist() {
                   <span className="text-btn-uppercase">View All Wish List</span>
                 </Link>
                 <Link
-                  href={`/shop-default-grid`}
+                  href={`/all-products`}
                   className="text-btn-uppercase"
                 >
                   Or continue shopping
@@ -101,4 +101,3 @@ export default function Wishlist() {
     </div>
   );
 }
-

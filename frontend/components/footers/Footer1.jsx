@@ -319,54 +319,13 @@ export default function Footer1({
                     <div className="tf-payment">
                       <p className="text-caption-1">Payment:</p>
                       <ul>
-                        <li>
-                          <Image
-                            alt=""
-                            src="/images/payment/img-1.png"
-                            width={100}
-                            height={64}
-                          />
-                        </li>
-                        <li>
-                          <Image
-                            alt=""
-                            src="/images/payment/img-2.png"
-                            width={100}
-                            height={64}
-                          />
-                        </li>
-                        <li>
-                          <Image
-                            alt=""
-                            src="/images/payment/img-3.png"
-                            width={100}
-                            height={64}
-                          />
-                        </li>
-                        <li>
-                          <Image
-                            alt=""
-                            src="/images/payment/img-4.png"
-                            width={98}
-                            height={64}
-                          />
-                        </li>
-                        <li>
-                          <Image
-                            alt=""
-                            src="/images/payment/img-5.png"
-                            width={102}
-                            height={64}
-                          />
-                        </li>
-                        <li>
-                          <Image
-                            alt=""
-                            src="/images/payment/img-6.png"
-                            width={98}
-                            height={64}
-                          />
-                        </li>
+                        {["UPI", "Visa", "Mastercard", "NetBanking", "Wallets", "COD"].map(
+                          (label) => (
+                            <li key={label}>
+                              <span className="text-caption-1 fw-6">{label}</span>
+                            </li>
+                          ),
+                        )}
                       </ul>
                     </div>
                   </div>

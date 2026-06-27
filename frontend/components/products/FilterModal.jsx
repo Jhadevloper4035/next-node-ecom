@@ -1,16 +1,59 @@
 "use client";
 
-import {
-  availabilityOptions,
-  brands,
-  categories,
-  colors,
-  sizes,
-} from "@/data/productFilterOptions";
-import { productMain } from "@/data/products";
-
+import Link from "next/link";
 import RangeSlider from "react-range-slider-input";
+
+const slugify = (value = "") =>
+  String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const unique = (values) =>
+  [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))];
+
 export default function FilterModal({ allProps }) {
+  const products = allProps.products || [];
+  const prices = products.map((product) => product.price).filter(Number.isFinite);
+  const minPrice = prices.length ? Math.min(...prices) : 0;
+  const maxPrice = prices.length ? Math.max(...prices) : 100000;
+  const sliderMax = minPrice === maxPrice ? maxPrice + 1 : maxPrice;
+
+  const categories = unique(
+    products.map((product) => product.category?.name || product.category?.slug),
+  ).map((name) => ({
+    name,
+    slug: slugify(name),
+    count: products.filter(
+      (product) =>
+        (product.category?.name || product.category?.slug || "") === name,
+    ).length,
+  }));
+
+  const sizes = unique(products.flatMap((product) => product.filterSizes || []));
+  const colors = unique(products.flatMap((product) => product.filterColor || [])).map((name) => ({
+    name,
+    className: "",
+  }));
+  const brands = unique(products.flatMap((product) => product.filterBrands || [])).map((label) => ({
+    label,
+    count: products.filter((product) => product.filterBrands?.includes(label)).length,
+  }));
+  const availabilityOptions = [
+    {
+      label: "In stock",
+      value: true,
+      count: products.filter((product) => product.inStock).length,
+    },
+    {
+      label: "Made to order",
+      value: false,
+      count: products.filter((product) => !product.inStock).length,
+    },
+  ];
+
   return (
     <div className="offcanvas offcanvas-start canvas-filter" id="filterShop">
       <div className="canvas-wrapper">
@@ -28,10 +71,10 @@ export default function FilterModal({ allProps }) {
             <ul className="facet-content">
               {categories.map((category, index) => (
                 <li key={index}>
-                  <a href="#" className={`categories-item`}>
+                  <Link href={`/shop-collection/${category.slug}`} className={`categories-item`}>
                     {category.name}{" "}
                     <span className="count-cate">({category.count})</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -40,8 +83,8 @@ export default function FilterModal({ allProps }) {
             <h6 className="facet-title">Price</h6>
 
             <RangeSlider
-              min={10}
-              max={450}
+              min={minPrice}
+              max={sliderMax}
               value={allProps.price}
               onInput={(value) => allProps.setPrice(value)}
             />
@@ -129,10 +172,7 @@ export default function FilterModal({ allProps }) {
                     {option.label}{" "}
                     <span className="count-stock">
                       (
-                      {
-                        productMain.filter((el) => el.inStock == option.value)
-                          .length
-                      }
+                      {option.count}
                       )
                     </span>
                   </label>
@@ -160,11 +200,7 @@ export default function FilterModal({ allProps }) {
                     {brand.label}{" "}
                     <span className="count-brand">
                       (
-                      {
-                        productMain.filter((el) =>
-                          el.filterBrands.includes(brand.label)
-                        ).length
-                      }
+                      {brand.count}
                       )
                     </span>
                   </label>

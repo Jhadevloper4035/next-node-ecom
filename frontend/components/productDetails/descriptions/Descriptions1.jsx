@@ -9,7 +9,7 @@ import ReturnPolicies from "./ReturnPolicies";
 export default function Descriptions1({ product }) {
   const [activeTab, setActiveTab] = useState(1);
   return (
-    <section className="">
+    <section className="product-detail-tabs">
       <div className="container">
         <div className="row">
           <div className="col-12">
@@ -21,12 +21,12 @@ export default function Descriptions1({ product }) {
                 >
                   <span className="inner">Description</span>
                 </li>
-                {/* <li
+                <li
                   className={`item-title ${activeTab == 2 ? "active" : ""} `}
                   onClick={() => setActiveTab(2)}
                 >
                   <span className="inner">Customer Reviews</span>
-                </li> */}
+                </li>
                 <li
                   className={`item-title ${activeTab == 3 ? "active" : ""} `}
                   onClick={() => setActiveTab(3)}

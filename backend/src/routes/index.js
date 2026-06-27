@@ -11,12 +11,14 @@ const addressRoutes = require("./address.route")
 const userRoutes = require("./user.route");
 const adminRoutes = require("./admin.route");
 const contactRoutes = require("./contact.route");
+const reviewRoutes = require("./review.route");
 
 
 router.use("/categories", categoryRoutes);
 router.use("/product", productRoutes);
 router.use("/address", addressRoutes);
 router.use("/contact", contactRoutes);
+router.use("/reviews", reviewRoutes);
 
 
 router.use("/auth", authRoutes);

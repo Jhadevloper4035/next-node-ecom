@@ -1,10 +1,25 @@
 import React, { useState } from "react";
 
-export default function ReviewSorting() {
-  const [selectedOption, setSelectedOption] = useState("Most Recent");
+const defaultOptions = [
+  { label: "Most Recent", value: "newest" },
+  { label: "Highest Rated", value: "highest" },
+  { label: "Lowest Rated", value: "lowest" },
+];
 
-  const handleSelect = (value) => {
-    setSelectedOption(value);
+export default function ReviewSorting({
+  options = defaultOptions,
+  value,
+  onChange,
+}) {
+  const firstOption = options[0] || defaultOptions[0];
+  const selected = options.find((option) => option.value === value);
+  const [selectedOption, setSelectedOption] = useState(
+    selected?.label || firstOption.label,
+  );
+
+  const handleSelect = (option) => {
+    setSelectedOption(option.label);
+    onChange?.(option.value);
   };
 
   return (
@@ -14,15 +29,15 @@ export default function ReviewSorting() {
         <span className="icon icon-arrow-down" />
       </div>
       <div className="dropdown-menu">
-        {["Most Recent", "Oldest", "Most Popular"].map((option) => (
+        {options.map((option) => (
           <div
-            key={option}
+            key={option.value}
             className={`select-item ${
-              selectedOption === option ? "active" : ""
+              selectedOption === option.label ? "active" : ""
             }`}
             onClick={() => handleSelect(option)}
           >
-            <span className="text-value-item">{option}</span>
+            <span className="text-value-item">{option.label}</span>
           </div>
         ))}
       </div>

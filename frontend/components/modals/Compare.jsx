@@ -103,7 +103,7 @@ export default function Compare() {
                             <Image
                               className="lazyload"
                               alt=""
-                              src={elm.imgSrc || "/images/products/placeholder.jpg"}
+                              src={elm.imgSrc || "/images/placeholder.svg"}
                               width={600}
                               height={800}
                             />

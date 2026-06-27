@@ -76,6 +76,10 @@ const searchableProductFields = (regex) => [
   { "optionPricing.foams.label": regex },
   { "optionPricing.materials.value": regex },
   { "optionPricing.materials.label": regex },
+  { "customizationGroups.key": regex },
+  { "customizationGroups.label": regex },
+  { "customizationGroups.options.value": regex },
+  { "customizationGroups.options.label": regex },
 ];
 
 const normalizeSearchText = (value = "") =>
@@ -85,6 +89,16 @@ const optionPricingText = (optionPricing = {}) =>
   ["sizes", "fabrics", "foams", "materials"]
     .flatMap((key) => optionPricing?.[key] || [])
     .flatMap((option) => [option?.value, option?.label])
+    .filter(Boolean)
+    .join(" ");
+
+const customizationText = (groups = []) =>
+  groups
+    .flatMap((group) => [
+      group?.key,
+      group?.label,
+      ...(group?.options || []).flatMap((option) => [option?.value, option?.label]),
+    ])
     .filter(Boolean)
     .join(" ");
 
@@ -129,6 +143,7 @@ const scoreProductSearch = (product, query) => {
   score += scoreText(product.careInstructions?.join(" "), phrase, terms, 25, 3);
   score += scoreText(product.warranty, phrase, terms, 20, 2);
   score += scoreText(optionPricingText(product.optionPricing), phrase, terms, 16, 1);
+  score += scoreText(customizationText(product.customizationGroups), phrase, terms, 16, 1);
 
   if (phrase && normalizeSearchText(product.title).startsWith(phrase)) {
     score += 80;

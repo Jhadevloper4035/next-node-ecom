@@ -40,7 +40,15 @@ export default function Products1({ parentClass = "flat-spacing" }) {
     const fetchProds = async () => {
       try {
         const response = await getAllProducts({ page: 1, limit: 100 });
-        setApiProducts(mapProductsForCards(response.data || []));
+        const mapped = mapProductsForCards(response.data || []);
+        setApiProducts(mapped);
+        const prices = mapped.map((product) => product.price).filter(Number.isFinite);
+        if (prices.length) {
+          dispatch({
+            type: "SET_PRICE",
+            payload: [Math.min(...prices), Math.max(...prices)],
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -92,7 +100,15 @@ export default function Products1({ parentClass = "flat-spacing" }) {
     },
     clearFilter: () => {
       dispatch({ type: "CLEAR_FILTER" });
+      const prices = apiProducts.map((product) => product.price).filter(Number.isFinite);
+      if (prices.length) {
+        dispatch({
+          type: "SET_PRICE",
+          payload: [Math.min(...prices), Math.max(...prices)],
+        });
+      }
     },
+    products: apiProducts,
   };
 
   useEffect(() => {

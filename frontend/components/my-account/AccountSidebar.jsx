@@ -31,7 +31,7 @@ export default function AccountSidebar() {
           <div className="image">
             <Image
               alt=""
-              src="/images/avatar/user-account.jpg"
+              src="/images/placeholder.svg"
               width={281}
               height={280}
             />

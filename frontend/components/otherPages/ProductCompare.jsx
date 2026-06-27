@@ -27,7 +27,7 @@ export default function ProductCompare() {
           <div>
             No items to compare yet. Add products to your comparison list and
             decide smarter!{" "}
-            <Link className="btn-line" href="/shop-default-grid">
+            <Link className="btn-line" href="/all-products">
               Explore Products
             </Link>
           </div>
@@ -48,7 +48,7 @@ export default function ProductCompare() {
                       <Image
                         className="lazyload"
                         alt="img-compare"
-                        src={elm.imgSrc || "/images/placeholder.jpg"}
+                        src={elm.imgSrc || "/images/placeholder.svg"}
                         width={600}
                         height={800}
                       />

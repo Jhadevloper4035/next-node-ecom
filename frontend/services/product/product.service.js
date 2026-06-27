@@ -15,9 +15,8 @@ export const getAllProducts = async (params = {}, options = {}) => {
 
 export const getProductsByCategory = async (categorySlug, params = {}, options = {}) => {
     try {
-        const { page = 1, limit = 10 } = params;
         const response = await api.get(`/v1/product/category/${categorySlug}`, {
-            params: { page, limit },
+            params: { page: 1, limit: 10, sort: "newest", ...params },
             skipAuth: true,
             ...options,
         });
@@ -40,9 +39,8 @@ export const getProductBySlug = async (slug) => {
 
 export const getProductsByCategoryAndSubcategory = async (categorySlug, subcategorySlug, params = {}, options = {}) => {
     try {
-        const { page = 1, limit = 10 } = params;
         const response = await api.get(`/v1/product/category/${categorySlug}/subcategory/${subcategorySlug}`, {
-            params: { page, limit },
+            params: { page: 1, limit: 10, sort: "newest", ...params },
             skipAuth: true,
             ...options,
         });

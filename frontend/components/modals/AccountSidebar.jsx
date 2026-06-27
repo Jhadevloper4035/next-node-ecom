@@ -16,7 +16,7 @@ export default function AccountSidebar() {
           <div className="sidebar-account">
             <div className="account-avatar">
               <div className="image">
-                <img src="/images/avatar/user-account.jpg" alt="" />
+                <img src="/images/placeholder.svg" alt="" />
               </div>
               <h6 className="mb_4">Tony Nguyen</h6>
               <div className="body-text-1">themesflat@gmail.com</div>

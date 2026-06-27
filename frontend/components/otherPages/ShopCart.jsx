@@ -40,6 +40,23 @@ const shippingOptions = [
   },
 ];
 
+const formatCartOptions = (product = {}) => {
+  if (Array.isArray(product.selectedOptions) && product.selectedOptions.length) {
+    return product.selectedOptions
+      .map((option) => `${option.label}: ${option.value}`)
+      .join(" / ");
+  }
+
+  const legacyOptions = [
+    product.selectedColor,
+    product.selectedFabric,
+    product.selectedMaterial,
+    product.selectedFoam,
+  ].filter(Boolean);
+
+  return legacyOptions.length ? legacyOptions.join(" / ") : "Standard";
+};
+
 export default function ShopCart() {
   const [activeDiscountIndex, setActiveDiscountIndex] = useState(1);
   const [selectedOption, setSelectedOption] = useState(shippingOptions[0]);
@@ -150,7 +167,7 @@ export default function ShopCart() {
                                 alt="product"
                                 src={
                                   elm.imgSrc ||
-                                  "/images/products/placeholder.jpg"
+                                  "/images/placeholder.svg"
                                 }
                                 width={600}
                                 height={800}
@@ -169,19 +186,7 @@ export default function ShopCart() {
                               </Link>
                               <div className="variant-box">
                                 <div className="text-secondary-2">
-                                  {elm.selectedColor ||
-                                  elm.selectedFabric ||
-                                  elm.selectedMaterial ||
-                                  elm.selectedFoam
-                                    ? [
-                                        elm.selectedColor,
-                                        elm.selectedFabric,
-                                        elm.selectedMaterial,
-                                        elm.selectedFoam,
-                                      ]
-                                        .filter(Boolean)
-                                        .join("/")
-                                    : "Standard"}
+                                  {formatCartOptions(elm)}
                                 </div>
                               </div>
                             </div>
@@ -288,7 +293,7 @@ export default function ShopCart() {
                 <div>
                   Your wishlist is empty. Start adding your favorite products to
                   save them for later!{" "}
-                  <Link className="btn-line" href="/shop-default-grid">
+                  <Link className="btn-line" href="/all-products">
                     Explore Products
                   </Link>
                 </div>

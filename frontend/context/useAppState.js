@@ -42,13 +42,8 @@ export const useAppState = () => {
 
     if (pObj) {
       // Ensure the object has the fields expected by the UI and Cart
-      pObj = {
-        ...pObj,
-        id: pObj.id || pObj._id,
-        price: pObj.price !== undefined ? pObj.price : (pObj.basePrice || 0),
-        imgSrc: pObj.imgSrc || (pObj.images && pObj.images.length > 0 ? (typeof pObj.images[0] === 'string' ? pObj.images[0] : pObj.images[0].url) : "/images/placeholder.jpg"),
-        title: pObj.title || pObj.name || "Product"
-      };
+      pObj = mapProductForCard(pObj);
+      pObj.id = id || pObj.id;
     }
 
     dispatch(addProduct({ id, qty, product: pObj }));
@@ -70,13 +65,7 @@ export const useAppState = () => {
 
     if (pObj) {
       // Ensure the object has the fields expected by the UI
-      pObj = {
-        ...pObj,
-        id: pObj.id || pObj._id,
-        price: pObj.price !== undefined ? pObj.price : (pObj.basePrice || 0),
-        imgSrc: pObj.imgSrc || (pObj.images && pObj.images.length > 0 ? (typeof pObj.images[0] === 'string' ? pObj.images[0] : pObj.images[0].url) : "/images/placeholder.jpg"),
-        title: pObj.title || pObj.name || "Product"
-      };
+      pObj = mapProductForCard(pObj);
       dispatch(addToWishlist(pObj));
     } else {
       dispatch(addToWishlist({ id }));

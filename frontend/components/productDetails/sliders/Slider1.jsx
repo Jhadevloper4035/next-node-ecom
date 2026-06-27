@@ -22,20 +22,38 @@ export default function Slider1({
   useEffect(() => {
     const isMobile = window.innerWidth <= 768;
 
-    if (isMobile) return; // ✅ disable zoom on mobile
+    if (isMobile) return; // Disable zoom on mobile.
 
     const driftAll = document.querySelectorAll(".tf-image-zoom");
     const pane = document.querySelector(".tf-zoom-main");
+    const driftInstances = [];
+
+    if (!pane || !driftAll.length) return;
 
     driftAll.forEach((el) => {
-      new Drift(el, {
-        zoomFactor: 2,
-        paneContainer: pane,
-        inlinePane: false,
-        handleTouch: false,
-        hoverBoundingBox: true,
-        containInline: true,
-      });
+      try {
+        const drift = new Drift(el, {
+          zoomFactor: 2,
+          paneContainer: pane,
+          inlinePane: false,
+          handleTouch: false,
+          hoverBoundingBox: true,
+          containInline: true,
+        });
+
+        const zoomPane = drift.zoomPane;
+        const completeHide = zoomPane?._completeHide?.bind(zoomPane);
+        if (zoomPane && completeHide) {
+          zoomPane._completeHide = () => {
+            if (!zoomPane.el?.parentElement) return;
+            completeHide();
+          };
+        }
+
+        driftInstances.push(drift);
+      } catch (error) {
+        console.warn("Product zoom disabled:", error);
+      }
     });
 
     const zoomElements = document.querySelectorAll(".tf-image-zoom");
@@ -59,6 +77,14 @@ export default function Slider1({
       zoomElements.forEach((element) => {
         element.removeEventListener("mouseover", handleMouseOver);
         element.removeEventListener("mouseleave", handleMouseLeave);
+      });
+      driftInstances.forEach((drift) => {
+        try {
+          drift.disable?.();
+          drift.destroy?.();
+        } catch (error) {
+          console.warn("Product zoom cleanup skipped:", error);
+        }
       });
     };
   }, []); // Empty dependency array to run only once on mount

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsStart, fetchProductsSuccess, fetchProductsFailure } from "@/redux/productSlice";
 import { getAllProducts } from "@/services/product/product.service";
+import { mapProductsForCards } from "@/utlis/productMapper";
 
 const tabItems = ["New Arrivals", "Best Seller", "Top Trending"];
 
@@ -49,14 +50,7 @@ export default function Products3({ parentClass = "flat-spacing-3" }) {
         filtered = products.filter((p) => p.tags?.includes("best-seller"));
       }
 
-      const mapped = filtered.map((p) => ({
-        ...p,
-        id: p._id,
-        price: p.basePrice,
-        imgSrc: p.images?.[0] || "/images/placeholder.jpg",
-        imgHover: p.images?.[1] || p.images?.[0] || "/images/placeholder.jpg",
-        // isOnSale: p.tags?.includes("on-sale"),
-      }));
+      const mapped = mapProductsForCards(filtered);
 
       setSelectedItems(mapped);
       if (container) container.classList.add("filtered");

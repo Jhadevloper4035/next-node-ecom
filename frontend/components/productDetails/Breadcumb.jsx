@@ -28,12 +28,6 @@ export default function Breadcumb({ product }) {
             <span className="text text-caption-1">{product?.title}</span>
           </div>
           <div className="tf-breadcrumb-prev-next">
-            <button
-              onClick={() => window.history.back()}
-              className="tf-breadcrumb-back btn-reset"
-            >
-              <i className="icon icon-squares-four" />
-            </button>
           </div>
         </div>
       </div>

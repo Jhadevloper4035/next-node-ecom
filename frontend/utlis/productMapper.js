@@ -12,12 +12,12 @@ const optionValues = (options = []) =>
 const colorsFromTags = (tags = []) =>
   tags
     .filter((tag) => typeof tag === "string" && tag.startsWith("color:"))
-    .map((tag) => tag.split(":")[1])
+    .map((tag) => tag.split(":").slice(1).join(":").trim())
     .filter(Boolean);
 
 export const mapProductForCard = (product = {}) => {
   const id = product.id || product._id;
-  const imgSrc = product.imgSrc || firstImage(product, 0) || "/images/placeholder.jpg";
+  const imgSrc = product.imgSrc || firstImage(product, 0) || "/images/placeholder.svg";
   const imgHover = product.imgHover || firstImage(product, 1) || imgSrc;
   const price = Number(product.price ?? product.basePrice ?? 0);
   const sizeOptions = product.optionPricing?.sizes || product.sizes || [];

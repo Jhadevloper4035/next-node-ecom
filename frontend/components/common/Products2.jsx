@@ -11,6 +11,7 @@ import {
   fetchProductsFailure,
 } from "@/redux/productSlice";
 import { getAllProducts } from "@/services/product/product.service";
+import { mapProductsForCards } from "@/utlis/productMapper";
 
 export default function Products2({
   title = "Best Selling",
@@ -39,13 +40,7 @@ export default function Products2({
     return products.filter((p) => p.tags?.includes(filter));
   })();
 
-  const mappedProducts = filteredProducts.map((p) => ({
-    ...p,
-    id: p._id,
-    price: p.basePrice,
-    imgSrc: p.images?.[0] || "/images/placeholder.jpg",
-    imgHover: p.images?.[1] || p.images?.[0] || "/images/placeholder.jpg",
-  }));
+  const mappedProducts = mapProductsForCards(filteredProducts);
 
   return (
     <section className={parentClass}>

@@ -24,6 +24,16 @@ const buildSort = (sort) => {
   }
 };
 
+const hasQueryValue = (value) => value !== undefined && value !== null && value !== "";
+
+const parseBooleanQuery = (value) => {
+  if (typeof value === "boolean") return value;
+  if (typeof value !== "string") return undefined;
+  if (value.toLowerCase() === "true") return true;
+  if (value.toLowerCase() === "false") return false;
+  return undefined;
+};
+
 const normalizeImagesArray = (images) => {
   // ✅ strict checks instead of == null
   if (images === null || images === undefined) return undefined;
@@ -51,6 +61,16 @@ const sanitizeOptionPricing = (optionPricing) => {
   return out;
 };
 
+const sanitizeCustomizationGroups = (customizationGroups) => {
+  if (!Array.isArray(customizationGroups)) return undefined;
+
+  return customizationGroups.map((group) => ({
+    ...group,
+    key: typeof group?.key === "string" ? group.key.trim().toLowerCase() : group?.key,
+    options: Array.isArray(group?.options) ? group.options : [],
+  }));
+};
+
 /**
  * CREATE
  */
@@ -63,6 +83,9 @@ exports.createProduct = async (req, res, next) => {
 
     // optional: normalize optionPricing
     if (payload.optionPricing) payload.optionPricing = sanitizeOptionPricing(payload.optionPricing);
+    if (payload.customizationGroups !== undefined) {
+      payload.customizationGroups = sanitizeCustomizationGroups(payload.customizationGroups);
+    }
 
     const product = await Product.create(payload);
     await invalidateNamespaces(["products"]);
@@ -95,6 +118,9 @@ exports.updateProduct = async (req, res, next) => {
     if (normalizedImages) payload.images = normalizedImages;
 
     if (payload.optionPricing) payload.optionPricing = sanitizeOptionPricing(payload.optionPricing);
+    if (payload.customizationGroups !== undefined) {
+      payload.customizationGroups = sanitizeCustomizationGroups(payload.customizationGroups);
+    }
 
     const updated = await Product.findOneAndUpdate(
       { _id: id, isDeleted: false },
@@ -156,6 +182,7 @@ exports.getBySlug = async (req, res, next) => {
  *  - q (product, category, tag, and option search)
  *  - sort (newest, price_asc, price_desc, rating)
  */
+
 exports.listProducts = async (req, res, next) => {
   try {
     const {
@@ -175,18 +202,21 @@ exports.listProducts = async (req, res, next) => {
       isDeleted: false,
     };
 
-    if (typeof isActive === "boolean") filter.isActive = isActive;
+    const activeFilter = parseBooleanQuery(isActive);
+    const stockFilter = parseBooleanQuery(inStock);
+
+    if (activeFilter !== undefined) filter.isActive = activeFilter;
     else filter.isActive = true; // default only active
 
     if (category) filter.category = category;
     if (subcategory) filter.subcategories = subcategory;
 
-    if (typeof inStock === "boolean") filter.inStock = inStock;
+    if (stockFilter !== undefined) filter.inStock = stockFilter;
 
-    if (minPrice !== undefined || maxPrice !== undefined) {
+    if (hasQueryValue(minPrice) || hasQueryValue(maxPrice)) {
       filter.basePrice = {};
-      if (minPrice !== null) filter.basePrice.$gte = Number(minPrice);
-      if (maxPrice !== null) filter.basePrice.$lte = Number(maxPrice);
+      if (hasQueryValue(minPrice)) filter.basePrice.$gte = Number(minPrice);
+      if (hasQueryValue(maxPrice)) filter.basePrice.$lte = Number(maxPrice);
     }
 
 

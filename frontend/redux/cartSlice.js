@@ -4,6 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const calculateTotal = (cartProducts) =>
   cartProducts.reduce((acc, p) => acc + (p.quantity || 0) * (p.price || 0), 0);
 
+const sameCartId = (a, b) => String(a) === String(b);
+
 // try to load from localStorage (client only)
 const loadCartFromStorage = () => {
   if (typeof window !== "undefined") {
@@ -28,7 +30,7 @@ const cartSlice = createSlice({
   reducers: {
     addProduct(state, action) {
       const { id, qty = 1, product = null } = action.payload;
-      const exists = state.cartProducts.find((p) => p.id === id);
+      const exists = state.cartProducts.find((p) => sameCartId(p.id, id));
       if (!exists) {
         if (product) {
           const item = {
@@ -54,7 +56,7 @@ const cartSlice = createSlice({
     },
     updateQuantity(state, action) {
       const { id, qty } = action.payload;
-      const item = state.cartProducts.find((p) => p.id === id);
+      const item = state.cartProducts.find((p) => sameCartId(p.id, id));
       if (item) {
         item.quantity = qty;
         state.totalPrice = calculateTotal(state.cartProducts);
@@ -65,7 +67,7 @@ const cartSlice = createSlice({
     },
     removeProduct(state, action) {
       state.cartProducts = state.cartProducts.filter(
-        (p) => p.id !== action.payload.id
+        (p) => !sameCartId(p.id, action.payload.id)
       );
       state.totalPrice = calculateTotal(state.cartProducts);
       if (typeof window !== "undefined") {

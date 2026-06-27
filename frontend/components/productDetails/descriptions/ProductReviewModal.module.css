@@ -1,0 +1,153 @@
+.reviewModal :global(.modal-dialog) {
+  max-width: 560px;
+  width: calc(100% - 24px);
+}
+
+.reviewModal :global(.modal-content) {
+  background: var(--white);
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.reviewModalHeader {
+  align-items: center;
+  border-bottom: 1px solid #ececec;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+}
+
+.reviewModalEyebrow {
+  color: var(--secondary);
+  font-size: 13px;
+  line-height: 18px;
+  margin: 0 0 2px;
+}
+
+.reviewModalTitle {
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.reviewModalClose {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--main);
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  min-width: 36px;
+  padding: 0;
+}
+
+.reviewModalClose:hover {
+  border-color: var(--main);
+}
+
+.reviewModalBody {
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+  padding: 22px;
+}
+
+.reviewModalForm :global(.form-write-review .heading) {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.reviewModalForm :global(.form-write-review .heading h4) {
+  display: none;
+}
+
+.reviewModalForm :global(.list-rating-check) {
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.reviewModalForm :global(.list-rating-check:not(:checked) > label) {
+  font-size: 30px;
+  line-height: 1;
+  width: 30px;
+}
+
+.reviewModalForm :global(.cols) {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reviewModalForm :global(.button-submit button) {
+  background: var(--main);
+  border-radius: 6px;
+  color: var(--white);
+  min-width: 160px;
+  padding: 12px 24px;
+}
+
+.reviewModalForm :global(input),
+.reviewModalForm :global(textarea) {
+  background: var(--white);
+  border-color: #dedede;
+  border-width: 1px;
+  min-height: 48px;
+}
+
+.reviewModalForm :global(textarea) {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.reviewModalForm :global(input:focus),
+.reviewModalForm :global(textarea:focus) {
+  border-color: var(--main);
+  box-shadow: 0 0 0 3px rgba(20, 20, 20, 0.08);
+}
+
+.reviewModalForm :global(input:disabled) {
+  background: #f7f7f7;
+  color: var(--secondary);
+  opacity: 1;
+}
+
+.reviewModalForm :global(fieldset) {
+  margin: 0;
+}
+
+.reviewModalForm :global(.mb_20) {
+  margin-bottom: 14px;
+}
+
+.reviewModalForm :global(.mb_32) {
+  margin-bottom: 18px;
+}
+
+@media (max-width: 575px) {
+  .reviewModalHeader {
+    padding: 16px;
+  }
+
+  .reviewModalTitle {
+    font-size: 19px;
+  }
+
+  .reviewModalBody {
+    max-height: calc(100dvh - 96px);
+    padding: 16px;
+  }
+
+  .reviewModalForm :global(.cols) {
+    grid-template-columns: 1fr;
+  }
+
+  .reviewModalForm :global(.button-submit button) {
+    width: 100%;
+  }
+}

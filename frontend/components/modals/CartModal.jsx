@@ -7,6 +7,24 @@ import { addProduct } from "@/redux/cartSlice";
 import { removeProduct } from "@/redux/cartSlice";
 import { getAllProducts } from "@/services/product/product.service";
 import { loadRecentlyViewedProducts, mapProductsForCards } from "@/utlis/productMapper";
+
+const formatCartOptions = (product = {}) => {
+  if (Array.isArray(product.selectedOptions) && product.selectedOptions.length) {
+    return product.selectedOptions
+      .map((option) => `${option.label}: ${option.value}`)
+      .join(" / ");
+  }
+
+  const legacyOptions = [
+    product.selectedColor,
+    product.selectedFabric,
+    product.selectedMaterial,
+    product.selectedFoam,
+  ].filter(Boolean);
+
+  return legacyOptions.length ? legacyOptions.join(" / ") : "Standard";
+};
+
 export default function CartModal() {
   const dispatch = useDispatch();
   const cartProducts = useSelector((state) => state.cart.cartProducts);
@@ -82,7 +100,7 @@ export default function CartModal() {
                       <Image
                         className="lazyload"
                         alt={product.title || "product"}
-                        src={product.imgSrc || "/images/placeholder.jpg"}
+                        src={product.imgSrc || "/images/placeholder.svg"}
                         width={600}
                         height={800}
                       />
@@ -109,9 +127,9 @@ export default function CartModal() {
                           onClick={() =>
                             dispatch(
                               addProduct({
-                                ...product,
                                 id: product.id,
                                 qty: 1,
+                                product,
                               })
                             )
                           }
@@ -164,7 +182,7 @@ export default function CartModal() {
               <Image
                 className="lazyload"
                 alt=""
-                src={product.imgSrc || "/images/placeholder.jpg"}
+                src={product.imgSrc || "/images/placeholder.svg"}
                 width={600}
                 height={800}
               />
@@ -188,11 +206,7 @@ export default function CartModal() {
                               </div>
                               <div className="d-flex align-items-center justify-content-between flex-wrap gap-12">
                                 <div className="text-secondary-2">
-                                  {product.selectedColor || product.selectedFabric || product.selectedMaterial || product.selectedFoam ? (
-                                    [product.selectedColor, product.selectedFabric, product.selectedMaterial, product.selectedFoam].filter(Boolean).join("/")
-                                  ) : (
-                                    "Standard"
-                                  )}
+                                  {formatCartOptions(product)}
                                 </div>
                                 <div className="text-button">
                                   {product.quantity} X ₹
@@ -207,7 +221,7 @@ export default function CartModal() {
                       <div className="p-4">
                         Your Cart is empty. Start adding favorite products to
                         cart!{" "}
-                        <Link className="btn-line" href="/shop-default-grid">
+                        <Link className="btn-line" href="/all-products">
                           Explore Products
                         </Link>
                       </div>
@@ -370,7 +384,7 @@ export default function CartModal() {
                     <div className="text-center">
                       <Link
                         className="link text-btn-uppercase"
-                        href={`/shop-default-grid`}
+                        href={`/all-products`}
                       >
                         Or continue shopping
                       </Link>

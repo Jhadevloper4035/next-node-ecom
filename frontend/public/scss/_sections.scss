@@ -276,12 +276,17 @@ ul.list-text {
   }
 }
 
+.tf-breadcrumb{
+  background-color: antiquewhite;
+}
+
 .tf-breadcrumb-wrap {
-  padding: 21px 0 0;
+  padding: 15px  0px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  background-color: antiquewhite;
   gap: 15px;
   .tf-breadcrumb-list {
     display: flex;

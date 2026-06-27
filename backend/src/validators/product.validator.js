@@ -55,6 +55,50 @@ const optionItemRules = (path) => [
     .isBoolean(),
 ];
 
+const customizationGroupRules = () => [
+  body("customizationGroups")
+    .optional()
+    .isArray()
+    .withMessage("customizationGroups must be an array"),
+
+  body("customizationGroups.*.key")
+    .exists()
+    .withMessage("customization group key is required")
+    .bail()
+    .isString()
+    .trim()
+    .toLowerCase()
+    .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    .withMessage("customization group key must be URL friendly"),
+
+  body("customizationGroups.*.label")
+    .exists()
+    .withMessage("customization group label is required")
+    .bail()
+    .isString()
+    .trim()
+    .notEmpty(),
+
+  body("customizationGroups.*.description").optional().isString().trim(),
+  body("customizationGroups.*.inputType")
+    .optional()
+    .isIn(["buttons", "select", "swatches", "images"]),
+  body("customizationGroups.*.isRequired").optional().isBoolean(),
+  body("customizationGroups.*.displayOrder").optional().isInt({ min: 0 }),
+  body("customizationGroups.*.isActive").optional().isBoolean(),
+
+  body("customizationGroups.*.options")
+    .isArray({ min: 1 })
+    .withMessage("each customization group must contain at least one option"),
+  ...optionItemRules("customizationGroups.*.options"),
+
+  body("customizationGroups.*.options.*.description").optional().isString().trim(),
+  body("customizationGroups.*.options.*.isDefault").optional().isBoolean(),
+  body("customizationGroups.*.options.*.swatch").optional().isObject(),
+  body("customizationGroups.*.options.*.swatch.color").optional().isString().trim(),
+  body("customizationGroups.*.options.*.swatch.image").optional().isString().trim(),
+];
+
 // ================= CREATE =================
 
 exports.createProductValidator = [
@@ -97,6 +141,7 @@ exports.createProductValidator = [
   ...optionItemRules("optionPricing.fabrics"),
   ...optionItemRules("optionPricing.foams"),
   ...optionItemRules("optionPricing.materials"),
+  ...customizationGroupRules(),
 
   body("dimensions").optional().isObject(),
   body("dimensions.length").optional().isFloat({ min: 0 }),
@@ -160,6 +205,7 @@ exports.updateProductValidator = [
   ...optionItemRules("optionPricing.fabrics"),
   ...optionItemRules("optionPricing.foams"),
   ...optionItemRules("optionPricing.materials"),
+  ...customizationGroupRules(),
 
   body("dimensions").optional().isObject(),
   body("dimensions.length").optional().isFloat({ min: 0 }),

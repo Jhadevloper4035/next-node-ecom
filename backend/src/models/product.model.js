@@ -5,11 +5,72 @@ const optionItemSchema = new mongoose.Schema(
         value: { type: String, required: true, trim: true },
         label: { type: String, required: true, trim: true },
 
-        priceDelta: { type: Number, default: 0 },
-        priceOverride: { type: Number, default: null },
+        description: { type: String, default: "", trim: true },
+
+        priceDelta: { type: Number, default: 0, min: 0 },
+        priceOverride: { type: Number, default: null, min: 0 },
 
         images: [{ type: String }],
+        swatch: {
+            color: { type: String, default: "", trim: true },
+            image: { type: String, default: "", trim: true },
+        },
+        isDefault: { type: Boolean, default: false },
         isActive: { type: Boolean, default: true },
+    },
+    { _id: true }
+);
+
+/**
+ * A product can expose any number of category-specific customization groups.
+ * Examples: size, foam-density, foam-quality, fabric-type, colour or finish.
+ */
+const customizationGroupSchema = new mongoose.Schema(
+    {
+        key: {
+            type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
+            match: [/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Customization key must be URL friendly"],
+        },
+        label: { type: String, required: true, trim: true },
+        description: { type: String, default: "", trim: true },
+        inputType: {
+            type: String,
+            enum: ["buttons", "select", "swatches", "images"],
+            default: "buttons",
+        },
+        isRequired: { type: Boolean, default: true },
+        displayOrder: { type: Number, default: 0, min: 0 },
+        isActive: { type: Boolean, default: true },
+        options: {
+            type: [optionItemSchema],
+            default: [],
+            validate: [
+                {
+                    validator(options) {
+                        return options.length > 0;
+                    },
+                    message: "A customization group must contain at least one option",
+                },
+                {
+                    validator(options) {
+                        const values = options.map((option) =>
+                            String(option.value || "").trim().toLowerCase()
+                        );
+                        return new Set(values).size === values.length;
+                    },
+                    message: "Option values must be unique within a customization group",
+                },
+                {
+                    validator(options) {
+                        return options.filter((option) => option.isDefault).length <= 1;
+                    },
+                    message: "A customization group can have only one default option",
+                },
+            ],
+        },
     },
     { _id: true }
 );
@@ -80,6 +141,22 @@ const productSchema = new mongoose.Schema(
             fabrics: { type: [optionItemSchema], default: [] },
             foams: { type: [optionItemSchema], default: [] },
             materials: { type: [optionItemSchema], default: [] },
+        },
+
+        // Dynamic option groups vary by product/category. optionPricing above is
+        // retained so existing products and clients remain backward compatible.
+        customizationGroups: {
+            type: [customizationGroupSchema],
+            default: [],
+            validate: {
+                validator(groups) {
+                    const keys = groups.map((group) =>
+                        String(group.key || "").trim().toLowerCase()
+                    );
+                    return new Set(keys).size === keys.length;
+                },
+                message: "Customization group keys must be unique",
+            },
         },
 
         // ===== DIMENSIONS / WEIGHT =====

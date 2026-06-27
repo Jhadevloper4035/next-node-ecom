@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchProductStart,
@@ -7,8 +7,8 @@ import {
   fetchProductFailure,
 } from "@/redux/productSlice";
 import { getProductBySlug } from "@/services/product/product.service";
-import Details1 from "@/components/productDetails/details/Details1";
 import Breadcumb from "@/components/productDetails/Breadcumb";
+import Details1 from "@/components/productDetails/details/Details1";
 import Descriptions1 from "@/components/productDetails/descriptions/Descriptions1";
 import RelatedProducts from "@/components/productDetails/RelatedProducts";
 import RecentProducts from "@/components/otherPages/RecentProducts";
@@ -39,27 +39,30 @@ export default function ProductDetailsBySlug({ slug }) {
     }
   }, [slug, dispatch]);
 
-  const getColorsFromTags = (tags = []) => {
-    return tags
-      .filter((tag) => tag.startsWith("color:"))
-      .map((tag) => tag.split(":")[1]);
-  };
+  const mappedProduct = useMemo(() => {
+    if (!selectedProduct) return null;
 
-  const mappedProduct = selectedProduct
-    ? {
-        ...mapProductForCard(selectedProduct),
-        color: getColorsFromTags(selectedProduct.tags),
-        slideItems:
-          selectedProduct.images?.map((img, index) => ({
-            id: index + 1,
-            src: typeof img === "string" ? img : img.url,
-            alt: selectedProduct.title,
-            width: 600,
-            height: 800,
-            color: getColorsFromTags(selectedProduct.tags), // Default color
-          })) || [],
-      }
-    : null;
+    const colors = (selectedProduct.tags || [])
+      .filter(
+        (tag) => typeof tag === "string" && tag.startsWith("color:"),
+      )
+      .map((tag) => tag.slice(6).trim())
+      .filter(Boolean);
+
+    return {
+      ...mapProductForCard(selectedProduct),
+      color: colors,
+      slideItems:
+        selectedProduct.images?.map((img, index) => ({
+          id: index + 1,
+          src: typeof img === "string" ? img : img.url,
+          alt: selectedProduct.title,
+          width: 900,
+          height: 1100,
+          color: colors[0] || "",
+        })) || [],
+    };
+  }, [selectedProduct]);
 
   useEffect(() => {
     if (selectedProduct && mappedProduct) {
@@ -76,7 +79,7 @@ export default function ProductDetailsBySlug({ slug }) {
   return (
     <>
       <Breadcumb product={mappedProduct} />
-      <Details1 product={mappedProduct} />
+      <Details1 key={mappedProduct.id} product={mappedProduct} />
       <Descriptions1 product={mappedProduct} />
       <RelatedProducts
         currentProductId={selectedProduct?._id}

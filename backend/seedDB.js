@@ -6,6 +6,9 @@ const mongoose = require("mongoose");
 
 const Category = require("./src/models/category.model");
 const Product = require("./src/models/product.model");
+const Review = require("./src/models/review.model");
+const { closeRedis, initRedis } = require("./src/config/redis");
+const { invalidateNamespaces } = require("./src/services/cache.service");
 
 const defaultEnvFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
 const envPath = process.env.SEED_ENV_FILE
@@ -156,6 +159,8 @@ function mapProductsWithIds(products, categoryByName, subByKey) {
 }
 
 async function seedProductsOneByOne(mappedProducts) {
+  const docs = [];
+
   for (const p of mappedProducts) {
     // Optional strict validation: ensure category is ObjectId and subcategories are array
     if (!mongoose.Types.ObjectId.isValid(p.category)) {
@@ -169,12 +174,105 @@ async function seedProductsOneByOne(mappedProducts) {
     );
 
     console.log(`🛋️ Product upserted: ${doc.title} -> ${doc._id}`);
+    docs.push(doc);
+  }
+
+  return docs;
+}
+
+const reviewTemplates = [
+  {
+    authorName: "Aarav Mehta",
+    rating: 5,
+    title: "Beautiful finish and very comfortable",
+    comment:
+      "The product looks exactly like the photos and feels sturdy in daily use. Delivery support was smooth and the finish works well with our room.",
+  },
+  {
+    authorName: "Priya Sharma",
+    rating: 4,
+    title: "Good quality with neat detailing",
+    comment:
+      "The build quality feels premium and the fabric selection matched our interiors nicely. The team helped us choose the right option before ordering.",
+  },
+  {
+    authorName: "Rohan Kapoor",
+    rating: 5,
+    title: "Worth it for the comfort",
+    comment:
+      "We wanted something that looked clean but still felt practical for everyday use. This has held up well and the customisation choices were useful.",
+  },
+];
+
+async function getReviewSummary(productId) {
+  const rows = await Review.aggregate([
+    { $match: { product: productId, status: "published" } },
+    { $group: { _id: "$rating", count: { $sum: 1 } } },
+  ]);
+
+  let total = 0;
+  let weightedTotal = 0;
+
+  rows.forEach((row) => {
+    total += row.count;
+    weightedTotal += row._id * row.count;
+  });
+
+  return {
+    average: total ? Number((weightedTotal / total).toFixed(1)) : 0,
+    total,
+  };
+}
+
+async function seedReviewsForProducts(productDocs) {
+  for (const product of productDocs) {
+    const currentCount = await Review.countDocuments({
+      product: product._id,
+      status: "published",
+    });
+
+    if (currentCount < reviewTemplates.length) {
+      for (let index = 0; index < reviewTemplates.length; index += 1) {
+        const template = reviewTemplates[index];
+
+        await Review.findOneAndUpdate(
+          {
+            product: product._id,
+            authorEmail: `review-${product.slug}-${index + 1}@curvecomfort.local`,
+          },
+          {
+            $set: {
+              product: product._id,
+              authorEmail: `review-${product.slug}-${index + 1}@curvecomfort.local`,
+              authorName: template.authorName,
+              rating: template.rating,
+              title: template.title,
+              comment: template.comment,
+              status: "published",
+              isVerifiedPurchase: true,
+            },
+          },
+          { new: true, upsert: true, runValidators: true }
+        );
+      }
+    }
+
+    const summary = await getReviewSummary(product._id);
+    await Product.findByIdAndUpdate(product._id, {
+      $set: {
+        rating: summary.average,
+        reviewsCount: summary.total,
+      },
+    });
+
+    console.log(`⭐ Reviews synced: ${product.title} -> ${summary.total}`);
   }
 }
 
 // ---------- run ----------
 async function run() {
   await connectDB();
+  await initRedis();
 
   try {
     const products = loadProductsJson();
@@ -184,13 +282,16 @@ async function run() {
 
     const mappedProducts = mapProductsWithIds(products, categoryByName, subByKey);
 
-    await seedProductsOneByOne(mappedProducts);
+    const productDocs = await seedProductsOneByOne(mappedProducts);
+    await seedReviewsForProducts(productDocs);
+    await invalidateNamespaces(["products", "reviews"]);
 
     console.log("✅ Seeding completed successfully");
   } catch (err) {
     console.error("❌ Seeding failed:", err);
     process.exitCode = 1;
   } finally {
+    await closeRedis();
     await mongoose.connection.close();
   }
 }

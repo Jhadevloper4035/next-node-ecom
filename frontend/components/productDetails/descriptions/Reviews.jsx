@@ -1,264 +1,303 @@
 "use client";
-import React from "react";
-import Image from "next/image";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { useSelector } from "react-redux";
 import ReviewSorting from "./ReviewSorting";
-export default function Reviews({product}) {
-  
+import ProductReviewForm from "./ProductReviewForm";
+import { getProductReviews } from "@/services/review/review.service";
+import styles from "./ProductReviewModal.module.css";
+
+const emptyBreakdown = {
+  5: 0,
+  4: 0,
+  3: 0,
+  2: 0,
+  1: 0,
+};
+
+const formatDate = (value) => {
+  if (!value) return "";
+
+  try {
+    return new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(value));
+  } catch {
+    return "";
+  }
+};
+
+const pluralize = (count, singular, plural = `${singular}s`) =>
+  `${count} ${count === 1 ? singular : plural}`;
+
+const errorMessage = (error, fallback) =>
+  typeof error === "string" ? error : error?.message || fallback;
+
+const StarRating = ({ rating = 0 }) => {
+  const rounded = Math.round(Number(rating) || 0);
+
+  return (
+    <div className="list-star">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <i
+          key={star}
+          className="icon icon-star"
+          style={{ opacity: star <= rounded ? 1 : 0.25 }}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default function Reviews({ product }) {
+  const productId = product?._id || product?.id;
+  const currentUser = useSelector((state) => state.auth.user);
+  const [reviews, setReviews] = useState([]);
+  const [summary, setSummary] = useState({
+    average: Number(product?.rating || 0),
+    total: Number(product?.reviewsCount || 0),
+    breakdown: emptyBreakdown,
+  });
+  const [sort, setSort] = useState("newest");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isModalMounted, setIsModalMounted] = useState(false);
+  const reviewModalId = useMemo(
+    () =>
+      `product-review-modal-${String(productId || "product").replace(
+        /[^a-zA-Z0-9_-]/g,
+        "-",
+      )}`,
+    [productId],
+  );
+
+  useEffect(() => {
+    setIsModalMounted(true);
+  }, []);
+
+  const reviewSchema = useMemo(() => {
+    if (!productId) return null;
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product?.title,
+      image: product?.images || product?.slideItems?.map((item) => item.src),
+      description: product?.description,
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: Number(summary.average || 0),
+        reviewCount: Number(summary.total || 0),
+      },
+      review: reviews.slice(0, 10).map((review) => ({
+        "@type": "Review",
+        name: review.title || "Customer review",
+        reviewBody: review.comment,
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: review.rating,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        author: {
+          "@type": "Person",
+          name: review.authorName,
+        },
+        datePublished: review.createdAt,
+      })),
+    };
+  }, [product, productId, reviews, summary]);
+
+  const loadReviews = useCallback(async () => {
+    if (!productId) return;
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await getProductReviews(productId, {
+        limit: 20,
+        sort,
+      });
+      setReviews(response.data || []);
+      setSummary({
+        average: Number(response.meta?.summary?.average || 0),
+        total: Number(response.meta?.summary?.total || 0),
+        breakdown: {
+          ...emptyBreakdown,
+          ...(response.meta?.summary?.breakdown || {}),
+        },
+      });
+    } catch (err) {
+      setError(errorMessage(err, "Unable to load reviews right now."));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [productId, sort]);
+
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !productId) return undefined;
+
+    const handleReviewsUpdated = (event) => {
+      if (String(event.detail?.productId) === String(productId)) {
+        loadReviews();
+      }
+    };
+
+    window.addEventListener("product-reviews-updated", handleReviewsUpdated);
+    return () =>
+      window.removeEventListener("product-reviews-updated", handleReviewsUpdated);
+  }, [loadReviews, productId]);
+
+  const totalReviews = Number(summary.total || reviews.length || 0);
+  const averageRating = Number(summary.average || product?.rating || 0);
+  const reviewCountLabel = pluralize(totalReviews, "Review");
+  const reviewModal = (
+    <div
+      className={`modal fade ${styles.reviewModal}`}
+      id={reviewModalId}
+      tabIndex={-1}
+      aria-labelledby={`${reviewModalId}-title`}
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className={styles.reviewModalHeader}>
+            <div>
+              <p className={styles.reviewModalEyebrow}>Customer feedback</p>
+              <h4 className={styles.reviewModalTitle} id={`${reviewModalId}-title`}>
+                Write a review
+              </h4>
+            </div>
+            <button
+              className={styles.reviewModalClose}
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <span className="icon-close" aria-hidden="true" />
+            </button>
+          </div>
+          <div className={styles.reviewModalBody}>
+            <div className={styles.reviewModalForm}>
+              <ProductReviewForm
+                product={product}
+                user={currentUser}
+                onSubmitted={loadReviews}
+                showTitle={false}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
+      {reviewSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+        />
+      )}
       <div className="tab-reviews-heading">
-        {" "}
         <div className="top">
           <div className="text-center">
-            <div className="number title-display">{product.rating}</div>
-            <div className="list-star">
-              <i className="icon icon-star" />
-              <i className="icon icon-star" />
-              <i className="icon icon-star" />
-              <i className="icon icon-star" />
-              <i className="icon icon-star" />
+            <div className="number title-display">
+              {averageRating ? averageRating.toFixed(1) : "0.0"}
             </div>
-            <p>(168 Ratings)</p>
+            <StarRating rating={averageRating} />
+            <p>({pluralize(totalReviews, "Rating")})</p>
           </div>
           <div className="rating-score">
-            <div className="item">
-              <div className="number-1 text-caption-1">5</div>
-              <i className="icon icon-star" />
-              <div className="line-bg">
-                <div style={{ width: "94.67%" }} />
-              </div>
-              <div className="number-2 text-caption-1">59</div>
-            </div>
-            <div className="item">
-              <div className="number-1 text-caption-1">4</div>
-              <i className="icon icon-star" />
-              <div className="line-bg">
-                <div style={{ width: "60%" }} />
-              </div>
-              <div className="number-2 text-caption-1">46</div>
-            </div>
-            <div className="item">
-              <div className="number-1 text-caption-1">3</div>
-              <i className="icon icon-star" />
-              <div className="line-bg">
-                <div style={{ width: "0%" }} />
-              </div>
-              <div className="number-2 text-caption-1">0</div>
-            </div>
-            <div className="item">
-              <div className="number-1 text-caption-1">2</div>
-              <i className="icon icon-star" />
-              <div className="line-bg">
-                <div style={{ width: "0%" }} />
-              </div>
-              <div className="number-2 text-caption-1">0</div>
-            </div>
-            <div className="item">
-              <div className="number-1 text-caption-1">1</div>
-              <i className="icon icon-star" />
-              <div className="line-bg">
-                <div style={{ width: "0%" }} />
-              </div>
-              <div className="number-2 text-caption-1">0</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div className="btn-style-4 text-btn-uppercase letter-1 btn-comment-review btn-cancel-review">
-            Cancel Review
-          </div>
-          <div className="btn-style-4 text-btn-uppercase letter-1 btn-comment-review btn-write-review">
-            Write a review
+            {[5, 4, 3, 2, 1].map((rating) => {
+              const count = Number(summary.breakdown?.[rating] || 0);
+              const width = totalReviews ? (count / totalReviews) * 100 : 0;
+
+              return (
+                <div className="item" key={rating}>
+                  <div className="number-1 text-caption-1">{rating}</div>
+                  <i className="icon icon-star" />
+                  <div className="line-bg">
+                    <div style={{ width: `${width}%` }} />
+                  </div>
+                  <div className="number-2 text-caption-1">{count}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
+
       <div className="reply-comment style-1 cancel-review-wrap">
         <div className="d-flex mb_24 gap-20 align-items-center justify-content-between flex-wrap">
-          <h4 className="">03 Comments</h4>
-          <div className="d-flex align-items-center gap-12">
+          <h4>{reviewCountLabel}</h4>
+          <div className="d-flex align-items-center gap-12 flex-wrap">
+            {currentUser && (
+              <button
+                className="btn-style-4 text-btn-uppercase letter-1"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target={`#${reviewModalId}`}
+              >
+                Post Review
+              </button>
+            )}
             <div className="text-caption-1">Sort by:</div>
-            <ReviewSorting />
+            <ReviewSorting value={sort} onChange={setSort} />
           </div>
         </div>
-        <div className="reply-comment-wrap">
-          <div className="reply-comment-item">
-            <div className="user">
-              <div className="image">
-                <Image
-                  alt=""
-                  src="/images/avatar/user-default.jpg"
-                  width={120}
-                  height={120}
-                />
-              </div>
-              <div>
-                <h6>
-                  <a href="#" className="link">
-                    Superb quality apparel that exceeds expectations
-                  </a>
-                </h6>
-                <div className="day text-secondary-2 text-caption-1">
-                  1 days ago &nbsp;&nbsp;&nbsp;-
+
+        {isLoading ? (
+          <p className="text-secondary">Loading customer reviews...</p>
+        ) : error && !reviews.length ? (
+          <p className="text-secondary">{error}</p>
+        ) : reviews.length ? (
+          <div className="reply-comment-wrap">
+            {reviews.map((review) => (
+              <div className="reply-comment-item" key={review._id}>
+                <div className="user">
+                  <div
+                    className="image d-flex align-items-center justify-content-center"
+                    style={{ backgroundColor: "#f3f3f3" }}
+                  >
+                    <span className="text-btn-uppercase">
+                      {(review.authorName || "C").slice(0, 1)}
+                    </span>
+                  </div>
+                  <div>
+                    <h6>
+                      <span className="link">
+                        {review.title || "Customer review"}
+                      </span>
+                    </h6>
+                    <div className="day text-secondary-2 text-caption-1">
+                      {review.authorName} &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+                      {formatDate(review.createdAt)}
+                    </div>
+                    <StarRating rating={review.rating} />
+                  </div>
                 </div>
+                <p className="text-secondary">{review.comment}</p>
               </div>
-            </div>
-            <p className="text-secondary">
-              Great theme - we were looking for a theme with lots of built in
-              features and flexibility and this was perfect. We expected to need
-              to employ a developer to add a few finishing touches. But we
-              actually managed to do everything ourselves. We did have one small
-              query and the support given was swift and helpful.
-            </p>
+            ))}
           </div>
-          <div className="reply-comment-item type-reply">
-            <div className="user">
-              <div className="image">
-                <Image
-                  alt=""
-                  src="/images/avatar/user-modave.jpg"
-                  width={104}
-                  height={104}
-                />
-              </div>
-              <div>
-                <h6>
-                  <a href="#" className="link">
-                    Reply from Modave
-                  </a>
-                </h6>
-                <div className="day text-secondary-2 text-caption-1">
-                  1 days ago &nbsp;&nbsp;&nbsp;-
-                </div>
-              </div>
-            </div>
-            <p className="text-secondary">
-              We love to hear it! Part of what we love most about Modave is how
-              much it empowers store owners like yourself to build a beautiful
-              website without having to hire a developer :) Thank you for this
-              fantastic review!
-            </p>
-          </div>
-          <div className="reply-comment-item">
-            <div className="user">
-              <div className="image">
-                <Image
-                  alt=""
-                  src="/images/avatar/user-default.jpg"
-                  width={120}
-                  height={120}
-                />
-              </div>
-              <div>
-                <h6>
-                  <a href="#" className="link">
-                    Superb quality apparel that exceeds expectations
-                  </a>
-                </h6>
-                <div className="day text-secondary-2 text-caption-1">
-                  1 days ago &nbsp;&nbsp;&nbsp;-
-                </div>
-              </div>
-            </div>
-            <p className="text-secondary">
-              Great theme - we were looking for a theme with lots of built in
-              features and flexibility and this was perfect. We expected to need
-              to employ a developer to add a few finishing touches. But we
-              actually managed to do everything ourselves. We did have one small
-              query and the support given was swift and helpful.
-            </p>
-          </div>
-        </div>
+        ) : (
+          <p className="text-secondary">
+            No reviews yet. Be the first customer to review this product.
+          </p>
+        )}
       </div>
-      <form
-        className="form-write-review write-review-wrap"
-        onSubmit={(e) => e.preventDefault()}
-      >
-        <div className="heading">
-          <h4>Write a review:</h4>
-          <div className="list-rating-check">
-            <input type="radio" id="star5" name="rate" defaultValue={5} />
-            <label htmlFor="star5" title="text" />
-            <input type="radio" id="star4" name="rate" defaultValue={4} />
-            <label htmlFor="star4" title="text" />
-            <input type="radio" id="star3" name="rate" defaultValue={3} />
-            <label htmlFor="star3" title="text" />
-            <input type="radio" id="star2" name="rate" defaultValue={2} />
-            <label htmlFor="star2" title="text" />
-            <input type="radio" id="star1" name="rate" defaultValue={1} />
-            <label htmlFor="star1" title="text" />
-          </div>
-        </div>
-        <div className="mb_32">
-          <div className="mb_8">Review Title</div>
-          <fieldset className="mb_20">
-            <input
-              className=""
-              type="text"
-              placeholder="Give your review a title"
-              name="text"
-              tabIndex={2}
-              defaultValue=""
-              aria-required="true"
-              required
-            />
-          </fieldset>
-          <div className="mb_8">Review</div>
-          <fieldset className="d-flex mb_20">
-            <textarea
-              className=""
-              rows={4}
-              placeholder="Write your comment here"
-              tabIndex={2}
-              aria-required="true"
-              required
-              defaultValue={""}
-            />
-          </fieldset>
-          <div className="cols mb_20">
-            <fieldset className="">
-              <input
-                className=""
-                type="text"
-                placeholder="You Name (Public)"
-                name="text"
-                tabIndex={2}
-                defaultValue=""
-                aria-required="true"
-                required
-              />
-            </fieldset>
-            <fieldset className="">
-              <input
-                className=""
-                type="email"
-                placeholder="Your email (private)"
-                name="email"
-                tabIndex={2}
-                defaultValue=""
-                aria-required="true"
-                required
-              />
-            </fieldset>
-          </div>
-          <div className="d-flex align-items-center check-save">
-            <input
-              type="checkbox"
-              name="availability"
-              className="tf-check"
-              id="check1"
-            />
-            <label className="text-secondary text-caption-1" htmlFor="check1">
-              Save my name, email, and website in this browser for the next time
-              I comment.
-            </label>
-          </div>
-        </div>
-        <div className="button-submit">
-          <button className="text-btn-uppercase" type="submit">
-            Submit Reviews
-          </button>
-        </div>
-      </form>
+
+      {error && reviews.length > 0 && <p className="text-secondary mb_12">{error}</p>}
+
+      {isModalMounted && currentUser ? createPortal(reviewModal, document.body) : null}
     </>
   );
 }

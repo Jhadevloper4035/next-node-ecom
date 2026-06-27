@@ -33,7 +33,7 @@ export default function ProductStikyBottom({ product }) {
                   <Image
                     className="lazyload"
                     alt={product.title || "Product"}
-                    src={product.imgSrc || "/images/placeholder.jpg"}
+                    src={product.imgSrc || "/images/placeholder.svg"}
                     width={600}
                     height={800}
                   />

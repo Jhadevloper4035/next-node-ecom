@@ -60,6 +60,193 @@ function buildOptions({ values, basePrice, images = [], startIndex = 0 }) {
   return { opts, nextImgIndex: imgIdx };
 }
 
+const FABRIC_VALUES = [
+  "Suede",
+  "Velvet",
+  "Boucle",
+  "Fur",
+  "Jute",
+  "Linen",
+  "Printed",
+  "Textured",
+  "Leatherette",
+  "Choose Later",
+];
+
+const SOFA_SIZE_VALUES = [
+  { value: "2-seater-66-inch", label: '2 Seater (66")' },
+  { value: "3-seater-86-inch", label: '3 Seater (86")', isDefault: true },
+  { value: "3-seater-large-96-inch", label: '3 Seater Large (96")' },
+  { value: "4-seater-106-inch", label: '4 Seater (106")' },
+];
+
+const BED_SIZE_VALUES = [
+  { value: "queen", label: "Queen" },
+  { value: "king", label: "King", isDefault: true },
+  { value: "super-king", label: "Super King" },
+];
+
+const FOAM_DENSITY_VALUES = [
+  { value: "28-very-soft", label: "28 - Very Soft" },
+  { value: "32-medium-soft", label: "32 - Medium Soft", isDefault: true },
+  { value: "40-hard", label: "40 - Hard" },
+];
+
+const FOAM_QUALITY_VALUES = [
+  { value: "hr", label: "HR", isDefault: true },
+  { value: "pu", label: "PU" },
+  { value: "latex", label: "Latex" },
+];
+
+function normalizeOptionInput(input) {
+  if (typeof input === "string") {
+    return { value: slugify(input), label: input };
+  }
+
+  const label = String(input?.label || input?.value || "").trim();
+  return {
+    value: String(input?.value || slugify(label)).trim(),
+    label,
+    isDefault: Boolean(input?.isDefault),
+  };
+}
+
+function groupOptions(values, images = []) {
+  return values.map((value, index) => {
+    const option = normalizeOptionInput(value);
+
+    return {
+      value: option.value,
+      label: option.label,
+      description: "",
+      priceDelta: 0,
+      priceOverride: null,
+      images: images.length ? [images[index % images.length]] : [],
+      swatch: {
+        color: "",
+        image: "",
+      },
+      isDefault: option.isDefault,
+      isActive: true,
+    };
+  });
+}
+
+function optionPricingGroupOptions(options = []) {
+  return options.map((option) => ({
+    value: option.value,
+    label: option.label,
+    description: option.description || "",
+    priceDelta: Number(option.priceDelta || 0),
+    priceOverride:
+      option.priceOverride === null || option.priceOverride === undefined
+        ? null
+        : Number(option.priceOverride),
+    images: Array.isArray(option.images) ? option.images.filter(Boolean) : [],
+    swatch: option.swatch || {
+      color: "",
+      image: "",
+    },
+    isDefault: Boolean(option.isDefault),
+    isActive: option.isActive !== false,
+  }));
+}
+
+function customizationGroup({ key, label, description, inputType = "buttons", displayOrder, options }) {
+  return {
+    key,
+    label,
+    description,
+    inputType,
+    isRequired: true,
+    displayOrder,
+    isActive: true,
+    options,
+  };
+}
+
+function buildCustomizationGroups({ category, images, materialOptions }) {
+  if (category === "Sofas") {
+    return [
+      customizationGroup({
+        key: "size",
+        label: "Size",
+        description: "Sofa sizes from the Curve & Comfort customization guide.",
+        displayOrder: 0,
+        options: groupOptions(SOFA_SIZE_VALUES, images),
+      }),
+      customizationGroup({
+        key: "foam-density",
+        label: "Foam Density",
+        description: "Density options from the Curve & Comfort customization guide.",
+        displayOrder: 1,
+        options: groupOptions(FOAM_DENSITY_VALUES, images),
+      }),
+      customizationGroup({
+        key: "foam-quality",
+        label: "Foam Quality",
+        description: "Foam material options from the Curve & Comfort customization guide.",
+        displayOrder: 2,
+        options: groupOptions(FOAM_QUALITY_VALUES, images),
+      }),
+      customizationGroup({
+        key: "fabric-types",
+        label: "Fabric Types",
+        description: "Fabric options from the Curve & Comfort customization guide.",
+        inputType: "swatches",
+        displayOrder: 3,
+        options: groupOptions(FABRIC_VALUES, images),
+      }),
+    ];
+  }
+
+  if (category === "Chairs & Ottomans") {
+    return [
+      customizationGroup({
+        key: "foam-density",
+        label: "Foam Density",
+        description: "Density options from the Curve & Comfort customization guide.",
+        displayOrder: 0,
+        options: groupOptions(FOAM_DENSITY_VALUES, images),
+      }),
+      customizationGroup({
+        key: "fabric-types",
+        label: "Fabric Types",
+        description: "Fabric options from the Curve & Comfort customization guide.",
+        inputType: "swatches",
+        displayOrder: 1,
+        options: groupOptions(FABRIC_VALUES, images),
+      }),
+    ];
+  }
+
+  if (category === "Beds") {
+    return [
+      customizationGroup({
+        key: "size",
+        label: "Size",
+        description: "Bed sizes from the Curve & Comfort customization guide.",
+        displayOrder: 0,
+        options: groupOptions(BED_SIZE_VALUES, images),
+      }),
+    ];
+  }
+
+  if (["Coffee Tables", "Console Tables", "Nester Tables", "Wall Decor"].includes(category)) {
+    return [
+      customizationGroup({
+        key: "material",
+        label: "Material",
+        description: "Material options from the Curve & Comfort customization guide.",
+        displayOrder: 0,
+        options: optionPricingGroupOptions(materialOptions),
+      }),
+    ];
+  }
+
+  return [];
+}
+
 // ---------- main transform ----------
 function transformOne(item) {
   const title = String(item?.title ?? "Untitled Product").trim();
@@ -118,6 +305,8 @@ function transformOne(item) {
     startIndex: imgAfterFoams,
   });
 
+  const category = item?.category || "Uncategorized";
+
   return {
     title,
     slug: slugify(title),
@@ -132,7 +321,7 @@ function transformOne(item) {
     images: images.length ? images : ["https://example.com/fallback.jpg"],
 
     // keep as-is (strings for now)
-    category: item?.category || "Uncategorized",
+    category,
     subcategories: Array.isArray(item?.subcategory) ? item.subcategory : [],
 
     optionPricing: {
@@ -141,6 +330,12 @@ function transformOne(item) {
       foams: foamOpts,
       fabrics: fabricOpts,
     },
+
+    customizationGroups: buildCustomizationGroups({
+      category,
+      images,
+      materialOptions: materialOpts,
+    }),
 
     dimensions: item?.dimensions || undefined,
     weight: item?.weight || undefined,

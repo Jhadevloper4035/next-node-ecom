@@ -2,10 +2,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
-import ReviewSorting from "./ReviewSorting";
-import ProductReviewForm from "./ProductReviewForm";
+import ReviewSorting from "./reviews/ReviewSorting";
+import ProductReviewForm from "./reviews/ProductReviewForm";
 import { getProductReviews } from "@/services/review/review.service";
-import styles from "./ProductReviewModal.module.css";
+import styles from "./reviews/ProductReviewModal.module.css";
 
 const emptyBreakdown = {
   5: 0,

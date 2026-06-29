@@ -14,7 +14,7 @@ export const demoItems = [
     label: ["New", "Hot"],
   },
   {
-    href: "/home-fashion-main",
+    href: "/homes/fashion-main",
     src: "/images/banner/discover-furniture2.jpg",
     alt: "home-fashion-main",
     name: "Fashion Main",
@@ -112,7 +112,7 @@ export const demoItems = [
     label: [],
   },
   {
-    href: "/home-decor",
+    href: "/homes/decor",
     src: "/images/banner/discover-decor.jpg",
     alt: "home-decor",
     name: "Decor",

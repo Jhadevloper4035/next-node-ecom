@@ -312,8 +312,8 @@ export default function Footer1({
                   <div className="footer-bottom-wrap">
                     <div className="left">
                       <p className="text-caption-1">
-                        ©{new Date().getFullYear()} Curve & Comfort. All Rights
-                        Reserved.
+                        ©{new Date().getFullYear()} Sahni Design and Build
+                        Corporation LLP. All Rights Reserved.
                       </p>
                     </div>
                     <div className="tf-payment">

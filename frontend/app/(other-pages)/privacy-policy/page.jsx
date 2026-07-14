@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footers/Footer1";
-import Terms from "@/components/otherPages/Refund";
+import Privacy from "@/components/otherPages/Privacy";
 import React from "react";
 import Link from "next/link";
 
@@ -46,7 +46,7 @@ export default function TermsOfUsePage() {
           </div>
         </div>
       </div>
-      <Terms />
+      <Privacy />
       <Footer1 />
     </>
   );

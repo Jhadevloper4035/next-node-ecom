@@ -18,8 +18,18 @@ import ShopGram from "@/components/common/ShopGram";
 import Testimonials from "@/components/homes/decor/Testimonials";
 
 export const metadata = {
-  title: "Curve & Comfort-Where elegant design meets everyday comfort",
-  description: "Discover the perfect blend of style and comfort with thoughtfully designed pieces made for everyday living. Crafted with quality materials and timeless aesthetics, Curve & Comfort brings effortless elegance into your space and lifestyle.",
+  title: "Online Furniture Stores | Premium Furniture Online - Curve & Comfort",
+  description: "Discover premium furniture online at Curve & Comfort. Shop high-end designer sofas, luxury chairs, and premium wooden furniture crafted for ultimate elegance. Buy furniture online today.",
+  keywords: [
+    "online furniture",
+    "premium furniture online",
+    "buy furniture online",
+    "online furniture stores",
+    "shop furniture online",
+  ],
+  alternates: {
+    canonical: "https://curve-comfort.com/",
+  },
 };
 
 export default function HomePage() {

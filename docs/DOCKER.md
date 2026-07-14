@@ -27,7 +27,6 @@ make dev-up
 - Frontend: http://localhost:3000
 - Backend:  http://localhost:5000/api/v1
 - Mailpit:  http://localhost:8025
-- Mongo UI: http://localhost:8081
 
 ---
 
@@ -35,8 +34,7 @@ make dev-up
 
 ### 1) Create env files
 ```bash
-cp .env.production.example .env.production
-cp frontend/.env.production.example frontend/.env.production
+cp docs/.env.example .env
 ```
 
 ### 2) Start
@@ -47,8 +45,9 @@ make prod-up
 ```
 
 Notes:
-- `mongo` and `redis` ports are **not** exposed in production.
-- `mailpit` is disabled in production; set real SMTP credentials in `.env.production`.
+- MongoDB uses Atlas via `MONGODB_URI`.
+- `redis` ports are **not** exposed in production.
+- `mailpit` is disabled in production; set real SMTP credentials in `.env`.
 
 ---
 

@@ -4,13 +4,7 @@ const path = require("path");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
-const Category = require("./src/models/category.model");
-const Product = require("./src/models/product.model");
-const Review = require("./src/models/review.model");
-const { closeRedis, initRedis } = require("./src/config/redis");
-const { invalidateNamespaces } = require("./src/services/cache.service");
-
-const defaultEnvFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+const defaultEnvFile = process.env.NODE_ENV === "production" ? ".env" : ".env.development";
 const envPath = process.env.SEED_ENV_FILE
   ? path.resolve(process.cwd(), process.env.SEED_ENV_FILE)
   : path.resolve(__dirname, "..", defaultEnvFile);
@@ -20,6 +14,12 @@ if (fs.existsSync(envPath)) {
 } else {
   dotenv.config();
 }
+
+const Category = require("./src/models/category.model");
+const Product = require("./src/models/product.model");
+const Review = require("./src/models/review.model");
+const { closeRedis, initRedis } = require("./src/config/redis");
+const { invalidateNamespaces } = require("./src/services/cache.service");
 
 // ---------- helpers ----------
 const uniq = (arr) => [...new Set(arr)];

@@ -4,6 +4,61 @@ import { getCategoryImage } from "@/data/categoryData";
 import Link from "next/link";
 import React from "react";
 
+const seoDetails = {
+  sofas: {
+    title: "Buy Sofa Set Online | Premium Luxury Sofas & Couches - Curve & Comfort",
+    description: "Shop premium luxury sofa sets online. Discover designer sofas and lounges crafted for maximum durability and contemporary style. Check the best sofa set prices and order online today.",
+    keywords: ["buy sofa set", "online sofa set", "order sofa online", "buy sofa online", "price of sofa set", "order couch online"],
+    canonical: "https://curve-comfort.com/collections/sofas",
+  },
+  chairs: {
+    title: "Buy Chairs Online | Premium Accent & Living Room Chairs - Curve & Comfort",
+    description: "Shop our exclusive collection of luxury chairs online. Find modern designer accent chairs, executive seating, and premium living room chairs built for ergonomic support and elegance.",
+    keywords: ["buy chairs online", "chairs online", "buy chair", "order chair online", "online chair purchase", "chair online order"],
+    canonical: "https://curve-comfort.com/collections/chairs",
+  },
+  "chairs-and-ottomans": {
+    title: "Buy Chairs Online | Premium Accent & Living Room Chairs - Curve & Comfort",
+    description: "Shop our exclusive collection of luxury chairs online. Find modern designer accent chairs, executive seating, and premium living room chairs built for ergonomic support and elegance.",
+    keywords: ["buy chairs online", "chairs online", "buy chair", "order chair online", "online chair purchase", "chair online order"],
+    canonical: "https://curve-comfort.com/collections/chairs",
+  },
+  "chairs-ottomans": {
+    title: "Buy Chairs Online | Premium Accent & Living Room Chairs - Curve & Comfort",
+    description: "Shop our exclusive collection of luxury chairs online. Find modern designer accent chairs, executive seating, and premium living room chairs built for ergonomic support and elegance.",
+    keywords: ["buy chairs online", "chairs online", "buy chair", "order chair online", "online chair purchase", "chair online order"],
+    canonical: "https://curve-comfort.com/collections/chairs",
+  },
+  beds: {
+    title: "Online Bed Purchase | Luxury & Premium Beds Online - Curve & Comfort",
+    description: "Complete your online bed purchase with Curve & Comfort. Explore our exquisite collection of premium luxury beds and designer bedroom furniture sets. Shop the collection today.",
+    keywords: ["online bed purchase", "bed online", "buy bed online", "luxury bedroom furniture", "high end beds", "premium wooden beds"],
+    canonical: "https://curve-comfort.com/collections/beds",
+  },
+  "wooden-furniture": {
+    title: "Online Wooden Furniture | Premium Solid Wood Designs - Curve & Comfort",
+    description: "Discover handcrafted online wooden furniture collections at Curve & Comfort. Premium solid wood tables, cabinets, and custom furniture pieces for modern luxury homes in Delhi NCR.",
+    keywords: ["online wooden furniture", "best online furniture shops", "furniture online delhi", "premium furniture online", "best online furniture shopping"],
+    canonical: "https://curve-comfort.com/collections/wooden-furniture",
+  },
+};
+
+export async function generateMetadata({ params }) {
+  const { categorySlug } = await params;
+  const details = seoDetails[categorySlug];
+
+  return details
+    ? {
+        title: details.title,
+        description: details.description,
+        keywords: details.keywords,
+        alternates: {
+          canonical: details.canonical,
+        },
+      }
+    : {};
+}
+
 export default async function CategoryPage({ params }) {
   const { categorySlug } = await params;
 

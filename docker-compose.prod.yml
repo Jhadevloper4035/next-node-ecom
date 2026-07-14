@@ -54,7 +54,7 @@ services:
     expose:
       - "5000"
     env_file:
-      - .env.production
+      - .env
     environment:
       NODE_ENV: production
       PORT: "5000"

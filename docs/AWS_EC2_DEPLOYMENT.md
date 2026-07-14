@@ -1,24 +1,33 @@
 # Curve & Comfort CI/CD deployment to AWS EC2
 
-The workflow in `.github/workflows/ci-cd.yml` follows the SkyDecor deployment
-model:
+The workflow in `.github/workflows/deploy.yml` deploys this app to EC2:
 
-- Pull request to `main`: lint/check/build and validate production Docker images.
-- Push to `main`: validate, publish commit-tagged images to Docker Hub, and deploy
+- Push to `main`: build backend/frontend images, push to Docker Hub, and deploy
   that exact commit to EC2.
-- Manual run: choose `validate-only` or `deploy` from GitHub Actions.
+- Manual run: use **Actions > Deploy to EC2 > Run workflow**.
 
 The production stack is Nginx, Next.js, Express, Redis, and MongoDB Atlas.
 
+## Deployment checklist
+
+- Create Docker Hub repos: `curve-comfort-backend`, `curve-comfort-frontend`.
+- Add EC2 inbound rules for SSH `22`, HTTP `80`, and HTTPS `443`.
+- Install Docker and Docker Compose plugin on EC2.
+- Add the EC2 public IP to MongoDB Atlas Network Access.
+- Add GitHub Actions secrets listed below.
+- Make `PROD_MONGODB_URI` include `/ecomerce-production`, not just the cluster host.
+- Push to `main` or run the workflow manually.
+- Verify on EC2 with `docker compose -f docker-compose.prod.yml --env-file .env ps`.
+
 ## 1. Protect secrets before the first pipeline commit
 
-This repository currently tracks `.env`, `.env.development`, and
-`.env.production`. Adding them to `.gitignore` does not untrack existing files.
+This repository currently tracks `.env` and `.env.development`. Adding them to
+`.gitignore` does not untrack existing files.
 Rotate every credential those files have ever contained, then run:
 
 ```bash
-git rm --cached .env .env.development .env.production
-git add .gitignore .env.production.example
+git rm --cached .env .env.development
+git add .gitignore docs/.env.example
 ```
 
 Do not delete your local files. `git rm --cached` only removes them from future
@@ -73,7 +82,7 @@ Create a production database and user. Add the EC2 Elastic IP to Atlas Network
 Access. Use a connection string similar to:
 
 ```text
-mongodb+srv://USERNAME:PASSWORD@CLUSTER.mongodb.net/curve_comfort?retryWrites=true&w=majority
+mongodb+srv://<db_username>:<db_password>@curve-and-comfort.lvwb3ba.mongodb.net/ecomerce-production?retryWrites=true&w=majority&appName=curve-and-comfort
 ```
 
 URL-encode special characters in usernames and passwords.
@@ -121,19 +130,17 @@ Generate JWT secrets with `openssl rand -hex 32` twice.
 
 ## 7. First deployment
 
-Push the pipeline and application changes to a branch and open a pull request.
-The PR validates both images without publishing them. After merging to `main`,
-the workflow publishes the images and deploys to EC2.
+Push the pipeline and application changes to `main`. The workflow publishes the
+images and deploys to EC2.
 
-You can also use **Actions > CI/CD - AWS EC2 > Run workflow**. Choose
-`validate-only` before the first real deployment, then choose `deploy`.
+You can also use **Actions > Deploy to EC2 > Run workflow**.
 
 On EC2, verify:
 
 ```bash
 cd /opt/curve-comfort
-docker compose -f docker-compose.prod.yml --env-file .env.production ps
-docker compose -f docker-compose.prod.yml --env-file .env.production logs --tail=100
+docker compose -f docker-compose.prod.yml --env-file .env ps
+docker compose -f docker-compose.prod.yml --env-file .env logs --tail=100
 curl http://127.0.0.1/health
 curl http://127.0.0.1/
 ```

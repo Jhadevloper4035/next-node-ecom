@@ -1,13 +1,13 @@
 SHELL := /bin/bash
 COMPOSE ?= docker compose
-PROD_COMPOSE := $(COMPOSE) -f docker-compose.prod.yml --env-file .env.production
+PROD_COMPOSE := $(COMPOSE) -f docker-compose.prod.yml --env-file .env
 
 .PHONY: help env-dev env-prod dev-up dev-down dev-logs dev-rebuild dev-seed prod-pull prod-up prod-down prod-logs prod-rebuild clean ps backend-sh frontend-sh
 
 help:
 	@echo "Targets:"
 	@echo "  env-dev        Create .env.development + frontend/.env.development from examples (won't overwrite)."
-	@echo "  env-prod       Create .env.production from its example (won't overwrite)."
+	@echo "  env-prod       Create .env from the production example (won't overwrite)."
 	@echo "  dev-up         Start development stack (build if needed)."
 	@echo "  dev-down       Stop development stack."
 	@echo "  dev-logs       Tail dev logs."
@@ -21,7 +21,7 @@ help:
 	@echo "  ps             Show running containers."
 	@echo "  backend-sh     Shell into backend container."
 	@echo "  frontend-sh    Shell into frontend container."
-	@echo "  clean          Remove containers + volumes (DANGEROUS: deletes DB data)."
+	@echo "  clean          Remove containers + volumes (DANGEROUS: deletes Redis data)."
 
 env-dev:
 	@test -f .env.development || cp .env.development.example .env.development
@@ -29,7 +29,7 @@ env-dev:
 	@echo "✅ Dev env ready."
 
 env-prod:
-	@test -f .env.production || cp .env.production.example .env.production
+	@test -f .env || cp docs/.env.example .env
 	@echo "✅ Prod env ready."
 
 dev-up: 
@@ -80,5 +80,5 @@ frontend-sh:
 	$(COMPOSE) exec frontend sh
 
 clean:
-	@echo "⚠️  This will delete containers AND volumes (mongo/redis data)."
+	@echo "⚠️  This will delete containers AND volumes (redis data)."
 	$(COMPOSE) down -v --remove-orphans

@@ -80,6 +80,10 @@ export default function TermsAndConditions() {
             <p className="terms-meta">
               Effective Date: March 2026 &nbsp;|&nbsp; curve-comfort.com
             </p>
+            <p className="terms-meta">
+              Curve &amp; Comfort is owned and operated by SAHNI DESIGN &amp; BUILD
+              CORPORATION LLP.
+            </p>
 
             {/* 1 */}
             <div className="terms-of-use-item item-scroll-target" id="general-terms">

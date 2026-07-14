@@ -188,6 +188,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          timeout: 120s
+          command_timeout: 20m
           envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,BACKEND_IMAGE,FRONTEND_IMAGE,GITHUB_REPOSITORY,GIT_COMMIT_SHA,HTTP_PORT,MONGODB_URI,FRONTEND_URL,CORS_ORIGIN,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,COOKIE_DOMAIN,SMTP_HOST,SMTP_PORT,SMTP_SECURE,SMTP_USER,SMTP_PASS,MAIL_FROM
           script: |
             set -eu

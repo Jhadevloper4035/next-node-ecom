@@ -246,16 +246,19 @@ jobs:
               "SMTP_USER=$SMTP_USER" \
               "SMTP_PASS=$SMTP_PASS" \
               "MAIL_FROM=$MAIL_FROM" \
-              > .env.production
+              > .env
 
-            chmod 600 .env.production
+            chmod 600 .env
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
-            docker compose -f docker-compose.prod.yml --env-file .env.production pull
-            docker compose -f docker-compose.prod.yml --env-file .env.production up -d --no-build --remove-orphans --wait --wait-timeout 180
+            docker compose -f docker-compose.prod.yml --env-file .env pull
+            docker compose -f docker-compose.prod.yml --env-file .env up -d --no-build --remove-orphans --wait --wait-timeout 180
+            docker compose -f docker-compose.prod.yml --env-file .env --profile certbot run --rm certbot certonly --webroot --webroot-path /var/www/certbot --non-interactive --agree-tos --register-unsafely-without-email -d curve-comfort.com -d www.curve-comfort.com
+            docker compose -f docker-compose.prod.yml --env-file .env exec -T nginx nginx -s reload
 
             BASE_URL="http://127.0.0.1:${HTTP_PORT:-80}"
             curl -fsS "$BASE_URL/health" >/dev/null
+            curl -kfsS "https://127.0.0.1:${HTTPS_PORT:-443}/health" >/dev/null
             curl -fsS "$BASE_URL/" >/dev/null
             curl -fsS "$BASE_URL/api/v1/product/?limit=1" >/dev/null
 

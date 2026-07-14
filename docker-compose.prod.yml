@@ -5,8 +5,24 @@ services:
     restart: always
     ports:
       - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
     volumes:
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - letsencrypt:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mkdir -p /etc/letsencrypt/live/curve-comfort.com /var/www/certbot
+        if [ ! -f /etc/letsencrypt/live/curve-comfort.com/fullchain.pem ]; then
+          apk add --no-cache openssl
+          openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -keyout /etc/letsencrypt/live/curve-comfort.com/privkey.pem \
+            -out /etc/letsencrypt/live/curve-comfort.com/fullchain.pem \
+            -subj "/CN=curve-comfort.com"
+        fi
+        nginx -g 'daemon off;'
     depends_on:
       frontend:
         condition: service_healthy
@@ -97,8 +113,18 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  certbot:
+    image: certbot/certbot:latest
+    profiles: ["certbot"]
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    networks: [app_network]
+
 volumes:
   redis_data:
+  letsencrypt:
+  certbot_webroot:
 
 networks:
   app_network:

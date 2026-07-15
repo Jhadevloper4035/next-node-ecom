@@ -2,10 +2,10 @@ import axios from "axios";
 import { getToken, setToken, clearAuth } from "@/utlis/auth.utlis";
 
 const normalizeApiBaseUrl = (url) => {
-  if (process.env.NEXT_RUNTIME !== "nodejs") return "/api/backend";
-
   const fallback = "http://localhost:5000/api";
   const raw = (url || fallback).replace(/\/+$/, "");
+  if (process.env.NEXT_RUNTIME !== "nodejs") return raw.startsWith("http") ? "/api" : raw;
+
   const dockerSafeRaw = raw.replace("http://localhost:5000", "http://backend:5000");
   return dockerSafeRaw.endsWith("/v1") ? dockerSafeRaw.slice(0, -3) : dockerSafeRaw;
 };

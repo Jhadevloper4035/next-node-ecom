@@ -15,6 +15,30 @@ import AppShell from "@/components/common/AppShell";
 export const metadata = {
   title: "Curve & Comfort",
   description: "Furniture and decor for comfortable modern homes.",
+  manifest: "/images/favicon/site.webmanifest",
+  appleWebApp: {
+    title: "Curve and Comfort",
+  },
+  icons: {
+    icon: [
+      {
+        url: "/images/favicon/favicon-96x96.png",
+        type: "image/png",
+        sizes: "96x96",
+      },
+      {
+        url: "/images/favicon/favicon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    shortcut: "/images/favicon/favicon.ico",
+    apple: [
+      {
+        url: "/images/favicon/apple-touch-icon.png",
+        sizes: "180x180",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }) {

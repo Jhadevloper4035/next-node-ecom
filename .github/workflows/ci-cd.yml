@@ -202,7 +202,7 @@ jobs:
             fi
 
             git fetch origin "$GIT_COMMIT_SHA"
-            git checkout --detach "$GIT_COMMIT_SHA"
+            git checkout --force --detach "$GIT_COMMIT_SHA"
 
             : "${MONGODB_URI:?PROD_MONGODB_URI is required}"
             : "${FRONTEND_URL:?PROD_FRONTEND_URL is required}"

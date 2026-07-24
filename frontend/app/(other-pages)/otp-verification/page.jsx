@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { verifyOtp } from "@/services/auth/otp.service";
 import { loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
+import { userErrorMessage } from "@/utlis/error.utlis";
 import styles from "@/components/otherPages/Login.module.css";
 
 function OtpVerificationContent() {
@@ -61,7 +62,7 @@ function OtpVerificationContent() {
         }, 200);
       }
     } catch (err) {
-      const msg = err?.message || "OTP verification failed. Please try again.";
+      const msg = userErrorMessage(err, "OTP verification failed. Please try again.");
       setError(msg);
       toast(msg, "error");
       dispatch(loginFailure(msg));

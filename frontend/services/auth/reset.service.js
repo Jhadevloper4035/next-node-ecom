@@ -1,4 +1,5 @@
 import api from "../../api/api.config";
+import { throwAuthError } from "./error.service";
 
 export const resetPassword = async (token, password) => {
   try {
@@ -10,6 +11,6 @@ export const resetPassword = async (token, password) => {
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throwAuthError(error);
   }
 };

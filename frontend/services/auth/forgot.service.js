@@ -1,4 +1,5 @@
 import api from "../../api/api.config";
+import { throwAuthError } from "./error.service";
 
 export const forgotPassword = async (email) => {
   try {
@@ -9,6 +10,6 @@ export const forgotPassword = async (email) => {
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throwAuthError(error);
   }
 };

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { forgotPassword } from "@/services/auth/forgot.service";
 import { useToast } from "@/components/common/ToastContext";
+import { userErrorMessage } from "@/utlis/error.utlis";
 import styles from "./Login.module.css";
 
 export default function ForgotPass() {
@@ -33,7 +34,7 @@ export default function ForgotPass() {
       setMessage(msg);
       toast(msg, "info");
     } catch (err) {
-      const errMsg = err?.message || "Failed to send email. Please try again.";
+      const errMsg = userErrorMessage(err, "Failed to send email. Please try again.");
       setError(errMsg);
       toast(errMsg, "error");
     } finally {

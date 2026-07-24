@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { login as loginService } from "@/services/auth/login.service";
 import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
+import { userErrorMessage } from "@/utlis/error.utlis";
 import styles from "./Login.module.css";
 
 export default function Login() {
@@ -90,7 +91,7 @@ export default function Login() {
         }, 200);
       }
     } catch (err) {
-      const errorMessage = err?.message || "Login failed. Please try again.";
+      const errorMessage = userErrorMessage(err, "Login failed. Please try again.");
       setError(errorMessage);
       dispatch(loginFailure(errorMessage));
     } finally {

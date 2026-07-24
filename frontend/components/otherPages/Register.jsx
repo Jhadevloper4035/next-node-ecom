@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { register as registerService } from "@/services/auth/register.service";
 import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
+import { userErrorMessage } from "@/utlis/error.utlis";
 import styles from "./Login.module.css";
 
 export default function Register() {
@@ -109,8 +110,7 @@ export default function Register() {
         );
       }, 100);
     } catch (err) {
-      const errorMessage =
-        err?.message || "Registration failed. Please try again.";
+      const errorMessage = userErrorMessage(err, "Registration failed. Please try again.");
       setError(errorMessage);
       dispatch(loginFailure(errorMessage));
       toast(errorMessage, "error");

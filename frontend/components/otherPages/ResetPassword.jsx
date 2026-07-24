@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { resetPassword } from "@/services/auth/reset.service";
 import { useToast } from "@/components/common/ToastContext";
+import { userErrorMessage } from "@/utlis/error.utlis";
 import styles from "./Login.module.css";
 
 export default function ResetPassword() {
@@ -46,7 +47,7 @@ export default function ResetPassword() {
       toast(msg, "success");
       setTimeout(() => router.push("/login"), 2000);
     } catch (err) {
-      const errMsg = err?.message || "Reset failed. Please try again.";
+      const errMsg = userErrorMessage(err, "Reset failed. Please try again.");
       setError(errMsg);
       toast(errMsg, "error");
     } finally {

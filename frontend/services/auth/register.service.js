@@ -1,5 +1,6 @@
 import api from "../../api/api.config";
 import { setToken } from "@/utlis/auth.utlis";
+import { throwAuthError } from "./error.service";
 
 export const register = async (fullName, email, password, mobileNumber) => {
   try {
@@ -22,6 +23,6 @@ export const register = async (fullName, email, password, mobileNumber) => {
     }
     return normalized;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throwAuthError(error);
   }
 };

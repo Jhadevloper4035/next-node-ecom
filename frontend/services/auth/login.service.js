@@ -1,5 +1,6 @@
 import api from "../../api/api.config";
 import { setToken } from "@/utlis/auth.utlis";
+import { throwAuthError } from "./error.service";
 
 export const login = async (email, password) => {
   try {
@@ -17,6 +18,6 @@ export const login = async (email, password) => {
 
     return data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throwAuthError(error);
   }
 };

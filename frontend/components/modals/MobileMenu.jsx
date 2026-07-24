@@ -20,6 +20,11 @@ import { useSelector } from "react-redux";
 import ProductSearchSuggestions from "@/components/search/ProductSearchSuggestions";
 import useProductSearch from "@/hooks/useProductSearch";
 
+const fixedHeaderCategories = [
+  { slug: "kitchen", name: "Kitchen" },
+  { slug: "wardrobe", name: "Wardrobe" },
+];
+
 export default function MobileMenu() {
   const router = useRouter();
   const pathname = usePathname();
@@ -58,6 +63,12 @@ export default function MobileMenu() {
     closeMobileMenu();
     resetSearch();
   };
+
+  const categorySlugs = new Set((categories || []).map((category) => category.slug));
+  const mobileCategories = [
+    ...(categories || []),
+    ...fixedHeaderCategories.filter((category) => !categorySlugs.has(category.slug)),
+  ];
 
   return (
     <div className="offcanvas offcanvas-start canvas-mb" id="mobileMenu">
@@ -166,33 +177,33 @@ export default function MobileMenu() {
                 <li className="nav-mb-item">
                   <span className="mb-menu-link text-danger">Error Loading Categories</span>
                 </li>
-              ) : (
-                categories?.map((category, index) => (
-                  <li key={category._id} className="nav-mb-item">
-                    <a
-                      href={`#dropdown-category-${index}`}
-                      className={`collapsed mb-menu-link ${
-                        pathname.includes(category.slug) ? "active" : ""
-                      }`}
-                      data-bs-toggle="collapse"
-                      aria-expanded="false"
-                      aria-controls={`dropdown-category-${index}`}
-                    >
-                      <span>{category.name}</span>
-                      {category.children?.length > 0 && (
+              ) : null}
+              {!loading &&
+                mobileCategories.map((category, index) => (
+                  category.children?.length > 0 ? (
+                    <li key={category._id || category.slug} className="nav-mb-item">
+                      <a
+                        href={`#dropdown-category-${index}`}
+                        className={`collapsed mb-menu-link ${
+                          pathname.includes(category.slug) ? "active" : ""
+                        }`}
+                        data-bs-toggle="collapse"
+                        aria-expanded="false"
+                        aria-controls={`dropdown-category-${index}`}
+                      >
+                        <span>{category.name}</span>
                         <span className="btn-open-sub" />
-                      )}
-                    </a>
-                    {category.children?.length > 0 && (
+                      </a>
                       <div id={`dropdown-category-${index}`} className="collapse">
                         <ul className="sub-nav-menu">
                           {category.children.map((child) => (
                             <li key={child._id}>
                               <Link
-                                href={`/shop-collection/${category.slug}/${child.slug}`}
+                                href={`/collections/${category.slug}/${child.slug}`}
                                 className={`sub-nav-link ${
                                   pathname.includes(child.slug) ? "active" : ""
                                 }`}
+                                onClick={closeMobileMenu}
                               >
                                 {child.name}
                               </Link>
@@ -200,10 +211,21 @@ export default function MobileMenu() {
                           ))}
                         </ul>
                       </div>
-                    )}
-                  </li>
-                ))
-              )}
+                    </li>
+                  ) : (
+                    <li key={category._id || category.slug} className="nav-mb-item">
+                      <Link
+                        href={`/collections/${category.slug}`}
+                        className={`mb-menu-link ${
+                          pathname.includes(`/collections/${category.slug}`) ? "active" : ""
+                        }`}
+                        onClick={closeMobileMenu}
+                      >
+                        <span>{category.name}</span>
+                      </Link>
+                    </li>
+                  )
+                ))}
               <li className="nav-mb-item">
                 <a
                   href="#dropdown-menu-four"

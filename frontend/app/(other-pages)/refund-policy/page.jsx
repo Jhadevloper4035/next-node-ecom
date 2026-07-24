@@ -20,7 +20,7 @@ export default function TermsOfUsePage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Refund & Return Policy</h3>
+              <h1 className="heading text-center">Refund & Return Policy</h1>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>

@@ -30,7 +30,7 @@ export default function Collections2() {
         {collections.map((item, index) => (
           <SwiperSlide key={index}>
             <div className="banner-cls-discover rounded-0 hover-img">
-              <Link href={`/shop-default-grid`} className="img-style">
+              <Link href={`/all-products`} className="img-style">
                 <Image
                   className="lazyload"
                   data-src={item.imgSrc}
@@ -47,7 +47,7 @@ export default function Collections2() {
                   </p>
                   <h3 className="title">
                     <Link
-                      href={`/shop-default-grid`}
+                      href={`/all-products`}
                       className="link text-white wow fadeInUp"
                       data-wow-delay="0.1s"
                     >
@@ -57,7 +57,7 @@ export default function Collections2() {
                 </div>
                 <div className="wow fadeInUp" data-wow-delay="0.2s">
                   <Link
-                    href={`/shop-default-grid`}
+                    href={`/all-products`}
                     className="tf-btn btn-md btn-white"
                   >
                     <span className="text">{item.buttonText}</span>

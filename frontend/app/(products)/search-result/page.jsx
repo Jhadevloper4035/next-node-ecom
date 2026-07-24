@@ -15,7 +15,7 @@ export default function SearchResultPage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Search</h3>
+              <h1 className="heading text-center">Search</h1>
             </div>
           </div>
         </div>

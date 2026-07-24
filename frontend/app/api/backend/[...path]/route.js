@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 
 const normalizeApiBaseUrl = (url) => {
-  const fallback = "http://backend:5000/api";
+  const fallback = "http://localhost:5000/api";
   const raw = (url || fallback).replace(/\/+$/, "");
-  const dockerSafeRaw = raw.replace("http://localhost:5000", "http://backend:5000");
-  return dockerSafeRaw.endsWith("/v1") ? dockerSafeRaw.slice(0, -3) : dockerSafeRaw;
+  return raw.endsWith("/v1") ? raw.slice(0, -3) : raw;
 };
 
 const backendBaseUrl = normalizeApiBaseUrl(

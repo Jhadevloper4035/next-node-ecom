@@ -26,8 +26,8 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
     setMessage("");
-    if (!password || password.length < 8) {
-      const msg = "Password must be at least 8 characters";
+    if (!password || password.length < 8 || password.length > 16) {
+      const msg = "Password must be between 8 and 16 characters";
       setError(msg);
       toast(msg, "warning");
       return;
@@ -77,6 +77,8 @@ export default function ResetPassword() {
                   placeholder="Enter new password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  minLength={8}
+                  maxLength={16}
                   required
                   disabled={isLoading}
                   style={{ paddingRight: "45px" }}
@@ -94,6 +96,8 @@ export default function ResetPassword() {
                   placeholder="Re-enter new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  minLength={8}
+                  maxLength={16}
                   required
                   disabled={isLoading}
                   style={{ paddingRight: "45px" }}

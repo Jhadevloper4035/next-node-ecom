@@ -15,8 +15,8 @@ export default function Breadcumb({ product }) {
             {product?.category && (
               <>
                 <i className="icon icon-arrRight" />
-                <Link 
-                  href={`/shop-collection/${product.category.slug}`} 
+                <Link
+                  href={`/collections/${product.category.slug}`}
                   className="text text-caption-1 text-capitalize"
                 >
                   {product.category.name}

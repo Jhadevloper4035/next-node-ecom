@@ -21,7 +21,7 @@ export default function ContactPage2() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Contact Us</h3>
+              <h1 className="heading text-center">Contact Us</h1>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>

@@ -2,6 +2,7 @@ import React from "react";
 import Pagination from "../common/Pagination";
 import { collections11 } from "@/data/collections";
 import Image from "next/image";
+import Link from "next/link";
 export default function Collections() {
   return (
     <section className="flat-spacing">
@@ -13,7 +14,7 @@ export default function Collections() {
               key={index}
               className="collection-position-2 radius-lg style-3 hover-img"
             >
-              <a className="img-style">
+              <Link href={item.link || "/collections"} className="img-style">
                 <Image
                   className="lazyload"
                   data-src={item.imgSrc}
@@ -22,15 +23,15 @@ export default function Collections() {
                   width={450}
                   height={600}
                 />
-              </a>
+              </Link>
               <div className="content">
-                <a href="#" className="cls-btn">
+                <Link href={item.link || "/collections"} className="cls-btn">
                   <h6 className="text">{item.text}</h6>
                   <span className="count-item text-secondary">
                     {item.count}
                   </span>
                   <i className="icon icon-arrowUpRight" />
-                </a>
+                </Link>
               </div>
             </div>
           ))}

@@ -285,7 +285,7 @@ export default function Details1({ product }) {
                   <div className="tf-product-info-heading">
                     <div className="tf-product-info-name">
                       <div className="text text-btn-uppercase">{categoryLabel}</div>
-                      <h3 className="name">{product.title}</h3>
+                      <h1 className="name">{product.title}</h1>
                       <div className="sub">
                         <div className="tf-product-info-rate">
                           <div className="list-star">
@@ -464,7 +464,7 @@ export default function Details1({ product }) {
                         <p className="text-caption-1">
                           {product.category && (
                             <a
-                              href={`/shop-collection/${product.category.slug}`}
+                              href={`/collections/${product.category.slug}`}
                               className="text-1 link text-capitalize"
                             >
                               {product.category.name}
@@ -474,7 +474,7 @@ export default function Details1({ product }) {
                             <React.Fragment key={sub._id || i}>
                               ,{" "}
                               <a
-                                href={`/shop-collection/${product.category?.slug}/${sub.slug}`}
+                                href={`/collections/${product.category?.slug}/${sub.slug}`}
                                 className="text-1 link text-capitalize"
                               >
                                 {sub.name}

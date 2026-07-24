@@ -16,7 +16,7 @@ export default function BannerCountdown() {
                 </p>
               </div>
               <div className="btn-banner wow fadeInUp">
-                <Link href={`/shop-default-grid`} className="tf-btn btn-fill">
+                <Link href={`/all-products`} className="tf-btn btn-fill">
                   <span className="text">Shop Now</span>
                   <i className="icon icon-arrowUpRight" />
                 </Link>

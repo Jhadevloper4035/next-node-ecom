@@ -29,5 +29,4 @@ router.use("/admin", adminRoutes);
 router.get("/health", healthCtrl.health);
 
 
-
 module.exports = router;

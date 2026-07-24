@@ -7,6 +7,10 @@ const v = require("../validators/product.validator");
 const validate = require("../validators/index")
 const { env } = require("../config/env");
 const cacheResponse = require("../middlewares/cacheResponse");
+const auth = require("../middlewares/auth");
+const requireRole = require("../middlewares/requireRole");
+
+const adminOnly = [auth, requireRole("admin")];
 
 // Public
 router.get(
@@ -54,9 +58,8 @@ router.get(
 );
 
 
-// Admin / Protected (add auth middleware as you have)
-router.post("/", v.createProductValidator, validate, productController.createProduct);
-router.put("/:id", v.updateProductValidator, validate, productController.updateProduct);
-router.delete("/:id", v.deleteProductValidator, validate, productController.softDeleteProduct);
+router.post("/", ...adminOnly, v.createProductValidator, validate, productController.createProduct);
+router.put("/:id", ...adminOnly, v.updateProductValidator, validate, productController.updateProduct);
+router.delete("/:id", ...adminOnly, v.deleteProductValidator, validate, productController.softDeleteProduct);
 
 module.exports = router;

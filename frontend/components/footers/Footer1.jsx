@@ -85,7 +85,7 @@ export default function Footer1({
         items:
           categories?.map((cat) => ({
             label: cat.name, // adjust based on API
-            href: `/shop-collection/${cat.slug}`, // adjust
+            href: `/collections/${cat.slug}`, // adjust
             isLink: true,
           })) || [],
       };

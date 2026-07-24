@@ -11,7 +11,7 @@ export default function ShopBreadcumbBackgroundPage() {
        */}
       <div className="page-title">
         <div className="container">
-          <h3 className="heading text-center">Women</h3>
+          <h1 className="heading text-center">Women</h1>
           <ul className="breadcrumbs d-flex align-items-center justify-content-center">
             <li>
               <Link className="link" href={`/`}>

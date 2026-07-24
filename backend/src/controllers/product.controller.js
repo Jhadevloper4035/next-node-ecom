@@ -178,7 +178,7 @@ exports.getBySlug = async (req, res, next) => {
  *  - page, limit
  *  - category, subcategory (ObjectId)
  *  - minPrice, maxPrice
- *  - inStock, isActive
+ *  - inStock
  *  - q (product, category, tag, and option search)
  *  - sort (newest, price_asc, price_desc, rating)
  */
@@ -193,7 +193,6 @@ exports.listProducts = async (req, res, next) => {
       minPrice,
       maxPrice,
       inStock,
-      isActive,
       q,
       sort = "newest",
     } = req.query;
@@ -202,11 +201,9 @@ exports.listProducts = async (req, res, next) => {
       isDeleted: false,
     };
 
-    const activeFilter = parseBooleanQuery(isActive);
     const stockFilter = parseBooleanQuery(inStock);
 
-    if (activeFilter !== undefined) filter.isActive = activeFilter;
-    else filter.isActive = true; // default only active
+    filter.isActive = true;
 
     if (category) filter.category = category;
     if (subcategory) filter.subcategories = subcategory;
@@ -295,7 +292,7 @@ exports.getByCategorySlug = async (req, res, next) => {
     const { categorySlug } = req.params;
     const { page = 1, limit = 10, sort = "newest" } = req.query;
 
-    const category = await Category.findOne({ slug: categorySlug });
+    const category = await Category.findOne({ slug: categorySlug, isDeleted: false, isActive: true });
     if (!category) {
       return res.status(404).json({ success: false, message: "Category not found" });
     }
@@ -345,8 +342,8 @@ exports.getByCategoryAndSubcategorySlug = async (req, res, next) => {
     const { page = 1, limit = 10, sort = "newest" } = req.query;
 
     const [category, subcategory] = await Promise.all([
-      Category.findOne({ slug: categorySlug }),
-      Category.findOne({ slug: subcategorySlug }),
+      Category.findOne({ slug: categorySlug, isDeleted: false, isActive: true }),
+      Category.findOne({ slug: subcategorySlug, isDeleted: false, isActive: true }),
     ]);
 
     if (!category) {

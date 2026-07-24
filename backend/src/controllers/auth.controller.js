@@ -58,11 +58,6 @@ async function sendOtp(user) {
   if (user.otpRequestCount >= env.otpMaxReqs) return { sent: false, reason: "rate_limited" };
 
   const otp = generateOtp();
-  user.emailOtpHash = hashOtp(otp);
-  user.emailOtpExpiresAt = new Date(now.getTime() + env.otpExpiry * 60 * 1000);
-  user.otpRequestCount += 1;
-  user.otpLastRequestedAt = now;
-  await user.save();
 
   try {
     await sendMail({
@@ -72,7 +67,14 @@ async function sendOtp(user) {
     });
   } catch (err) {
     console.error("Failed to send OTP:", err.message);
+    throw new ApiError(503, "Unable to send OTP email. Please try again later.");
   }
+
+  user.emailOtpHash = hashOtp(otp);
+  user.emailOtpExpiresAt = new Date(now.getTime() + env.otpExpiry * 60 * 1000);
+  user.otpRequestCount += 1;
+  user.otpLastRequestedAt = now;
+  await user.save();
 
   return { sent: true };
 }

@@ -12,10 +12,31 @@ import "../public/css/image-compare-viewer.min.css";
 import "../components/common/toast.css";
 import AppShell from "@/components/common/AppShell";
 
+
+
 export const metadata = {
-  title: "Curve & Comfort",
+  metadataBase: new URL("https://curve-comfort.com"),
+  title: {
+    default: "Curve & Comfort | Premium Furniture Online",
+    template: "%s | Curve & Comfort",
+  },
   description: "Furniture and decor for comfortable modern homes.",
   manifest: "/images/favicon/site.webmanifest",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    siteName: "Curve & Comfort",
+    type: "website",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   appleWebApp: {
     title: "Curve and Comfort",
   },

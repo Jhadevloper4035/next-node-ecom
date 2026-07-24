@@ -44,7 +44,7 @@ export default function Hero() {
                   </div>
                   <div className="fade-item fade-item-3 box-btn-slider">
                     <Link
-                      href={`/shop-default-grid`} // Link added directly here
+                      href={`/all-products`}
                       className="tf-btn btn-fill btn-white"
                     >
                       <span className="text">{slide.linkText}</span>

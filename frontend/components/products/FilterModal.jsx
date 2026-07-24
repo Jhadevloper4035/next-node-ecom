@@ -71,7 +71,7 @@ export default function FilterModal({ allProps }) {
             <ul className="facet-content">
               {categories.map((category, index) => (
                 <li key={index}>
-                  <Link href={`/shop-collection/${category.slug}`} className={`categories-item`}>
+                  <Link href={`/collections/${category.slug}`} className={`categories-item`}>
                     {category.name}{" "}
                     <span className="count-cate">({category.count})</span>
                   </Link>

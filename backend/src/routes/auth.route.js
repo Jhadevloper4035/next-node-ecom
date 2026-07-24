@@ -4,7 +4,6 @@ const validate = require("../validators/index");
 const v = require("../validators/auth.validator");
 
 const auth = require("../middlewares/auth");
-const requireRole = require("../middlewares/requireRole");
 const { authLimiter, loginLimiter, otpVerifyLimiter } = require("../middlewares/rateLimiters");
 
 const authCtrl = require("../controllers/auth.controller");

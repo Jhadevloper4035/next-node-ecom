@@ -15,19 +15,19 @@ const seoDetails = {
     title: "Buy Chairs Online | Premium Accent & Living Room Chairs - Curve & Comfort",
     description: "Shop our exclusive collection of luxury chairs online. Find modern designer accent chairs, executive seating, and premium living room chairs built for ergonomic support and elegance.",
     keywords: ["buy chairs online", "chairs online", "buy chair", "order chair online", "online chair purchase", "chair online order"],
-    canonical: "https://curve-comfort.com/collections/chairs",
+    canonical: "https://curve-comfort.com/collections/chairs-and-ottomans",
   },
   "chairs-and-ottomans": {
     title: "Buy Chairs Online | Premium Accent & Living Room Chairs - Curve & Comfort",
     description: "Shop our exclusive collection of luxury chairs online. Find modern designer accent chairs, executive seating, and premium living room chairs built for ergonomic support and elegance.",
     keywords: ["buy chairs online", "chairs online", "buy chair", "order chair online", "online chair purchase", "chair online order"],
-    canonical: "https://curve-comfort.com/collections/chairs",
+    canonical: "https://curve-comfort.com/collections/chairs-and-ottomans",
   },
   "chairs-ottomans": {
     title: "Buy Chairs Online | Premium Accent & Living Room Chairs - Curve & Comfort",
     description: "Shop our exclusive collection of luxury chairs online. Find modern designer accent chairs, executive seating, and premium living room chairs built for ergonomic support and elegance.",
     keywords: ["buy chairs online", "chairs online", "buy chair", "order chair online", "online chair purchase", "chair online order"],
-    canonical: "https://curve-comfort.com/collections/chairs",
+    canonical: "https://curve-comfort.com/collections/chairs-and-ottomans",
   },
   beds: {
     title: "Online Bed Purchase | Luxury & Premium Beds Online - Curve & Comfort",
@@ -41,6 +41,24 @@ const seoDetails = {
     keywords: ["online wooden furniture", "best online furniture shops", "furniture online delhi", "premium furniture online", "best online furniture shopping"],
     canonical: "https://curve-comfort.com/collections/wooden-furniture",
   },
+  kitchen: {
+    title: "Kitchen Furniture Online | Premium Modular Kitchen Designs - Curve & Comfort",
+    description: "Explore premium kitchen furniture and modular kitchen designs from Curve & Comfort. Discover elegant storage, counters, and custom kitchen solutions for modern homes.",
+    keywords: ["kitchen furniture online", "modular kitchen furniture", "premium kitchen designs", "custom kitchen furniture"],
+    canonical: "https://curve-comfort.com/collections/kitchen",
+  },
+  wardrobe: {
+    title: "Wardrobe Furniture Online | Premium Custom Wardrobes - Curve & Comfort",
+    description: "Shop premium wardrobe furniture and custom wardrobe designs from Curve & Comfort. Discover elegant storage solutions for luxury bedrooms and modern homes.",
+    keywords: ["wardrobe furniture online", "custom wardrobes", "premium wardrobe designs", "luxury bedroom storage"],
+    canonical: "https://curve-comfort.com/collections/wardrobe",
+  },
+  wardrobes: {
+    title: "Wardrobe Furniture Online | Premium Custom Wardrobes - Curve & Comfort",
+    description: "Shop premium wardrobe furniture and custom wardrobe designs from Curve & Comfort. Discover elegant storage solutions for luxury bedrooms and modern homes.",
+    keywords: ["wardrobe furniture online", "custom wardrobes", "premium wardrobe designs", "luxury bedroom storage"],
+    canonical: "https://curve-comfort.com/collections/wardrobe",
+  },
 };
 
 export async function generateMetadata({ params }) {
@@ -50,12 +68,18 @@ export async function generateMetadata({ params }) {
   return details
     ? {
         title: details.title,
+      description: details.description,
+      keywords: details.keywords,
+      alternates: {
+        canonical: details.canonical,
+      },
+      openGraph: {
+        title: details.title,
         description: details.description,
-        keywords: details.keywords,
-        alternates: {
-          canonical: details.canonical,
-        },
-      }
+        url: details.canonical,
+        type: "website",
+      },
+    }
     : {};
 }
 
@@ -75,7 +99,7 @@ export default async function CategoryPage({ params }) {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center text-capitalize">{categoryTitle}</h3>
+              <h1 className="heading text-center text-capitalize">{categoryTitle}</h1>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>

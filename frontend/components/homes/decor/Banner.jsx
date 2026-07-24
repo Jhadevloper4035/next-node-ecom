@@ -36,7 +36,7 @@ export default function Banner() {
             </div>
             <div className="wow fadeInUp" data-wow-delay="0.3s">
               <Link
-                href={`/shop-default-grid`}
+                href={`/all-products`}
                 className="tf-btn btn-md btn-white"
               >
                 <span className="text">discover Now</span>

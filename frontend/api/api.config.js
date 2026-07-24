@@ -4,10 +4,9 @@ import { getToken, setToken, clearAuth } from "@/utlis/auth.utlis";
 const normalizeApiBaseUrl = (url) => {
   const fallback = "http://localhost:5000/api";
   const raw = (url || fallback).replace(/\/+$/, "");
-  if (process.env.NEXT_RUNTIME !== "nodejs") return raw.startsWith("http") ? "/api" : raw;
+  if (process.env.NEXT_RUNTIME !== "nodejs") return raw.startsWith("http") ? "/api/backend" : raw;
 
-  const dockerSafeRaw = raw.replace("http://localhost:5000", "http://backend:5000");
-  return dockerSafeRaw.endsWith("/v1") ? dockerSafeRaw.slice(0, -3) : dockerSafeRaw;
+  return raw.endsWith("/v1") ? raw.slice(0, -3) : raw;
 };
 
 const api = axios.create({

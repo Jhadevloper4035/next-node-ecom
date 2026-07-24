@@ -145,6 +145,45 @@ const CATEGORY_PRODUCT_CONFIG = {
       },
     ],
   },
+  kitchen: {
+    label: "Kitchen",
+    gridColumns: 3,
+    filters: ["price", "availability", "material"],
+    customizationGroups: [
+      {
+        key: "material",
+        label: "Material",
+        inputType: "buttons",
+        source: "optionPricing.materials",
+      },
+    ],
+  },
+  wardrobe: {
+    label: "Wardrobe",
+    gridColumns: 3,
+    filters: ["price", "availability", "material"],
+    customizationGroups: [
+      {
+        key: "material",
+        label: "Material",
+        inputType: "buttons",
+        source: "optionPricing.materials",
+      },
+    ],
+  },
+  wardrobes: {
+    label: "Wardrobes",
+    gridColumns: 3,
+    filters: ["price", "availability", "material"],
+    customizationGroups: [
+      {
+        key: "material",
+        label: "Material",
+        inputType: "buttons",
+        source: "optionPricing.materials",
+      },
+    ],
+  },
 };
 
 const DEFAULT_CATEGORY_CONFIG = {

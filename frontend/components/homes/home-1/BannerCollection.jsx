@@ -20,7 +20,7 @@ export default function BannerCollection() {
             </a>
             <div className="content">
               <h3 className="title wow fadeInUp">
-                <Link href={`/shop-collection`} className="link">
+                <Link href={`/collections`} className="link">
                   Upgrade Your Home to Luxury with Us
                 </Link>
               </h3>
@@ -28,7 +28,7 @@ export default function BannerCollection() {
                 Transform your everyday spaces into refined living experiences. Our thoughtfully crafted furniture blends modern design with timeless comfort, helping you create a home that feels truly luxurious.
               </p>
               <div className="wow fadeInUp">
-                <Link href={`/shop-collection`} className="btn-line">
+                <Link href={`/collections`} className="btn-line">
                   Shop Now
                 </Link>
               </div>
@@ -48,7 +48,7 @@ export default function BannerCollection() {
             <div className="content">
               <h3 className="title">
                 <Link
-                  href={`/shop-collection`}
+                  href={`/collections`}
                   className="link text-white wow fadeInUp"
                 >
                   Capsule Collection
@@ -59,7 +59,7 @@ export default function BannerCollection() {
               </p>
               <div className="wow fadeInUp">
                 <Link
-                  href={`/shop-collection`}
+                  href={`/collections`}
                   className="btn-line style-white"
                 >
                   Shop Now

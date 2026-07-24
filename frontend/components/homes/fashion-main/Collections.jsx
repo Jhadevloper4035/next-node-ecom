@@ -11,7 +11,7 @@ export default function Collections() {
       <div className="container">
         <div className="heading-section-2 wow fadeInUp">
           <h3 className="heading">Explore Collections</h3>
-          <Link href={`/shop-collection`} className="btn-line">
+          <Link href={`/collections`} className="btn-line">
             View All Collection
           </Link>
         </div>
@@ -48,7 +48,7 @@ export default function Collections() {
                   />
                 </a>
                 <div className="content">
-                  <Link href={`/shop-collection`} className="cls-btn">
+                  <Link href={`/collections`} className="cls-btn">
                     <h6 className="text">{category.title}</h6>
                     <span className="count-item text-secondary">
                       {category.itemsCount}

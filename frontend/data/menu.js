@@ -233,7 +233,7 @@ export const demoItems = [
 ];
 
 export const shopLayout = [
-  { href: "/shop-default-grid", name: "Default Grid" },
+  { href: "/all-products", name: "Default Grid" },
   { href: "/shop-default-list", name: "Default List" },
   { href: "/shop-fullwidth-list", name: "Full Width List" },
   { href: "/shop-fullwidth-grid", name: "Full Width Grid" },
@@ -246,7 +246,7 @@ export const shopLayout = [
 export const shopFeatures = [
   { href: "/shop-categories-top", name: "Categories Top 1" },
   { href: "/shop-categories-top-02", name: "Categories Top 2" },
-  { href: "/shop-collection", name: "Shop Collection" },
+  { href: "/collections", name: "Shop Collection" },
   { href: "/shop-breadcrumb-img", name: "Breadcrumb IMG" },
   { href: "/shop-breadcrumb-left", name: "Breadcrumb Left" },
   { href: "/shop-breadcrumb-background", name: "Breadcrumb BG" },

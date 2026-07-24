@@ -7,7 +7,6 @@ const v = require("../validators/auth.validator");
 
 const auth = require("../middlewares/auth");
 const requireRole = require("../middlewares/requireRole");
-const { authLimiter, loginLimiter, otpVerifyLimiter } = require("../middlewares/rateLimiters");
 
 
 const adminCtrl = require("../controllers/admin.controller");

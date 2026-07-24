@@ -25,7 +25,7 @@ export default function AboutUsPage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">About Our Store</h3>
+              <h1 className="heading text-center">About Our Store</h1>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>

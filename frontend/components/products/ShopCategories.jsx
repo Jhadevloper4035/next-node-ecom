@@ -34,7 +34,7 @@ export default function ShopCategories() {
           {collections.map((collection, index) => (
             <SwiperSlide key={index}>
               <div className="collection-circle hover-img">
-                <Link href={`/shop-collection`} className="img-style">
+                <Link href={`/collections`} className="img-style">
                   <Image
                     className="lazyload"
                     data-src={collection.imgSrc}
@@ -46,7 +46,7 @@ export default function ShopCategories() {
                 </Link>
                 <div className="collection-content text-center">
                   <div>
-                    <Link href={`/shop-collection`} className="cls-title">
+                    <Link href={`/collections`} className="cls-title">
                       <h6 className="text">{collection.title}</h6>
                       <i className="icon icon-arrowUpRight" />
                     </Link>

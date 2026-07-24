@@ -23,7 +23,7 @@ export default function OrderTrackingPage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Order Tracking</h3>
+              <h1 className="heading text-center">Order Tracking</h1>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>
@@ -34,7 +34,7 @@ export default function OrderTrackingPage() {
                   <i className="icon-arrRight" />
                 </li>
                 <li>
-                  <Link className="link" href={`/shop-default-grid`}>
+                  <Link className="link" href={`/all-products`}>
                     Shop
                   </Link>
                 </li>

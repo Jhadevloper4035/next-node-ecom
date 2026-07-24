@@ -23,10 +23,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategoriesStart, fetchCategoriesSuccess, fetchCategoriesFailure } from "@/redux/categorySlice";
 import { getAllCategories } from "@/services/category/category.service";
 
+const fallbackHeaderCategories = [
+  { slug: "beds", name: "Beds", hasChildren: true },
+  { slug: "chairs-and-ottomans", name: "Chairs & Ottomans", hasChildren: true },
+  { slug: "coffee-tables", name: "Coffee Tables", hasChildren: true },
+  { slug: "console-tables", name: "Console Tables", hasChildren: true },
+  { slug: "nester-tables", name: "Nester Tables", hasChildren: true },
+  { slug: "sofas", name: "Sofas", hasChildren: true },
+  { slug: "wall-decor", name: "Wall Decor", hasChildren: true },
+  { slug: "kitchen", name: "Kitchen" },
+  { slug: "wardrobe", name: "Wardrobe" },
+];
+
 export default function Nav() {
   const pathname = usePathname();
   const dispatch = useDispatch();
-  const { categories, loading, error } = useSelector((state) => state.category);
+  const { categories } = useSelector((state) => state.category);
 
   useEffect(() => {
     const fetchCats = async () => {
@@ -42,41 +54,43 @@ export default function Nav() {
   }, [dispatch]);
 
   const isCategoryActive = (category) => {
-    if (pathname.includes(`/shop-collection/${category.slug}`)) return true;
+    if (pathname.includes(`/collections/${category.slug}`)) return true;
     return category.children?.some((child) =>
-      pathname.includes(`/shop-collection/${child.slug}`)
+      pathname.includes(`/collections/${category.slug}/${child.slug}`)
     );
   };
+
+  const apiCategoriesBySlug = new Map((categories || []).map((category) => [category.slug, category]));
+  const fallbackSlugs = new Set(fallbackHeaderCategories.map((category) => category.slug));
+  const headerCategories = [
+    ...fallbackHeaderCategories.map((category) => ({
+      ...category,
+      ...apiCategoriesBySlug.get(category.slug),
+    })),
+    ...(categories || []).filter((category) => !fallbackSlugs.has(category.slug)),
+  ];
+
   return (
     <>
+      {headerCategories.map((category) => {
+        const hasSubmenu = category.children?.length > 0;
 
-
-      {loading ? (
-        <li className="menu-item">
-          <a href="#" className="item-link">Loading...</a>
-        </li>
-      ) : error ? (
-        <li className="menu-item">
-          {/* <a href="#" className="item-link text-danger">Error loading categories</a> */}
-          console.log(error);
-        </li>
-      ) : (
-        categories?.map((category) => (
+        return (
           <li
-            key={category._id}
+            key={category._id || category.slug}
             className={`menu-item ${isCategoryActive(category) ? "active" : ""
-              } ${category.children?.length > 0 ? "position-relative" : ""}`}
+              } ${hasSubmenu ? "position-relative" : ""}`}
           >
             <Link
-              href={`/shop-collection/${category.slug}`}
+              href={`/collections/${category.slug}`}
               className="item-link"
             >
               {category.name}
-              {category.children?.length > 0 && (
+              {(hasSubmenu || category.hasChildren) && (
                 <i className="icon icon-arrow-down" />
               )}
             </Link>
-            {category.children?.length > 0 && (
+            {hasSubmenu && (
               <div className="sub-menu submenu-default">
                 <ul className="menu-list">
                   {category.children.map((child) => (
@@ -86,7 +100,7 @@ export default function Nav() {
                         }`}
                     >
                       <Link
-                        href={`/shop-collection/${category.slug}/${child.slug}`}
+                        href={`/collections/${category.slug}/${child.slug}`}
                         className="menu-link-text"
                       >
                         {child.name}
@@ -97,11 +111,8 @@ export default function Nav() {
               </div>
             )}
           </li>
-        ))
-      )}
-
-
-
+        );
+      })}
     </>
   );
 }

@@ -34,7 +34,7 @@ export default function ShopCategories2() {
                   />
                 </a>
                 <div className="content">
-                  <Link href={`/shop-collection`} className="cls-btn">
+                  <Link href={`/collections`} className="cls-btn">
                     <h6 className="text">{slide.text}</h6>
                     <i className="icon icon-arrowUpRight" />
                   </Link>

@@ -505,7 +505,8 @@
 .box-nav-ul {
   .menu-item {
     padding: 28px 0px;
-    &:hover {
+    &:hover,
+    &:focus-within {
       > .sub-menu {
         pointer-events: all;
         opacity: 1;
@@ -542,7 +543,8 @@
         top: 3px;
       }
     }
-    &:hover {
+    &:hover,
+    &:focus-within {
       > .sub-menu {
         pointer-events: all;
         opacity: 1;
@@ -564,9 +566,18 @@
     opacity: 0;
     visibility: hidden;
     border-radius: 8px;
-    transform: translateX(0px) translateY(10px);
+    transform: translateX(0px) translateY(0px);
     box-shadow: var(--shadow1);
-    @include mixin.transition3;
+    transition: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -12px;
+      height: 12px;
+    }
   }
   .wrapper-sub-shop {
     margin-left: -10px;

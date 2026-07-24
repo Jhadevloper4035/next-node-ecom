@@ -1,7 +1,6 @@
 // import Topbar from "@/components/headers/Topbar";
 // import BannerCountdown from "@/components/homes/home-1/BannerCountdown";
 
-
 import Footer from "@/components/footers/Footer1";
 
 import BannerCollection from "@/components/homes/home-1/BannerCollection";
@@ -19,7 +18,8 @@ import Testimonials from "@/components/homes/decor/Testimonials";
 
 export const metadata = {
   title: "Online Furniture Stores | Premium Furniture Online - Curve & Comfort",
-  description: "Discover premium furniture online at Curve & Comfort. Shop high-end designer sofas, luxury chairs, and premium wooden furniture crafted for ultimate elegance. Buy furniture online today.",
+  description:
+    "Discover premium furniture online at Curve & Comfort. Shop high-end designer sofas, luxury chairs, and premium wooden furniture crafted for ultimate elegance. Buy furniture online today.",
   keywords: [
     "online furniture",
     "premium furniture online",
@@ -37,14 +37,21 @@ export default function HomePage() {
     <>
       <Hero />
 
-
       <Collections />
 
-      <Products title="Best Selling" filter="on-sale" parentClass="flat-spacing-3" />
+      <Products
+        title="Best Selling"
+        filter="on-sale"
+        parentClass="flat-spacing-3"
+      />
 
       <BannerDiscover />
 
-      <Products title="Top Trending" filter="featured" parentClass="flat-spacing-3" />
+      <Products
+        title="Top Trending"
+        filter="featured"
+        parentClass="flat-spacing-3"
+      />
 
       <LookBook />
 
@@ -55,7 +62,9 @@ export default function HomePage() {
       <Testimonials />
 
       <ShopGram />
+
       {/* <Features /> */}
+
       <Footer />
     </>
   );

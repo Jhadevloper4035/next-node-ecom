@@ -52,7 +52,7 @@ export default function Categories() {
                 
                 <span className="title">
                   {category.children?.length === 0 ? (
-                    <Link href={`/shop-collection/${category.slug}`} className="text-decoration-none text-dark">
+                    <Link href={`/collections/${category.slug}`} className="text-decoration-none text-dark">
                       {category.name}
                     </Link>
                   ) : (
@@ -67,7 +67,7 @@ export default function Categories() {
                 <div id={`category-menu-${index}`} className="collapse">
                   <ul className="facet-body">
                     <li>
-                      <Link href={`/shop-collection/${category.slug}`} className="item link">
+                      <Link href={`/collections/${category.slug}`} className="item link">
                         <span className="title-sub text-caption-1 text-secondary">
                           All {category.name}
                         </span>
@@ -75,7 +75,7 @@ export default function Categories() {
                     </li>
                     {category.children.map((child, childIndex) => (
                       <li key={child._id || childIndex}>
-                        <Link href={`/shop-collection/${category.slug}/${child.slug}`} className="item link">
+                        <Link href={`/collections/${category.slug}/${child.slug}`} className="item link">
                            {child.image && (
                             <Image
                               className="avt"

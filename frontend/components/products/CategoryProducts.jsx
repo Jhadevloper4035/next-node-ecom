@@ -46,6 +46,7 @@ const optionFilterLabels = {
   material: "Material",
   size: "Size",
 };
+const emptyPlannedCategories = new Set(["kitchen", "wardrobe", "wardrobes"]);
 
 export default function CategoryProducts({ categorySlug, subcategorySlug }) {
   const config = useMemo(
@@ -85,7 +86,8 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err?.message || "Failed to fetch products");
+          const message = err?.message || String(err);
+          setError(emptyPlannedCategories.has(categorySlug) && message === "Category not found" ? "" : message || "Failed to fetch products");
           setProducts([]);
         }
       } finally {

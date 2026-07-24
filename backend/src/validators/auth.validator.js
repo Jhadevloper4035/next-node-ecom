@@ -14,8 +14,8 @@ const passwordRule = (field = "password") =>
     .isString()
     .withMessage("Password must be a string")
     .bail()
-    .isLength({ min: 10, max: 72 })
-    .withMessage("Password must be between 10 and 72 characters")
+    .isLength({ min: 8, max: 16 })
+    .withMessage("Password must be between 8 and 16 characters")
     .bail()
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
     .withMessage(
@@ -137,20 +137,14 @@ exports.listUsersValidator = [
 
 
 exports.changePasswordValidator = [
-  body("password")
-    .trim()
-    .isLength({ min: 10, max: 72 })
-    .withMessage("Password must be between 10 and 72 characters")
-    .bail()
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
-    .withMessage(
-      "Password must include uppercase, lowercase, number, and special character"
-    ),
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required"),
 
-    body("newPassword")
+  body("newPassword")
     .trim()
-    .isLength({ min: 10, max: 72 })
-    .withMessage("New password must be between 10 and 72 characters")
+    .isLength({ min: 8, max: 16 })
+    .withMessage("New password must be between 8 and 16 characters")
     .bail()
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
     .withMessage(

@@ -19,7 +19,7 @@ export default function CustomerFeedbackPage() {
         <div className="container-full">
           <div className="row">
             <div className="col-12">
-              <h3 className="heading text-center">Customer Feedbacks</h3>
+              <h1 className="heading text-center">Customer Feedbacks</h1>
               <ul className="breadcrumbs d-flex align-items-center justify-content-center">
                 <li>
                   <Link className="link" href={`/`}>

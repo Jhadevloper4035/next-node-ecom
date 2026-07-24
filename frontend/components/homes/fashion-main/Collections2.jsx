@@ -39,7 +39,7 @@ export default function Collections2() {
               </a>
               <div className="content">
                 <h3 className="title wow fadeInUp">
-                  <Link href={`/shop-collection`} className="link text-white">
+                  <Link href={`/collections`} className="link text-white">
                     {collection.title}
                   </Link>
                 </h3>
@@ -51,7 +51,7 @@ export default function Collections2() {
                 </p>
                 <div className="wow fadeInUp" data-wow-delay={collection.delay}>
                   <Link
-                    href={`/shop-collection`}
+                    href={`/collections`}
                     className="btn-line style-white"
                   >
                     {collection.btnText}

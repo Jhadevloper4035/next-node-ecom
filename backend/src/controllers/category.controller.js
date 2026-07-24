@@ -89,9 +89,7 @@ exports.getCategories = async (req, res) => {
     const limit = Math.min(Math.max(parseInt(req.query.limit || "20", 10), 1), 100);
     const skip = (page - 1) * limit;
 
-    const filter = { isDeleted: false };
-
-    if (req.query.isActive !== undefined) filter.isActive = req.query.isActive === "true";
+    const filter = { isDeleted: false, isActive: true };
 
     console.log("Query parent:", req.query.parent);
 
@@ -128,7 +126,7 @@ exports.getCategories = async (req, res) => {
 
 exports.getCategoryById = async (req, res) => {
   try {
-    const doc = await Category.findOne({ _id: req.params.id, isDeleted: false }).lean();
+    const doc = await Category.findOne({ _id: req.params.id, isDeleted: false, isActive: true }).lean();
     if (!doc) return sendError(res, "Category not found", 404);
     return sendSuccess(res, doc);
   } catch (error) {
@@ -138,7 +136,7 @@ exports.getCategoryById = async (req, res) => {
 
 exports.getCategoryBySlug = async (req, res) => {
   try {
-    const doc = await Category.findOne({ slug: req.params.slug.toLowerCase(), isDeleted: false }).lean();
+    const doc = await Category.findOne({ slug: req.params.slug.toLowerCase(), isDeleted: false, isActive: true }).lean();
     if (!doc) return sendError(res, "Category not found", 404);
     return sendSuccess(res, doc);
   } catch (error) {
@@ -182,7 +180,7 @@ exports.restoreCategory = async (req, res) => {
 
 exports.getCategoryTree = async (req, res) => {
   try {
-    const categories = await Category.find({ isDeleted: false })
+    const categories = await Category.find({ isDeleted: false, isActive: true })
       .select("_id name slug parent  level")
       .sort({ displayOrder: 1, name: 1 })
       .lean();
@@ -299,7 +297,7 @@ exports.getSubcategories = async (req, res) => {
     const limit = Math.min(Math.max(parseInt(req.query.limit || "50", 10), 1), 100);
     const skip = (page - 1) * limit;
 
-    const filter = { isDeleted: false, parent: parentId };
+    const filter = { isDeleted: false, isActive: true, parent: parentId };
 
     const [items, total] = await Promise.all([
       Category.find(filter).sort({ displayOrder: 1, name: 1 }).skip(skip).limit(limit).lean(),

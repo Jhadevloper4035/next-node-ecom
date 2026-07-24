@@ -6,9 +6,6 @@ exports.submitContact = async (req, res) => {
   try {
     const { name, email, mobileNumber, message } = req.body;
 
-    // Optional: attach user if logged in
-    const userId = req.user?.id || null;
-
     const contact = await Contact.create({
       name,
       email,

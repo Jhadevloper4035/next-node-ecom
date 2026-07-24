@@ -68,8 +68,8 @@ export default function Register() {
       return false;
     }
 
-    if (formData.password.length < 8) {
-      const msg = "Password must be at least 8 characters long";
+    if (formData.password.length < 8 || formData.password.length > 16) {
+      const msg = "Password must be between 8 and 16 characters";
       setError(msg);
       toast(msg, "warning");
       return false;
@@ -170,6 +170,8 @@ export default function Register() {
                   value={formData.password}
                   onChange={handleInputChange}
                   disabled={isLoading}
+                  minLength={8}
+                  maxLength={16}
                   required
                   style={{ paddingRight: "45px" }}
                 />

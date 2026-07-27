@@ -115,18 +115,6 @@ export default function AppShell({ children }) {
   }, []);
 
   useEffect(() => {
-    const trackPageView = () => window.fbq?.("track", "PageView");
-
-    window.addEventListener("app-route-change", trackPageView);
-    window.addEventListener("popstate", trackPageView);
-
-    return () => {
-      window.removeEventListener("app-route-change", trackPageView);
-      window.removeEventListener("popstate", trackPageView);
-    };
-  }, []);
-
-  useEffect(() => {
     const header = document.querySelector("header");
     if (!header) return;
 

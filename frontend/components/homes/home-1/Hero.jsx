@@ -1,20 +1,18 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectFade, Pagination } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import { slides } from "@/data/heroSlides";
 import Image from "next/image";
 import Link from "next/link";
 export default function Hero() {
   return (
-    <section className="tf-slideshow slider-default slider-effect-fade">
+    <section className="tf-slideshow slider-default home-hero">
       <Swiper
-        effect="fade"
         spaceBetween={0}
         centeredSlides={false}
         slidesPerView={1}
         loop={true}
-        modules={[EffectFade, Autoplay, Pagination]}
-        // autoplay={{ delay: 3000 }}
+        modules={[Pagination]}
         dir="ltr"
         pagination={{
           clickable: true,
@@ -28,9 +26,9 @@ export default function Hero() {
               <Image
                 alt={slide.alt}
                 src={slide.imgSrc}
-                width={1920}
-                height={803}
-                priority
+                width={1679}
+                height={652}
+                priority={index === 0}
               />
               <div className="box-content">
                 <div className="content-slider">

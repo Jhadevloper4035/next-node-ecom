@@ -341,12 +341,13 @@
     .item-link {
       font-size: 16px;
       line-height: 26px;
-      font-weight: 600;
+      font-weight: 400;
       display: flex;
       align-items: center;
       gap: 4px;
       @include mixin.transition3;
       position: relative;
+      letter-spacing: 0.6px;
 
       .icon {
         font-size: 12px;
@@ -1329,6 +1330,7 @@
 header {
   position: sticky;
   position: -webkit-sticky;
+  top: 0;
   left: 0;
   right: 0;
   -webkit-transition: 0.2s ease-out;

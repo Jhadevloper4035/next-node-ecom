@@ -63,7 +63,7 @@ async function sendVerificationEmail(user) {
   const token = await createToken(EmailVerificationToken, user._id, env.verificationExpiry * 60 * 1000);
   queueMail({
     to: user.email,
-    subject: `${env.appName} - Verify your email`,
+    subject: "Curve & Comfort - Verify your email",
     html: verificationEmailTemplate({
       appName: env.appName,
       verificationLink: `${env.frontendUrl}/verify-email#token=${token}`,

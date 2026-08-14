@@ -1,337 +1,144 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import CurrencySelect from "../common/CurrencySelect";
 import ToolbarBottom from "../headers/ToolbarBottom";
 import ScrollTop from "../common/ScrollTop";
-import { footerLinks, footerLinks2, socialLinks } from "@/data/footerLinks";
-import axios from "axios";
-export default function Footer1({
-  border = true,
-  dark = false,
-  hasPaddingBottom = false,
-}) {
-  const [success, setSuccess] = useState(true);
-  const [showMessage, setShowMessage] = useState(false);
-  const { categories, loading } = useSelector((state) => state.category);
-  const handleShowMessage = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 2000);
-  };
+import styles from "./Footer1.module.css";
 
-  const sendEmail = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    const email = e.target.email.value;
+const columns = [
+  {
+    title: "Quick Links",
+    links: [
+      ["About Us", "/about-us"],
+      ["Our Blog", "/blog-default"],
+      ["Contact Us", "/contact"],
+      ["Store Locations", "/store-list"],
+    ],
+  },
+  {
+    title: "Shop",
+    links: [
+      ["All Products", "/all-products"],
+      ["Shop Furniture", "/shop-default-grid"],
+      ["Shopping Cart", "/shopping-cart"],
+      ["Wishlist", "/wish-list"],
+      ["Compare Products", "/compare-products"],
+    ],
+  },
+  {
+    title: "My Account",
+    links: [
+      ["My Account", "/my-account"],
+      ["My Orders", "/my-account-orders"],
+      ["Order Tracking", "/order-tracking"],
+      ["Login", "/login"],
+      ["Create Account", "/register"],
+    ],
+  },
+  {
+    title: "Customer Care",
+    links: [
+      ["Contact Us", "/contact"],
+      ["FAQs", "/FAQs"],
+      ["Refund Policy", "/refund-policy"],
+      ["Privacy Policy", "/privacy-policy"],
+      ["Terms & Conditions", "/term-of-use"],
+    ],
+  },
+];
 
-    try {
-      const response = await axios.post(
-        "https://express-brevomail.vercel.app/api/contacts",
-        {
-          email,
-        },
-      );
+const payments = [
+  ["Visa", "/images/weaccepts/w23-pf-visa.webp"],
+  ["Mastercard", "/images/weaccepts/w23-pf-master-card.webp"],
+  ["Maestro", "/images/weaccepts/w23-pf-maestro.webp"],
+  ["American Express", "/images/weaccepts/w23-pf-american-express.webp"],
+  ["RuPay", "/images/weaccepts/w23-pf-rupay.webp"],
+  ["Diners Club", "/images/weaccepts/w23-pf-dinners-club.webp"],
+  ["Wallet", "/images/weaccepts/w23-pf-wallet.webp"],
+  ["Net Banking", "/images/weaccepts/w23-pf-net-banking.webp"],
+];
+const socials = [
+  ["Instagram", "icon-instagram", ""],
+  ["Facebook", "icon-fb", ""],
+  ["Pinterest", "icon-pinterest", ""],
+  ["LinkedIn", "", "in"],
+  ["YouTube", "icon-youtube", ""],
+];
 
-      if ([200, 201].includes(response.status)) {
-        e.target.reset(); // Reset the form
-        setSuccess(true); // Set success state
-        handleShowMessage();
-      } else {
-        setSuccess(false); // Handle unexpected responses
-        handleShowMessage();
-      }
-    } catch (error) {
-      console.error("Error:", error.response?.data || "An error occurred");
-      setSuccess(false); // Set error state
-      handleShowMessage();
-      e.target.reset(); // Reset the form
-    }
-  };
-  useEffect(() => {
-    const headings = document.querySelectorAll(".footer-heading-mobile");
+export default function Footer1({ hasPaddingBottom = false }) {
+  const { categories = [] } = useSelector((state) => state.category);
+  const categoryLinks = categories.slice(0, 5).map((category) => [
+    category.name,
+    `/collections/${category.slug}`,
+  ]);
 
-    const toggleOpen = (event) => {
-      const parent = event.target.closest(".footer-col-block");
-      const content = parent.querySelector(".tf-collapse-content");
-
-      if (parent.classList.contains("open")) {
-        parent.classList.remove("open");
-        content.style.height = "0px";
-      } else {
-        parent.classList.add("open");
-        content.style.height = content.scrollHeight + 10 + "px";
-      }
-    };
-
-    headings.forEach((heading) => {
-      heading.addEventListener("click", toggleOpen);
-    });
-
-    // Clean up event listeners when the component unmounts
-    return () => {
-      headings.forEach((heading) => {
-        heading.removeEventListener("click", toggleOpen);
-      });
-    };
-  }, []); // Empty dependency array means this will run only once on mount
-
-  const dynamicFooterLinks2 = footerLinks2.map((section) => {
-    if (section.heading === "Categories") {
-      return {
-        ...section,
-        items:
-          categories?.map((cat) => ({
-            label: cat.name, // adjust based on API
-            href: `/collections/${cat.slug}`, // adjust
-            isLink: true,
-          })) || [],
-      };
-    }
-    return section;
-  });
   return (
     <>
-      <footer
-        id="footer"
-        className={`footer ${dark ? "bg-main" : ""} ${
-          hasPaddingBottom ? "has-pb" : ""
-        } `}
-      >
-        <div className={`footer-wrap ${!border ? "border-0" : ""}`}>
-          <div className="footer-body">
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-4">
-                  <div className="footer-infor">
-                    <div className="footer-logo">
-                      <Link href={`/`}>
-                        <Image
-                          alt=""
-                          src={
-                            dark
-                              ? "/images/logo/white-logo.png"
-                              : "/images/logo/white-logo.png"
-                          }
-                          width={127}
-                          height={24}
-                          style={{ maxWidth: "240px", height: "auto" }}
-                        />
-                      </Link>
-                    </div>
-                    <div className="footer-address">
-                      <p>549 Oak St.Crystal Lake, IL 60014</p>
-                    </div>
-                    <ul className="footer-info">
-                      <li>
-                        <i className="icon-mail" style={{ color: "#fff" }} />
-                        <p>Info@curve-comfort.com</p>
-                      </li>
-                      <li>
-                        <i className="icon-phone" style={{ color: "#fff" }} />
-                        <p>315-666-6688</p>
-                      </li>
-                    </ul>
-                    <ul
-                      className={`tf-social-icon  ${
-                        dark ? "style-white" : ""
-                      } `}
-                    >
-                      {socialLinks.map((link, index) => (
-                        <li key={index}>
-                          <a href={link.href} className={link.className}>
-                            <i className={`icon ${link.iconClass}`} />
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className="col-lg-4">
-                  <div className="footer-menu">
-                    {footerLinks.map((section, sectionIndex) => (
-                      <div className="footer-col-block" key={sectionIndex}>
-                        <div className="footer-heading text-button footer-heading-mobile">
-                          {section.heading}
-                        </div>
-                        <div className="tf-collapse-content">
-                          <ul className="footer-menu-list">
-                            {section.items.map((item, itemIndex) => (
-                              <li className="text-caption-1" key={itemIndex}>
-                                {item.isLink ? (
-                                  <Link
-                                    href={item.href}
-                                    className="footer-menu_item"
-                                  >
-                                    {item.label}
-                                  </Link>
-                                ) : (
-                                  <a
-                                    href={item.href}
-                                    className="footer-menu_item"
-                                  >
-                                    {item.label}
-                                  </a>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="col-lg-4">
-                  <div className="footer-menu">
-                    {dynamicFooterLinks2.map((section, sectionIndex) => (
-                      <div className="footer-col-block" key={sectionIndex}>
-                        <div className="footer-heading text-button footer-heading-mobile">
-                          {section.heading}
-                        </div>
-                        <div className="tf-collapse-content">
-                          <ul className="footer-menu-list">
-                            {section.items.map((item, itemIndex) => (
-                              <li className="text-caption-1" key={itemIndex}>
-                                {item.isLink ? (
-                                  <Link
-                                    href={item.href}
-                                    className="footer-menu_item"
-                                  >
-                                    {item.label}
-                                  </Link>
-                                ) : (
-                                  <a
-                                    href={item.href}
-                                    className="footer-menu_item"
-                                  >
-                                    {item.label}
-                                  </a>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* <div className="col-lg-4">
-                  <div className="footer-col-block">
-                    <div className="footer-heading text-button footer-heading-mobile">
-                      Newletter
-                    </div>
-                    <div className="tf-collapse-content">
-                      <div className="footer-newsletter">
-                        <p className="text-caption-1">
-                          Sign up for our newsletter and get 10% off your first
-                          purchase
-                        </p>
-                        <div
-                          className={`tfSubscribeMsg  footer-sub-element ${
-                            showMessage ? "active" : ""
-                          }`}
-                        >
-                          {success ? (
-                            <p style={{ color: "rgb(52, 168, 83)" }}>
-                              You have successfully subscribed.
-                            </p>
-                          ) : (
-                            <p style={{ color: "red" }}>Something went wrong</p>
-                          )}
-                        </div>
-                        <form
-                          onSubmit={sendEmail}
-                          className={`form-newsletter subscribe-form ${
-                            dark ? "style-black" : ""
-                          }`}
-                        >
-                          <div className="subscribe-content">
-                            <fieldset className="email">
-                              <input
-                                type="email"
-                                name="email"
-                                className="subscribe-email"
-                                placeholder="Enter your e-mail"
-                                tabIndex={0}
-                                aria-required="true"
-                              />
-                            </fieldset>
-                            <div className="button-submit">
-                              <button
-                                className="subscribe-button"
-                                type="submit"
-                              >
-                                <i className="icon icon-arrowUpRight" />
-                              </button>
-                            </div>
-                          </div>
-                          <div className="subscribe-msg" />
-                        </form>
-                        <div className="tf-cart-checkbox">
-                          <div className="tf-checkbox-wrapp">
-                            <input
-                              className=""
-                              type="checkbox"
-                              id="footer-Form_agree"
-                              name="agree_checkbox"
-                            />
-                            <div>
-                              <i className="icon-check" />
-                            </div>
-                          </div>
-                          <label
-                            className="text-caption-1"
-                            htmlFor="footer-Form_agree"
-                          >
-                            By clicking subcribe, you agree to the{" "}
-                            <Link className="fw-6 link" href={`/term-of-use`}>
-                              Terms of Service
-                            </Link>{" "}
-                            and{" "}
-                            <a className="fw-6 link" href="#">
-                              Privacy Policy
-                            </a>
-                            .
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-              </div>
-            </div>
+      <footer className={styles.compactFooter}>
+        <div className={styles.inner}>
+          <div className={styles.linkGrid}>
+            {columns.map((column) => (
+              <section key={column.title} className={styles.column}>
+                <h2>{column.title}</h2>
+                {column.links.map(([label, href]) => (
+                  <Link key={label} href={href}>{label}</Link>
+                ))}
+              </section>
+            ))}
+            <section className={styles.column}>
+              <h2>Shop by Category</h2>
+              {(categoryLinks.length ? categoryLinks : [["All Products", "/all-products"], ["Furniture Collection", "/shop-collection"], ["Shop by Category", "/shop-categories-top"], ["New Arrivals", "/shop-default-grid"]]).map(([label, href]) => (
+                <Link key={label} href={href}>{label}</Link>
+              ))}
+            </section>
           </div>
-          <div className="footer-bottom">
-            <div className="container-full2">
-              <div className="row">
-                <div className="col-12">
-                  <div className="footer-bottom-wrap">
-                    <div className="left">
-                      <p className="text-caption-1">
-                        ©{new Date().getFullYear()} Curve &amp; Comfort by SAHNI
-                        DESIGN &amp; BUILD CORPORATION LLP. All Rights Reserved.
-                      </p>
-                    </div>
-                    <div className="tf-payment">
-                      <p className="text-caption-1">Payment:</p>
-                      <ul>
-                        {["UPI", "Visa", "Mastercard", "NetBanking", "Wallets", "COD"].map(
-                          (label) => (
-                            <li key={label}>
-                              <span className="text-caption-1 fw-6">{label}</span>
-                            </li>
-                          ),
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+
+          <div className={styles.discoveryGrid}>
+            <section>
+              <h2>Popular Categories</h2>
+              <p>Living Room, Bedroom, Dining, Sofas, Beds, Chairs, Tables, Storage, Lighting and Home Decor.</p>
+            </section>
+            <section>
+              <h2>Popular Brands</h2>
+              <p>Curve & Comfort, Urban Living, Home Essentials, Comfort Craft, Modern Habitat and everyday furniture favourites.</p>
+            </section>
+            <section>
+              <h2>Popular Cities</h2>
+              <p>Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Pune, Ahmedabad, Jaipur and Kolkata.</p>
+            </section>
+          </div>
+
+          <div className={styles.utilityRow}>
+            <section>
+              <h2>We accept</h2>
+              <div className={styles.payments}>
+                {payments.map(([name, src]) => <img key={name} src={src} alt={name} />)}
               </div>
+            </section>
+            <section className={styles.socialSection}>
+              <h2>Like what you see? Follow us here</h2>
+              <ul>
+                {socials.map(([label, iconClass, mark]) => (
+                  <li key={label}>
+                    <a href="#" aria-label={label}>
+                      {iconClass ? <i className={`icon ${iconClass}`} /> : <span>{mark}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          <div className={styles.legalRow}>
+            <div>
+              <Link href="/">Home</Link>
+              <Link href="/sitemap">Sitemap</Link>
+              <Link href="/term-of-use">Terms of Use</Link>
+              <Link href="/privacy-policy">Privacy Policy</Link>
+              <Link href="/refund-policy">Refund Policy</Link>
             </div>
+            <p>©{new Date().getFullYear()} Curve &amp; Comfort. All rights reserved.</p>
           </div>
         </div>
       </footer>

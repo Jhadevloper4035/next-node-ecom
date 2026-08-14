@@ -12,6 +12,34 @@
   }
 }
 
+.home-hero {
+  .title-display {
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.12;
+  }
+
+  .box-content {
+    top: 160px;
+  }
+
+  .box-btn-slider .tf-btn {
+    gap: 6px;
+    padding: 11px 24px;
+    font-size: 14px;
+    line-height: 22px;
+
+    .icon {
+      font-size: 18px;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .home-hero .box-content {
+    top: 64px;
+  }
+}
+
 #shoppingCart.show .tf-progress-bar .value {
   width: 60% !important;
 }
@@ -204,4 +232,3 @@ footer .footer-infor {
 .page-title ul.breadcrumbs li {
     color: #ffffff;
 }
-

@@ -21,7 +21,7 @@ import Header from "@/components/headers/Header2";
 import GlobalSpinner from "@/components/common/GlobalSpinner";
 
 export default function AppShell({ children }) {
-  const [scrollDirection, setScrollDirection] = useState("down");
+  const [scrollDirection, setScrollDirection] = useState("up");
 
   useEffect(() => {
     import("bootstrap/dist/js/bootstrap.esm");
@@ -70,7 +70,6 @@ export default function AppShell({ children }) {
   }, []);
 
   useEffect(() => {
-    setScrollDirection("up");
     const lastScrollY = { current: window.scrollY };
 
     const handleScroll = () => {

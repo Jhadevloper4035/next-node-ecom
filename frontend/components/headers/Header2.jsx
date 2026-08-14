@@ -44,20 +44,14 @@ export default function Header2() {
             <div className="col-xl-5 d-none d-xl-block">
               <ul className="header-list-categories">
                 <li className="categories-item active">
-                  <Link href="/privacy-policy" >
-                    Privacy Policy
+                  <Link href="/collections/kitchen" >
+                    Modular Kitchen
                   </Link>
                 </li>
                 <li className="categories-item">
-                  <a href="/term-of-use" >
-                    Terms & Conditions
-                  </a>
-                </li>
-                {/* className="text-uppercase" */}
-                <li className="categories-item">
-                  <a href="/refund-policy" >
-                   Refund Policy
-                  </a>
+                  <Link href="/collections/wardrobe" >
+                    Modular Wardrobe
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -245,29 +239,12 @@ export default function Header2() {
           </div>
         </div>
       </div>
-      <div className="header-bottom header-dark">
+      <div className="header-bottom header-dark d-none d-xl-block">
         <div className="container">
           <div className="wrapper-header d-flex justify-content-center align-items-center">
             <nav className="box-navigation text-center">
               <ul className="box-nav-ul d-flex align-items-center justify-content-center d-none d-xl-flex">
                 <Nav />
-              </ul>
-              <ul className="header-list-categories d-xl-none justify-content-center">
-                <li className="categories-item active">
-                  <Link href={`/privacy-policy`} className="text-uppercase">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li className="categories-item">
-                  <Link href={`/term-of-use`} className="text-uppercase">
-                    Terms & Conditions
-                  </Link>
-                </li>
-                <li className="categories-item">
-                  <Link href={`/refund-policy`} className="text-uppercase">
-                    Refund Policy
-                  </Link>
-                </li>
               </ul>
             </nav>
           </div>

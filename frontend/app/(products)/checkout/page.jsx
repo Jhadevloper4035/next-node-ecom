@@ -8,18 +8,19 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const { token } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
+  const isInitialLoading = useSelector((state) => state.ui.isInitialLoading);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
-      // Redirect to login if not authenticated
-      router.push("/login");
-    } else {
+    if (isInitialLoading) return;
+    if (user) {
       setIsLoading(false);
+    } else {
+      router.replace("/login");
     }
-  }, [token, router]);
+  }, [isInitialLoading, router, user]);
 
   if (isLoading) {
     return (

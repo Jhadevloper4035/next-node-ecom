@@ -31,8 +31,6 @@ const fallbackHeaderCategories = [
   { slug: "nester-tables", name: "Nester Tables", hasChildren: true },
   { slug: "sofas", name: "Sofas", hasChildren: true },
   { slug: "wall-decor", name: "Wall Decor", hasChildren: true },
-  { slug: "kitchen", name: "Kitchen" },
-  { slug: "wardrobe", name: "Wardrobe" },
 ];
 
 export default function Nav() {
@@ -67,7 +65,7 @@ export default function Nav() {
       ...category,
       ...apiCategoriesBySlug.get(category.slug),
     })),
-    ...(categories || []).filter((category) => !fallbackSlugs.has(category.slug)),
+    ...(categories || []).filter((category) => !fallbackSlugs.has(category.slug) && !["kitchen", "wardrobe"].includes(category.slug)),
   ];
 
   return (

@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login as loginService } from "@/services/auth/login.service";
 import { resendVerification } from "@/services/auth/resend-verification.service";
 import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
@@ -18,7 +18,14 @@ export default function Login() {
   const [isResending, setIsResending] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
   const toast = useToast();
+
+  useEffect(() => {
+    if (user) router.replace("/");
+  }, [router, user]);
+
+  if (user) return null;
 
   const togglePassword = () => {
     setPasswordType((prevType) =>

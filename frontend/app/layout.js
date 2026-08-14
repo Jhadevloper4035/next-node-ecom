@@ -8,7 +8,7 @@ import "../public/scss/main.scss";
 import "photoswipe/style.css";
 import "react-range-slider-input/dist/style.css";
 import "../public/css/image-compare-viewer.min.css";
-import "../components/common/toast.css";
+import "react-toastify/dist/ReactToastify.css";
 import AppShell from "@/components/common/AppShell";
 
 

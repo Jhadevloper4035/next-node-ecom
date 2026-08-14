@@ -68,9 +68,9 @@ export default function Header2() {
             <div className="col-xl-2 col-md-4 col-6 text-center">
               <Link href={`/`} className="logo-header">
                 <Image
-                  alt="logo"
+                  alt="Curve & Comfort"
                   className="logo"
-                  src="/images/logo/logo.png"
+                  src="/images/logo/logo.png?v=curve-comfort"
                   width={144}
                   height={25}
                 />

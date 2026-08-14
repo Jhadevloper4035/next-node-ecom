@@ -36,12 +36,14 @@ export default function ForgotPass() {
   };
 
   return (
-    <div className={styles.loginContainer}>
+    <section className={`${styles.loginContainer} ${styles.authSingleColumn}`}>
       <div className={styles.loginLeft}>
         <div className={styles.loginFormWrapper}>
+          <Link href="/" className={styles.homeLink}>← Back to shopping</Link>
           <div className={styles.loginHead}>
-            <h2>Reset your password</h2>
-            <p>We will send you an email to reset your password</p>
+            <p className={styles.eyebrow}>Account recovery</p>
+            <h1>Forgot your password?</h1>
+            <p>Enter your email and we’ll send a secure reset link.</p>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.loginForm}>
@@ -74,14 +76,6 @@ export default function ForgotPass() {
         </div>
       </div>
 
-      {/* Right Side - Furniture Image */}
-      <div className={styles.loginRight}>
-        <img
-          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=900&fit=crop"
-          alt="Premium furniture"
-          className={styles.loginRightImage}
-        />
-      </div>
-    </div>
+    </section>
   );
 }

@@ -22,23 +22,24 @@
 .checkboxWrapper { display: flex; align-items: center; gap: 8px; color: var(--secondary); font-size: 14px; cursor: pointer; }
 .checkboxWrapper input { width: 16px; height: 16px; accent-color: var(--primary); }
 .checkboxWrapper a { color: var(--main); text-decoration: underline; }
-.loginBtn { min-height: 52px; margin-top: 6px; border: 1px solid var(--primary); border-radius: 2px; background: var(--primary); color: var(--white); cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; transition: background .2s, border-color .2s; }
+.loginBtn { align-self: flex-start; min-width: 148px; min-height: 46px; margin-top: 6px; padding: 0 24px; border: 1px solid var(--primary); border-radius: 2px; background: var(--primary); color: var(--white); cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; transition: background .2s, border-color .2s; }
 .loginBtn:hover:not(:disabled) { border-color: var(--main); background: var(--main); }
 .loginBtn:disabled { cursor: not-allowed; opacity: .6; }
-.signupPrompt { margin-top: 28px; color: var(--secondary); font-size: 14px; text-align: center; }
+.signupPrompt { margin-top: 18px; color: var(--secondary); font-size: 14px; text-align: left; }
 .loginRight { position: relative; min-height: 100%; overflow: hidden; background: var(--main); }
 .loginRightImage { width: 100%; height: 100%; object-fit: cover; }
 .loginRight::after { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, rgba(24, 24, 24, .05), rgba(24, 24, 24, .65)); }
 .imageOverlay { position: absolute; z-index: 1; right: 9%; bottom: 8%; left: 9%; color: var(--white); }
 .imageOverlay p { margin: 0 0 8px; font-size: clamp(28px, 3vw, 44px); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
 .imageOverlay span { display: block; max-width: 310px; font-size: 15px; line-height: 1.5; }
-.authSingleColumn { grid-template-columns: 1fr; min-height: 0; }
-.authSingleColumn .loginLeft { padding: 48px 24px 56px; }
+.authSingleColumn { grid-template-columns: 1fr; min-height: 0; background: #eee; }
+.authSingleColumn .loginLeft { padding: 48px 24px 56px; background: #eee; }
 .authSingleColumn .loginFormWrapper { width: min(100%, 430px); }
-.registerContainer { padding: 48px 24px 64px; background: #f6f4ef; }
+.authSingleColumn:not(.registerContainer) .loginFormWrapper { padding: clamp(28px, 5vw, 48px); border: 1px solid #e5e5e5; border-radius: 8px; background: #fff; box-shadow: 0 18px 45px rgba(24, 24, 24, .07); }
+.registerContainer { padding: 48px 24px 64px; background: #eee; }
 .registerContainer .loginLeft { padding: 0; background: transparent; }
 .registerContainer .loginFormWrapper { width: min(100%, 720px); }
-.registerCard { padding: clamp(28px, 5vw, 52px); border: 1px solid #eeeae2; border-radius: 8px; background: var(--white); box-shadow: 0 18px 45px rgba(24, 24, 24, .07); }
+.registerCard { padding: clamp(28px, 5vw, 52px); border: 1px solid #e5e5e5; border-radius: 8px; background: #fff; box-shadow: 0 18px 45px rgba(24, 24, 24, .07); }
 .registerTopline { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 34px; color: var(--secondary); font-size: 12px; }
 .registerTopline .homeLink { margin: 0; }
 .registerTopline span a { color: var(--primary); font-weight: 700; text-decoration: none; }

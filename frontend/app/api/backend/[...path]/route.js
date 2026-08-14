@@ -14,6 +14,14 @@ const backendBaseUrl = normalizeApiBaseUrl(
 
 const accessCookieName = process.env.ACCESS_COOKIE_NAME || "accessToken";
 const refreshCookieName = process.env.COOKIE_NAME || "refreshToken";
+const unsafeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+function publicOrigin(request) {
+  const url = new URL(request.url);
+  const protocol = request.headers.get("x-forwarded-proto")?.split(",")[0] || url.protocol.slice(0, -1);
+  const host = request.headers.get("x-forwarded-host")?.split(",")[0] || request.headers.get("host") || url.host;
+  return `${protocol}://${host}`;
+}
 
 function rewriteCookiePath(cookie) {
   const name = cookie.slice(0, cookie.indexOf("="));
@@ -23,6 +31,10 @@ function rewriteCookiePath(cookie) {
 }
 
 async function proxyRequest(request, context) {
+  if (unsafeMethods.has(request.method) && request.headers.get("origin") !== publicOrigin(request)) {
+    return NextResponse.json({ success: false, message: "Cross-origin request blocked" }, { status: 403 });
+  }
+
   const { path = [] } = await context.params;
   const target = new URL(`${backendBaseUrl}/${path.join("/")}`);
   target.search = new URL(request.url).search;

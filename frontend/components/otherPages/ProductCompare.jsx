@@ -61,7 +61,7 @@ export default function ProductCompare() {
                         {elm.title}
                       </Link>
                       <p className="desc text-caption-1">
-                        Clothes, Women, T-shirt
+                        {elm.category?.name || elm.categoryName || elm.category || "Furniture"}
                       </p>
                     </div>
                   </div>
@@ -78,14 +78,7 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field tf-compare-rate"
                 >
-                  <div className="list-star">
-                    <span className="icon icon-star" />
-                    <span className="icon icon-star" />
-                    <span className="icon icon-star" />
-                    <span className="icon icon-star" />
-                    <span className="icon icon-star" />
-                  </div>
-                  <span>(1.234)</span>
+                  <span>{elm.rating ? `${elm.rating} / 5` : "Not rated"}</span>
                 </div>
               ))}
             </div>
@@ -99,7 +92,7 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <span className="price">₹{elm.price.toFixed(2)}</span>
+                  <span className="price">₹{Number(elm.price || 0).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -112,7 +105,7 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <span className="type">Jacket</span>
+                  <span className="type">{elm.productType || elm.category?.name || elm.categoryName || "—"}</span>
                 </div>
               ))}
             </div>
@@ -125,20 +118,20 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <span className="brand">Gucci</span>
+                  <span className="brand">{elm.brand || "—"}</span>
                 </div>
               ))}
             </div>
             <div className="tf-compare-row">
               <div className="tf-compare-col tf-compare-field d-md-block d-none">
-                <h6>size</h6>
+                <h6>Size</h6>
               </div>
               {items.map((elm, i) => (
                 <div
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <span className="size">X, XS, L, M, XL</span>
+                  <span className="size">{elm.filterSizes?.join(", ") || "—"}</span>
                 </div>
               ))}
             </div>
@@ -151,26 +144,20 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <div className="list-compare-color justify-content-center">
-                    <span className="item bg-pink" />
-                    <span className="item bg-yellow" />
-                    <span className="item bg-primary active" />
-                    <span className="item bg-success" />
-                    <span className="item bg-warning" />
-                  </div>
+                  <span>{elm.filterColor?.join(", ") || "—"}</span>
                 </div>
               ))}
             </div>
             <div className="tf-compare-row">
               <div className="tf-compare-col tf-compare-field d-md-block d-none">
-                <h6>Metarial</h6>
+                <h6>Material</h6>
               </div>
               {items.map((elm, i) => (
                 <div
                   key={i}
                   className="tf-compare-col tf-compare-field text-center"
                 >
-                  <span className="size">Cotton</span>
+                  <span className="size">{elm.material || elm.selectedMaterial || "—"}</span>
                 </div>
               ))}
             </div>
@@ -183,14 +170,15 @@ export default function ProductCompare() {
                   key={i}
                   className="tf-compare-col tf-compare-field tf-compare-viewcart text-center"
                 >
-                  <a
+                  <button
+                    type="button"
                     className="btn-view-cart"
-                    onClick={() => addProductToCart(elm.id)}
+                    onClick={() => addProductToCart(elm.id, 1, true, elm)}
                   >
                     {isAddedToCartProducts(elm.id)
                       ? "Already Added"
                       : "Add to Cart"}
-                  </a>
+                  </button>
                 </div>
               ))}
             </div>

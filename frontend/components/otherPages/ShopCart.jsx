@@ -2,43 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import CountdownTimer from "../common/Countdown";
 import { useSelector, useDispatch } from "react-redux";
 import { updateQuantity, removeProduct } from "@/redux/cartSlice";
-const discounts = [
-  {
-    discount: "10% OFF",
-    details: "For all orders from 200$",
-    code: "Mo234231",
-  },
-  {
-    discount: "10% OFF",
-    details: "For all orders from 200$",
-    code: "Mo234231",
-  },
-  {
-    discount: "10% OFF",
-    details: "For all orders from 200$",
-    code: "Mo234231",
-  },
-];
-const shippingOptions = [
-  {
-    id: "free",
-    label: "Free Shipping",
-    price: 0.0,
-  },
-  {
-    id: "local",
-    label: "Local:",
-    price: 35.0,
-  },
-  {
-    id: "rate",
-    label: "Flat Rate:",
-    price: 35.0,
-  },
-];
 
 const formatCartOptions = (product = {}) => {
   if (Array.isArray(product.selectedOptions) && product.selectedOptions.length) {
@@ -58,9 +23,6 @@ const formatCartOptions = (product = {}) => {
 };
 
 export default function ShopCart() {
-  const [activeDiscountIndex, setActiveDiscountIndex] = useState(1);
-  const [selectedOption, setSelectedOption] = useState(shippingOptions[0]);
-
   const dispatch = useDispatch();
   const cartProducts = useSelector((state) => state.cart.cartProducts);
   const totalPrice = useSelector((state) => state.cart.totalPrice);
@@ -74,18 +36,10 @@ export default function ShopCart() {
   const removeItem = (id) => {
     dispatch(removeProduct({ id }));
   };
-  const handleOptionChange = (elm) => {
-    setSelectedOption(elm);
-  };
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const progressEl = document.querySelector(".progress-cart .value");
-    if (progressEl) {
-      progressEl.style.width = "70%";
-    }
   }, []);
 
   if (!mounted) return null;
@@ -96,49 +50,6 @@ export default function ShopCart() {
         <div className="container">
           <div className="row">
             <div className="col-xl-8">
-              <div className="tf-cart-sold">
-                <div className="notification-sold bg-surface">
-                  <Image
-                    className="icon"
-                    alt="img"
-                    src="/images/logo/icon-fire.png"
-                    width={48}
-                    height={49}
-                  />
-                  <div className="count-text">
-                    Your cart will expire in
-                    <div
-                      className="js-countdown time-count"
-                      data-timer={600}
-                      data-labels=":,:,:,"
-                    >
-                      <CountdownTimer
-                        style={4}
-                        targetDate={new Date(new Date().getTime() - 30 * 60000)}
-                      />
-                    </div>
-                    minutes! Please checkout now before your items sell out!
-                  </div>
-                </div>
-                <div className="notification-progress">
-                  <div className="text">
-                    Buy
-                    <span className="fw-semibold text-primary">
-                      ₹70.00
-                    </span>{" "}
-                    more to get <span className="fw-semibold">Freeship</span>
-                  </div>
-                  <div className="progress-cart">
-                    <div
-                      className="value"
-                      style={{ width: "0%" }}
-                      data-progress={50}
-                    >
-                      <span className="round" />
-                    </div>
-                  </div>
-                </div>
-              </div>
               {cartProducts.length ? (
                 <form onSubmit={(e) => e.preventDefault()}>
                   <table className="tf-table-page-cart">
@@ -291,8 +202,7 @@ export default function ShopCart() {
                 </form>
               ) : (
                 <div>
-                  Your wishlist is empty. Start adding your favorite products to
-                  save them for later!{" "}
+                  Your cart is empty. Add products to continue shopping. {" "}
                   <Link className="btn-line" href="/all-products">
                     Explore Products
                   </Link>
@@ -310,39 +220,14 @@ export default function ShopCart() {
                     </span>
                   </div>
                   <div className="discount text-button d-flex justify-content-between align-items-center">
-                    <span>Discounts</span>
-                    <span className="total">₹{totalPrice ? "20" : 0}</span>
-                  </div>
-                  <div className="ship">
-                    <span className="text-button">Shipping</span>
-                    <div className="flex-grow-1">
-                      {shippingOptions.map((option) => (
-                        <fieldset key={option.id} className="ship-item">
-                          <input
-                            type="radio"
-                            name="ship-check"
-                            className="tf-check-rounded"
-                            id={option.id}
-                            checked={selectedOption === option}
-                            onChange={() => handleOptionChange(option)}
-                          />
-                          <label htmlFor={option.id}>
-                            <span>{option.label}</span>
-                            <span className="price">
-                              ₹{option.price.toFixed(2)}
-                            </span>
-                          </label>
-                        </fieldset>
-                      ))}
-                    </div>
+                    <span>Delivery</span>
+                    <span className="total">Calculated at checkout</span>
                   </div>
                   <h5 className="total-order d-flex justify-content-between align-items-center">
                     <span>Total</span>
                     <span className="total">
                       ₹
-                      {totalPrice
-                        ? ((selectedOption?.price || 0) + totalPrice).toFixed(2)
-                        : "0.00"}
+                      {totalPrice?.toFixed(2) || "0.00"}
                     </span>
                   </h5>
                   <div className="box-progress-checkout">

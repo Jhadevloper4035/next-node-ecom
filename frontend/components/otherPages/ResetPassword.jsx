@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { resetPassword } from "@/services/auth/reset.service";
 import { useToast } from "@/components/common/ToastContext";
@@ -12,6 +13,8 @@ export default function ResetPassword() {
   const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
@@ -48,12 +51,14 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className={styles.loginContainer}>
+    <section className={`${styles.loginContainer} ${styles.authSingleColumn}`}>
       <div className={styles.loginLeft}>
         <div className={styles.loginFormWrapper}>
+          <Link href="/" className={styles.homeLink}>← Back to shopping</Link>
           <div className={styles.loginHead}>
-            <h2>Choose New Password</h2>
-            <p>Enter a secure password and confirm below.</p>
+            <p className={styles.eyebrow}>Account security</p>
+            <h1>Create a new password</h1>
+            <p>Choose a secure password, then sign in with it.</p>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.loginForm}>
@@ -62,7 +67,7 @@ export default function ResetPassword() {
               <div className={styles.passwordWrapper}>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Enter new password"
                   value={password}
@@ -73,6 +78,7 @@ export default function ResetPassword() {
                   disabled={isLoading}
                   style={{ paddingRight: "45px" }}
                 />
+                <button type="button" className={styles.passwordToggle} onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Hide password" : "Show password"}><i className={`icon ${showPassword ? "icon-eye-hide-line" : "icon-eye"}`} /></button>
               </div>
             </div>
 
@@ -81,7 +87,7 @@ export default function ResetPassword() {
               <div className={styles.passwordWrapper}>
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmation ? "text" : "password"}
                   name="confirmPassword"
                   placeholder="Re-enter new password"
                   value={confirmPassword}
@@ -92,6 +98,7 @@ export default function ResetPassword() {
                   disabled={isLoading}
                   style={{ paddingRight: "45px" }}
                 />
+                <button type="button" className={styles.passwordToggle} onClick={() => setShowConfirmation((value) => !value)} aria-label={showConfirmation ? "Hide confirmation password" : "Show confirmation password"}><i className={`icon ${showConfirmation ? "icon-eye-hide-line" : "icon-eye"}`} /></button>
               </div>
             </div>
 
@@ -106,14 +113,6 @@ export default function ResetPassword() {
         </div>
       </div>
 
-      {/* Right Side - Furniture Image */}
-      <div className={styles.loginRight}>
-        <img
-          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=700&h=900&fit=crop"
-          alt="Premium furniture"
-          className={styles.loginRightImage}
-        />
-      </div>
-    </div>
+    </section>
   );
 }

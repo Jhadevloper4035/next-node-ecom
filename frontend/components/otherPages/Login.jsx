@@ -117,9 +117,7 @@ export default function Login() {
     <section className={`${styles.loginContainer} ${styles.authSingleColumn}`}>
       <div className={styles.loginLeft}>
         <div className={styles.loginFormWrapper}>
-          <Link href="/" className={styles.homeLink}>← Back to shopping</Link>
           <div className={styles.loginHead}>
-            <p className={styles.eyebrow}>Your Curve & Comfort account</p>
             <h1>Welcome back</h1>
             <p>Sign in to continue furnishing your space.</p>
           </div>

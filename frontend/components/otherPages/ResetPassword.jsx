@@ -12,8 +12,6 @@ export default function ResetPassword() {
   const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
@@ -25,17 +23,13 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
     if (!password || password.length < 8 || password.length > 16) {
       const msg = "Password must be between 8 and 16 characters";
-      setError(msg);
       toast(msg, "warning");
       return;
     }
     if (password !== confirmPassword) {
       const msg = "Passwords do not match";
-      setError(msg);
       toast(msg, "warning");
       return;
     }
@@ -43,12 +37,10 @@ export default function ResetPassword() {
     try {
       await resetPassword(token, password);
       const msg = "Your password has been reset. You can now log in.";
-      setMessage(msg);
       toast(msg, "success");
       setTimeout(() => router.push("/login"), 2000);
     } catch (err) {
       const errMsg = userErrorMessage(err, "Reset failed. Please try again.");
-      setError(errMsg);
       toast(errMsg, "error");
     } finally {
       setIsLoading(false);
@@ -63,9 +55,6 @@ export default function ResetPassword() {
             <h2>Choose New Password</h2>
             <p>Enter a secure password and confirm below.</p>
           </div>
-
-          {error && <div className={styles.alertError}>{error}</div>}
-          {message && <div className="alert alert-success">{message}</div>}
 
           <form onSubmit={handleSubmit} className={styles.loginForm}>
             <div className={styles.formGroup}>

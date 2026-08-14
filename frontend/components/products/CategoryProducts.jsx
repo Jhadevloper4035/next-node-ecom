@@ -13,6 +13,7 @@ import {
   getProductsByCategoryAndSubcategory,
 } from "@/services/product/product.service";
 import { mapProductsForCards } from "@/utlis/productMapper";
+import { useToast } from "@/components/common/ToastContext";
 
 const SORT_OPTIONS = [
   { label: "Newest", value: "newest" },
@@ -55,7 +56,7 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
   );
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [price, setPrice] = useState([0, 100000]);
   const [availability, setAvailability] = useState("all");
   const [sort, setSort] = useState("newest");
@@ -66,7 +67,6 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
 
     const fetchProducts = async () => {
       setLoading(true);
-      setError("");
       try {
         const response = subcategorySlug
           ? await getProductsByCategoryAndSubcategory(categorySlug, subcategorySlug, {
@@ -87,7 +87,9 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
       } catch (err) {
         if (!cancelled) {
           const message = err?.message || String(err);
-          setError(emptyPlannedCategories.has(categorySlug) && message === "Category not found" ? "" : message || "Failed to fetch products");
+          if (!(emptyPlannedCategories.has(categorySlug) && message === "Category not found")) {
+            toast(message || "Failed to fetch products", "error");
+          }
           setProducts([]);
         }
       } finally {
@@ -100,7 +102,7 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
     return () => {
       cancelled = true;
     };
-  }, [categorySlug, subcategorySlug]);
+  }, [categorySlug, subcategorySlug, toast]);
 
   useEffect(() => {
     setSelectedFilters({});
@@ -165,8 +167,6 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
   const activeFilterKeys = config.filters || [];
   const showPrice = activeFilterKeys.includes("price");
   const showAvailability = activeFilterKeys.includes("availability");
-
-  if (error) return <div className="text-center py-5 text-danger">{error}</div>;
 
   return (
     <section className="flat-spacing">

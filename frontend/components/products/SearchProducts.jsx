@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAllProducts } from "@/services/product/product.service";
 import { mapProductsForCards } from "@/utlis/productMapper";
+import { useToast } from "@/components/common/ToastContext";
 
 export default function SearchProducts() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [visibleCount, setVisibleCount] = useState(12);
 
   const trimmedQuery = query.trim();
@@ -35,7 +36,6 @@ export default function SearchProducts() {
     const controller = new AbortController();
     const timeout = setTimeout(async () => {
       setLoading(true);
-      setError("");
 
       try {
         const response = await getAllProducts(
@@ -55,7 +55,7 @@ export default function SearchProducts() {
       } catch (err) {
         if (isCurrent) {
           setProducts([]);
-          setError(err?.message || "Unable to load products.");
+          toast(err?.message || "Unable to load products.", "error");
         }
       } finally {
         if (isCurrent) setLoading(false);
@@ -67,7 +67,7 @@ export default function SearchProducts() {
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [trimmedQuery]);
+  }, [trimmedQuery, toast]);
 
   const updateSearchUrl = (value) => {
     const nextQuery = value.trim();
@@ -175,8 +175,6 @@ export default function SearchProducts() {
             >
               <div className="tf-loading loading"></div>
             </div>
-          ) : error ? (
-            <div className="text-center py-5 text-danger">{error}</div>
           ) : visibleProducts.length ? (
             <>
               <div className="tf-grid-layout tf-col-2 lg-col-3 xl-col-4">

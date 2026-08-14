@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import ReviewSorting from "./reviews/ReviewSorting";
 import ProductReviewForm from "./reviews/ProductReviewForm";
 import { getProductReviews } from "@/services/review/review.service";
+import { useToast } from "@/components/common/ToastContext";
 import styles from "./reviews/ProductReviewModal.module.css";
 
 const emptyBreakdown = {
@@ -62,7 +63,7 @@ export default function Reviews({ product }) {
   });
   const [sort, setSort] = useState("newest");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [isModalMounted, setIsModalMounted] = useState(false);
   const reviewModalId = useMemo(
     () =>
@@ -114,7 +115,6 @@ export default function Reviews({ product }) {
     if (!productId) return;
 
     setIsLoading(true);
-    setError("");
 
     try {
       const response = await getProductReviews(productId, {
@@ -131,11 +131,11 @@ export default function Reviews({ product }) {
         },
       });
     } catch (err) {
-      setError(errorMessage(err, "Unable to load reviews right now."));
+      toast(errorMessage(err, "Unable to load reviews right now."), "error");
     } finally {
       setIsLoading(false);
     }
-  }, [productId, sort]);
+  }, [productId, sort, toast]);
 
   useEffect(() => {
     loadReviews();
@@ -256,8 +256,6 @@ export default function Reviews({ product }) {
 
         {isLoading ? (
           <p className="text-secondary">Loading customer reviews...</p>
-        ) : error && !reviews.length ? (
-          <p className="text-secondary">{error}</p>
         ) : reviews.length ? (
           <div className="reply-comment-wrap">
             {reviews.map((review) => (
@@ -294,8 +292,6 @@ export default function Reviews({ product }) {
           </p>
         )}
       </div>
-
-      {error && reviews.length > 0 && <p className="text-secondary mb_12">{error}</p>}
 
       {isModalMounted && currentUser ? createPortal(reviewModal, document.body) : null}
     </>

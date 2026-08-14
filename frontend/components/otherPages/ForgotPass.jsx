@@ -8,21 +8,16 @@ import styles from "./Login.module.css";
 
 export default function ForgotPass() {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
-    setMessage("");
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
       const msg = "Please enter a valid email address";
-      setError(msg);
       toast(msg, "warning");
       setIsLoading(false);
       return;
@@ -31,11 +26,9 @@ export default function ForgotPass() {
     try {
       await forgotPassword(email);
       const msg = "If the email exists, you'll receive a reset link shortly.";
-      setMessage(msg);
       toast(msg, "info");
     } catch (err) {
       const errMsg = userErrorMessage(err, "Failed to send email. Please try again.");
-      setError(errMsg);
       toast(errMsg, "error");
     } finally {
       setIsLoading(false);
@@ -50,9 +43,6 @@ export default function ForgotPass() {
             <h2>Reset your password</h2>
             <p>We will send you an email to reset your password</p>
           </div>
-
-          {error && <div className={styles.alertError}>{error}</div>}
-          {message && <div className="alert alert-success">{message}</div>}
 
           <form onSubmit={handleSubmit} className={styles.loginForm}>
             <div className={styles.formGroup}>

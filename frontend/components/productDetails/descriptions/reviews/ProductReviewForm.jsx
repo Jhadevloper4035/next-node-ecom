@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { createProductReview } from "@/services/review/review.service";
+import { useToast } from "@/components/common/ToastContext";
 
 const initialForm = {
   title: "",
@@ -26,8 +27,7 @@ export default function ProductReviewForm({
   const reviewUser = getReviewUser(user);
   const [form, setForm] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const toast = useToast();
 
   const ratingInputName = useMemo(
     () => `product-review-rating-${productId || "product"}`,
@@ -47,13 +47,11 @@ export default function ProductReviewForm({
     if (!productId || isSubmitting) return;
 
     if (!reviewUser.name || !reviewUser.email) {
-      setError("Your account name and email are required to post a review.");
+      toast("Your account name and email are required to post a review.", "warning");
       return;
     }
 
     setIsSubmitting(true);
-    setMessage("");
-    setError("");
 
     try {
       await createProductReview(productId, {
@@ -62,7 +60,7 @@ export default function ProductReviewForm({
         authorEmail: reviewUser.email,
       });
       setForm(initialForm);
-      setMessage("Thank you. Your review has been posted.");
+      toast("Thank you. Your review has been posted.", "success");
       onSubmitted?.();
 
       if (typeof window !== "undefined") {
@@ -73,7 +71,7 @@ export default function ProductReviewForm({
         );
       }
     } catch (err) {
-      setError(errorMessage(err, "Unable to post your review right now."));
+      toast(errorMessage(err, "Unable to post your review right now."), "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -154,9 +152,6 @@ export default function ProductReviewForm({
           </fieldset>
         </div>
       </div>
-
-      {message && <p className="text-secondary mb_12">{message}</p>}
-      {error && <p className="text-secondary mb_12">{error}</p>}
 
       <div className="button-submit">
         <button className="text-btn-uppercase" type="submit" disabled={isSubmitting}>

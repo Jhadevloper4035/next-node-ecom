@@ -1,17 +1,18 @@
 const crypto = require("crypto");
 const User = require("../models/user.model");
+const Session = require("../models/session.model");
+const EmailVerificationToken = require("../models/emailVerificationToken.model");
+const PasswordResetToken = require("../models/passwordResetToken.model");
 const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const { env } = require("../config/env");
 const { sendMail } = require("../config/mailer");
-const { otpEmailTemplate, passwordResetEmailTemplate } = require("../utils/emailTemplates");
-const { generateOtp, hashOtp, compareOtp } = require("../utils/otp");
-const { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken, hashRefreshToken } = require("../config/token");
+const { verificationEmailTemplate, passwordResetEmailTemplate, passwordChangedEmailTemplate } = require("../utils/emailTemplates");
+const { signAccessToken, createRefreshToken, hashRefreshToken } = require("../config/token");
 const { toSafeUser } = require("../utils/safeUser");
 
 const RESET_EXPIRES_MS = 15 * 60 * 1000;
-const MAX_SESSIONS = 10;
 
 function cookieOptions() {
   return {
@@ -23,180 +24,181 @@ function cookieOptions() {
   };
 }
 
-async function issueTokens(user, req, res) {
-  const payload = { sub: user._id.toString(), role: user.role };
-  const accessToken = signAccessToken(payload);
-  const refreshToken = signRefreshToken(payload);
-
-  user.refreshTokens.push({
-    tokenHash: hashRefreshToken(refreshToken),
-    ip: (req.headers["x-forwarded-for"] || req.ip || "").split(",")[0].trim(),
-    userAgent: req.headers["user-agent"] || "unknown",
-  });
-  if (user.refreshTokens.length > MAX_SESSIONS) {
-    user.refreshTokens = user.refreshTokens.slice(-MAX_SESSIONS);
-  }
-  await user.save();
-
-  res.cookie(env.cookieName, refreshToken, { ...cookieOptions(), maxAge: 7 * 24 * 60 * 60 * 1000 });
-
-  const data = { accessToken };
-  if (env.returnRefreshInBody) data.refreshToken = refreshToken;
-  return data;
+function accessCookieOptions() {
+  return { ...cookieOptions(), path: env.accessCookiePath };
 }
 
-async function sendOtp(user) {
-  const now = new Date();
-  const windowMs = env.otpWindow * 60 * 1000;
-  const cooldownMs = env.otpCooldown * 1000;
+function setAccessToken(user, res) {
+  res.cookie(env.accessCookieName, signAccessToken({ sub: user._id.toString(), role: user.role, tokenVersion: user.tokenVersion }), accessCookieOptions());
+}
 
-  if (!user.otpWindowStartAt || now - user.otpWindowStartAt > windowMs) {
-    user.otpWindowStartAt = now;
-    user.otpRequestCount = 0;
+function clearAuthCookies(res) {
+  res.clearCookie(env.cookieName, cookieOptions());
+  res.clearCookie(env.accessCookieName, accessCookieOptions());
+}
+
+function requestMeta(req) {
+  return {
+    ipAddress: req.ip || "",
+    deviceInfo: req.headers["user-agent"] || "unknown",
+  };
+}
+
+function queueMail(mail) {
+  sendMail(mail).catch((error) => console.error("Email delivery failed:", error.message));
+}
+
+async function createToken(TokenModel, userId, expiresInMs) {
+  const token = crypto.randomBytes(32).toString("hex");
+  await TokenModel.deleteMany({ userId });
+  await TokenModel.create({
+    userId,
+    tokenHash: crypto.createHash("sha256").update(token).digest("hex"),
+    expiresAt: new Date(Date.now() + expiresInMs),
+  });
+  return token;
+}
+
+async function sendVerificationEmail(user) {
+  const token = await createToken(EmailVerificationToken, user._id, env.verificationExpiry * 60 * 1000);
+  queueMail({
+    to: user.email,
+    subject: `${env.appName} - Verify your email`,
+    html: verificationEmailTemplate({
+      appName: env.appName,
+      verificationLink: `${env.frontendUrl}/verify-email#token=${token}`,
+      expiresMinutes: env.verificationExpiry,
+    }),
+  });
+}
+
+async function createSession(user, req, familyId = crypto.randomUUID()) {
+  const refreshToken = createRefreshToken();
+  const session = await Session.create({
+    userId: user._id,
+    familyId,
+    tokenHash: hashRefreshToken(refreshToken),
+    expiresAt: new Date(Date.now() + env.refreshTokenDays * 24 * 60 * 60 * 1000),
+    ...requestMeta(req),
+  });
+
+  const oldSessions = await Session.find({ userId: user._id, isRevoked: false })
+    .sort({ createdAt: -1 })
+    .skip(env.maxSessions)
+    .select("_id");
+  if (oldSessions.length) {
+    await Session.updateMany({ _id: { $in: oldSessions } }, { $set: { isRevoked: true, revokedAt: new Date() } });
   }
-  if (user.otpLastRequestedAt && now - user.otpLastRequestedAt < cooldownMs) return { sent: false, reason: "cooldown" };
-  if (user.otpRequestCount >= env.otpMaxReqs) return { sent: false, reason: "rate_limited" };
+  return { refreshToken, session };
+}
 
-  const otp = generateOtp();
+async function issueTokens(user, req, res, familyId) {
+  const { refreshToken, session } = await createSession(user, req, familyId);
+  res.cookie(env.cookieName, refreshToken, {
+    ...cookieOptions(),
+    maxAge: env.refreshTokenDays * 24 * 60 * 60 * 1000,
+  });
+  setAccessToken(user, res);
+  return { session };
+}
 
-  try {
-    await sendMail({
-      to: user.email,
-      subject: `${env.appName} - Your OTP Code`,
-      html: otpEmailTemplate({ appName: env.appName, otp, expiresMinutes: env.otpExpiry }),
-    });
-  } catch (err) {
-    console.error("Failed to send OTP:", err.message);
-    throw new ApiError(503, "Unable to send OTP email. Please try again later.");
+async function revokeFamilyForReuse(tokenHash) {
+  const reusedSession = await Session.findOne({ tokenHash }).select("familyId");
+  if (reusedSession) {
+    await Session.updateMany({ familyId: reusedSession.familyId }, { $set: { isRevoked: true, revokedAt: new Date() } });
   }
-
-  user.emailOtpHash = hashOtp(otp);
-  user.emailOtpExpiresAt = new Date(now.getTime() + env.otpExpiry * 60 * 1000);
-  user.otpRequestCount += 1;
-  user.otpLastRequestedAt = now;
-  await user.save();
-
-  return { sent: true };
 }
 
 exports.register = asyncHandler(async (req, res) => {
   const { fullName, email, password, mobileNumber } = req.body;
   let user = await User.findOne({ email });
-
-  if (user && user.isEmailVerified) {
-    return res.status(201).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
-  }
-
-  if (!user) {
-    user = await User.create({ fullName, email, password, mobileNumber });
-  } else {
-    user.fullName = fullName; user.mobileNumber = mobileNumber; user.password = password;
-    await user.save();
-  }
-
-  await sendOtp(user);
-  return res.status(201).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
+  if (!user) user = await User.create({ fullName, email, password, mobileNumber });
+  if (!user.isEmailVerified) await sendVerificationEmail(user);
+  return res.status(201).json(new ApiResponse({ message: "If an account exists, a verification link has been sent to your email.", data: null }));
 });
 
-exports.resendOtp = asyncHandler(async (req, res) => {
+exports.resendVerification = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
-  if (!user || user.isEmailVerified) {
-    return res.status(200).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
-  }
-  const result = await sendOtp(user);
-  if (!result.sent) console.warn("OTP not sent:", result.reason, req.body.email);
-  return res.status(200).json(new ApiResponse({ message: "If an account exists, an OTP has been sent to your email.", data: null }));
+  if (user && !user.isEmailVerified) await sendVerificationEmail(user);
+  return res.status(200).json(new ApiResponse({ message: "If an account exists, a verification link has been sent to your email.", data: null }));
 });
 
-exports.verifyOtp = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
-  const user = await User.findOne({ email });
+exports.verifyEmail = asyncHandler(async (req, res) => {
+  const tokenHash = crypto.createHash("sha256").update(req.body.token).digest("hex");
+  const verification = await EmailVerificationToken.findOneAndDelete({ tokenHash, expiresAt: { $gt: new Date() } });
+  if (!verification) throw new ApiError(400, "Invalid or expired verification link");
 
-  if (!user || !user.emailOtpHash) throw new ApiError(400, "Invalid OTP or email");
-  if (user.isBlocked) throw new ApiError(403, "Account blocked");
-  if (user.emailOtpExpiresAt < Date.now()) throw new ApiError(400, "OTP expired");
-  if (!compareOtp(otp, user.emailOtpHash)) throw new ApiError(400, "Invalid OTP or email");
-
+  const user = await User.findById(verification.userId);
+  if (!user || user.isBlocked) throw new ApiError(403, "Account unavailable");
   user.isEmailVerified = true;
-  user.emailOtpHash = null;
-  user.emailOtpExpiresAt = null;
-  user.otpRequestCount = 0;
-  user.otpWindowStartAt = null;
-  user.otpLastRequestedAt = null;
-  user.refreshTokens = [];
   await user.save();
 
-  const tokens = await issueTokens(user, req, res);
-  return res.status(200).json(new ApiResponse({ message: "Email verified successfully", data: { user: toSafeUser(user), ...tokens } }));
+  await issueTokens(user, req, res);
+  return res.status(200).json(new ApiResponse({ message: "Email verified successfully", data: { user: toSafeUser(user) } }));
 });
 
 exports.login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-
-  // Check existence and blocked state BEFORE running bcrypt
+  const user = await User.findOne({ email: req.body.email });
   if (!user) throw new ApiError(401, "Invalid email or password");
   if (user.isBlocked) throw new ApiError(403, "Account blocked");
+  if (user.lockedUntil && user.lockedUntil > new Date()) throw new ApiError(429, "Account temporarily locked. Please try again later.");
 
-  if (!(await user.comparePassword(password))) throw new ApiError(401, "Invalid email or password");
-
-  if (!user.isEmailVerified) {
-    await sendOtp(user);
-    throw new ApiError(403, "Account not verified. An OTP has been sent to your email.");
+  if (!(await user.comparePassword(req.body.password))) {
+    user.failedLoginAttempts += 1;
+    if (user.failedLoginAttempts >= env.loginMaxAttempts) {
+      user.failedLoginAttempts = 0;
+      user.lockedUntil = new Date(Date.now() + env.accountLockMinutes * 60 * 1000);
+    }
+    await user.save();
+    throw new ApiError(401, "Invalid email or password");
   }
 
-  const tokens = await issueTokens(user, req, res);
-  return res.status(200).json(new ApiResponse({ message: "Logged in successfully", data: { user: toSafeUser(user), ...tokens } }));
+  user.failedLoginAttempts = 0;
+  user.lockedUntil = null;
+  await user.save();
+  if (!user.isEmailVerified) {
+    await sendVerificationEmail(user);
+    throw new ApiError(403, "Please verify your email before logging in.");
+  }
+
+  await issueTokens(user, req, res);
+  return res.status(200).json(new ApiResponse({ message: "Logged in successfully", data: { user: toSafeUser(user) } }));
 });
 
 exports.refresh = asyncHandler(async (req, res) => {
-  const token = req.cookies?.[env.cookieName] || req.body?.refreshToken;
+  const token = req.cookies?.[env.cookieName];
   if (!token) throw new ApiError(401, "Unauthorized");
 
-  let decoded;
-  try { decoded = verifyRefreshToken(token); }
-  catch { throw new ApiError(401, "Unauthorized"); }
-
-  if (decoded.type !== "refresh") throw new ApiError(401, "Unauthorized");
-
   const tokenHash = hashRefreshToken(token);
-  const user = await User.findOneAndUpdate(
-    { _id: decoded.sub, "refreshTokens.tokenHash": tokenHash },
-    { $pull: { refreshTokens: { tokenHash } } },
-    { new: true }
+  const session = await Session.findOneAndUpdate(
+    { tokenHash, isRevoked: false, expiresAt: { $gt: new Date() } },
+    { $set: { isRevoked: true, revokedAt: new Date() } },
+    { new: true },
   );
-
-  if (!user) {
-    await User.findByIdAndUpdate(decoded.sub, { $set: { refreshTokens: [] } });
+  if (!session) {
+    await revokeFamilyForReuse(tokenHash);
     throw new ApiError(401, "Unauthorized");
   }
-  if (user.isBlocked) throw new ApiError(403, "Account blocked");
 
-  const tokens = await issueTokens(user, req, res);
-  return res.status(200).json(new ApiResponse({ message: "Token refreshed", data: tokens }));
+  const user = await User.findById(session.userId);
+  if (!user || user.isBlocked) throw new ApiError(401, "Unauthorized");
+  const { session: replacement } = await issueTokens(user, req, res, session.familyId);
+  await Session.findByIdAndUpdate(session._id, { $set: { replacedByToken: replacement._id } });
+  return res.status(200).json(new ApiResponse({ message: "Token refreshed", data: null }));
 });
 
 exports.logout = asyncHandler(async (req, res) => {
-  const token = req.cookies?.[env.cookieName] || req.body?.refreshToken;
-
-  if (token) {
-    try {
-      const decoded = verifyRefreshToken(token);
-      const tokenHash = hashRefreshToken(token);
-      await User.findByIdAndUpdate(decoded.sub, { $pull: { refreshTokens: { tokenHash } } });
-    } catch { /* invalid — clear cookie anyway */ }
-  } else {
-    const header = req.headers.authorization || "";
-    if (header.startsWith("Bearer ")) {
-      try {
-        const decoded = verifyAccessToken(header.slice(7));
-        await User.findByIdAndUpdate(decoded.sub, { $set: { refreshTokens: [] } });
-      } catch { /* nothing to do */ }
-    }
-  }
-
-  res.clearCookie(env.cookieName, cookieOptions());
+  const token = req.cookies?.[env.cookieName];
+  if (token) await Session.updateOne({ tokenHash: hashRefreshToken(token) }, { $set: { isRevoked: true, revokedAt: new Date() } });
+  clearAuthCookies(res);
   return res.status(200).json(new ApiResponse({ message: "Logged out", data: null }));
+});
+
+exports.logoutAll = asyncHandler(async (req, res) => {
+  await Session.updateMany({ userId: req.user.id, isRevoked: false }, { $set: { isRevoked: true, revokedAt: new Date() } });
+  await User.updateOne({ _id: req.user.id }, { $inc: { tokenVersion: 1 } });
+  clearAuthCookies(res);
+  return res.status(200).json(new ApiResponse({ message: "Logged out from all devices", data: null }));
 });
 
 exports.me = asyncHandler(async (req, res) => {
@@ -205,57 +207,50 @@ exports.me = asyncHandler(async (req, res) => {
 
 exports.forgotPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
-
-  console.log("Found user:", user);
-
   if (user && !user.isBlocked) {
-    const rawToken = crypto.randomBytes(32).toString("hex");
-    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
-    user.passwordResetTokenHash = tokenHash;
-    user.passwordResetExpiresAt = new Date(Date.now() + RESET_EXPIRES_MS);
-
-    await user.save();
-
-    try {
-      await sendMail({
-        to: user.email,
-        subject: `${env.appName} - Reset your password`,
-        html: passwordResetEmailTemplate({ appName: env.appName, resetLink: `${env.frontendUrl}/reset-password?token=${rawToken}`, expiresMinutes: 15 }),
-      });
-    } catch (err) { console.error("Failed to send reset email:", err.message); }
-
+    const token = await createToken(PasswordResetToken, user._id, RESET_EXPIRES_MS);
+    queueMail({
+      to: user.email,
+      subject: `${env.appName} - Reset your password`,
+      html: passwordResetEmailTemplate({ appName: env.appName, resetLink: `${env.frontendUrl}/reset-password#token=${token}`, expiresMinutes: 15 }),
+    });
   }
-
   return res.status(200).json(new ApiResponse({ message: "If an account exists, a password reset link has been sent to your email.", data: null }));
 });
 
 exports.resetPassword = asyncHandler(async (req, res) => {
   const tokenHash = crypto.createHash("sha256").update(req.body.token).digest("hex");
-  const user = await User.findOne({ passwordResetTokenHash: tokenHash, passwordResetExpiresAt: { $gt: new Date() } });
+  const reset = await PasswordResetToken.findOneAndDelete({ tokenHash, expiresAt: { $gt: new Date() } });
+  if (!reset) throw new ApiError(400, "Invalid or expired reset token");
 
-  if (!user) throw new ApiError(400, "Invalid or expired reset token");
-  if (user.isBlocked) throw new ApiError(403, "Account blocked");
-
+  const user = await User.findById(reset.userId);
+  if (!user || user.isBlocked) throw new ApiError(403, "Account unavailable");
   user.password = req.body.password;
-  user.passwordResetTokenHash = null;
-  user.passwordResetExpiresAt = null;
-  user.refreshTokens = [];
+  user.failedLoginAttempts = 0;
+  user.lockedUntil = null;
+  user.tokenVersion += 1;
   await user.save();
+  await Session.updateMany({ userId: user._id, isRevoked: false }, { $set: { isRevoked: true, revokedAt: new Date() } });
+  queueMail({ to: user.email, subject: `${env.appName} - Password changed`, html: passwordChangedEmailTemplate({ appName: env.appName }) });
 
-  res.clearCookie(env.cookieName, cookieOptions());
+  clearAuthCookies(res);
   return res.status(200).json(new ApiResponse({ message: "Password reset successful. Please login again.", data: null }));
 });
 
 exports.changePassword = asyncHandler(async (req, res) => {
-  const user = req.userDoc;
-
-  if (user.isBlocked) throw new ApiError(403, "Account blocked");
-  if (!await user.comparePassword(req.body.currentPassword)) throw new ApiError(400, "Current password is incorrect");
+  const user = await User.findById(req.user.id);
+  if (!user || user.isBlocked) throw new ApiError(403, "Account unavailable");
+  if (!(await user.comparePassword(req.body.currentPassword))) throw new ApiError(400, "Current password is incorrect");
 
   user.password = req.body.newPassword;
-  user.refreshTokens = [];
+  user.tokenVersion += 1;
   await user.save();
-
-  res.clearCookie(env.cookieName, cookieOptions());
-  return res.status(200).json(new ApiResponse({ message: "Password changed successfully. Please login again.", data: null }));
+  const currentToken = req.cookies?.[env.cookieName];
+  const currentSession = currentToken && await Session.findOne({ tokenHash: hashRefreshToken(currentToken) }).select("_id");
+  const filter = { userId: user._id, isRevoked: false };
+  if (currentSession) filter._id = { $ne: currentSession._id };
+  await Session.updateMany(filter, { $set: { isRevoked: true, revokedAt: new Date() } });
+  setAccessToken(user, res);
+  queueMail({ to: user.email, subject: `${env.appName} - Password changed`, html: passwordChangedEmailTemplate({ appName: env.appName }) });
+  return res.status(200).json(new ApiResponse({ message: "Password changed successfully.", data: null }));
 });

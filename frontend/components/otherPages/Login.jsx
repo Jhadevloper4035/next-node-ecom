@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { login as loginService } from "@/services/auth/login.service";
+import { resendVerification } from "@/services/auth/resend-verification.service";
 import { loginStart, loginSuccess, loginFailure } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
 import { userErrorMessage } from "@/utlis/error.utlis";
@@ -14,6 +15,7 @@ export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isResending, setIsResending] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const toast = useToast();
@@ -59,12 +61,7 @@ export default function Login() {
       dispatch(loginStart());
       const response = await loginService(formData.email, formData.password);
 
-      if (response.otpRequired) {
-        // redirect to standalone OTP verification page
-        router.push(
-          `/otp-verification?email=${encodeURIComponent(formData.email)}`,
-        );
-      } else if (response.accessToken) {
+      if (response.user) {
         try {
           const me = await import("@/services/user/me.service").then((m) =>
             m.getMe(),
@@ -72,7 +69,6 @@ export default function Login() {
           dispatch(
             loginSuccess({
               user: me.data || response.user,
-              token: response.accessToken,
             }),
           );
         } catch (meErr) {
@@ -80,7 +76,6 @@ export default function Login() {
           dispatch(
             loginSuccess({
               user: response.user,
-              token: response.accessToken,
             }),
           );
         }
@@ -99,6 +94,19 @@ export default function Login() {
     }
   };
 
+  const handleResendVerification = async () => {
+    if (!formData.email) return setError("Enter your email address first.");
+    setIsResending(true);
+    try {
+      await resendVerification(formData.email);
+      toast("If this account needs verification, a new link has been sent.", "info");
+    } catch (err) {
+      setError(userErrorMessage(err, "Could not resend the verification link."));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   return (
     <div className={styles.loginContainer}>
       {/* Left Side - Login Form */}
@@ -110,6 +118,12 @@ export default function Login() {
           </div>
 
           {error && <div className={styles.alertError}>{error}</div>}
+
+          {error.includes("verify your email") && (
+            <button type="button" className={styles.forgotPassword} onClick={handleResendVerification} disabled={isResending}>
+              {isResending ? "Sending verification link..." : "Resend verification link"}
+            </button>
+          )}
 
           <form onSubmit={handleLogin} className={styles.loginForm}>
             <div className={styles.formGroup}>

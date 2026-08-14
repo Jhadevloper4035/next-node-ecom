@@ -23,8 +23,8 @@ async function initRateLimitStore() {
   }
 }
 
-function limiter(windowMinutes, max, message) {
-  return rateLimit({ windowMs: MINUTES(windowMinutes), limit: max, standardHeaders: "draft-7", legacyHeaders: false, store: redisStore || undefined, message: { success: false, message, data: null } });
+function limiter(windowMinutes, max, message, keyGenerator) {
+  return rateLimit({ windowMs: MINUTES(windowMinutes), limit: max, standardHeaders: "draft-7", legacyHeaders: false, store: redisStore || undefined, message: { success: false, message, data: null }, keyGenerator });
 }
 
 const lazyLimiter = (...options) => {
@@ -37,6 +37,6 @@ const lazyLimiter = (...options) => {
 
 const authLimiter = lazyLimiter(15, 120, "Too many requests. Please try again later.");
 const loginLimiter = lazyLimiter(env.loginWindow, env.loginMaxAttempts, "Too many login attempts. Please try again later.");
-const otpVerifyLimiter = lazyLimiter(env.otpVerifyWindow, env.otpVerifyMaxAttempts, "Too many OTP attempts. Please try again later.");
+const loginEmailLimiter = lazyLimiter(env.loginWindow, env.loginMaxAttempts, "Too many login attempts. Please try again later.", (req) => `email:${String(req.body?.email || "").toLowerCase()}`);
 
-module.exports = { authLimiter, loginLimiter, otpVerifyLimiter, initRateLimitStore };
+module.exports = { authLimiter, loginLimiter, loginEmailLimiter, initRateLimitStore };

@@ -12,25 +12,10 @@ const UserSchema = new mongoose.Schema({
   isEmailVerified: { type: Boolean, default: false },
   isBlocked: { type: Boolean, default: false },
 
-  emailOtpHash: { type: String, default: null },
-  emailOtpExpiresAt: { type: Date, default: null },
-
-  otpRequestCount: { type: Number, default: 0 },
-  otpWindowStartAt: { type: Date, default: null },
-  otpLastRequestedAt: { type: Date, default: null },
-
-  refreshTokens: {
-    type: [{ tokenHash: { type: String, required: true }, ip: String, userAgent: String, createdAt: { type: Date, default: Date.now } }],
-    default: [],
-    _id: false,
-  },
-
-  passwordResetTokenHash: { type: String, default: null },
-  passwordResetExpiresAt: { type: Date, default: null },
+  failedLoginAttempts: { type: Number, default: 0 },
+  lockedUntil: { type: Date, default: null },
+  tokenVersion: { type: Number, default: 0 },
 }, { timestamps: true });
-
-
-UserSchema.index({ passwordResetTokenHash: 1 }, { sparse: true });
 
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

@@ -3,15 +3,14 @@ import Sidebar from "./Sidebar";
 import Pagination from "../common/Pagination";
 import Link from "next/link";
 import Image from "next/image";
-import { blogPosts6 } from "@/data/blogs";
 
-export default function BlogDefault() {
+export default function BlogDefault({ posts }) {
   return (
     <div className="main-content-page">
       <div className="container">
         <div className="row">
           <div className="col-lg-8 mb-lg-30">
-            {blogPosts6.slice(0, 3).map((post, i) => (
+            {posts.slice(0, 3).map((post, i) => (
               <React.Fragment key={i}>
                 {i != 0 ? <div className="line-bt mb_40" /> : ""}
                 <div className="wg-blog hover-image mb_40">
@@ -19,7 +18,7 @@ export default function BlogDefault() {
                     <Image
                       className="lazyload"
                       alt=""
-                      src={post.imgSrc}
+                      src={post.image}
                       width={1275}
                       height={717}
                     />
@@ -31,7 +30,7 @@ export default function BlogDefault() {
                           <div className="icon">
                             <i className="icon-calendar" />
                           </div>
-                          <p>{post.date}</p>
+                          <p>{new Date(post.created_at).toLocaleDateString()}</p>
                         </div>
                         <div className="meta-item gap-8">
                           <div className="icon">
@@ -61,11 +60,11 @@ export default function BlogDefault() {
                       </div>
                     </div>
                     <h4 className="title fw-5">
-                      <Link className="link" href={`/blog-detail/${post.id}`}>
+                      <Link className="link" href={`/blog-detail/${post.url}`}>
                         {post.title}
                       </Link>
                     </h4>
-                    <div className="body-text-1">{post.description}</div>
+                    <div className="body-text-1">{post.meta_description || post.text}</div>
                   </div>
                 </div>{" "}
               </React.Fragment>

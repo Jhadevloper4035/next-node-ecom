@@ -3,8 +3,10 @@ import Footer1 from "@/components/footers/Footer1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Link from "next/link";
 import React from "react";
+import { getBlogs } from "@/lib/blogs";
 
-export default function BlogDefaultPage() {
+export default async function BlogDefaultPage() {
+  const posts = await getBlogs();
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" /> */}
@@ -39,7 +41,7 @@ export default function BlogDefaultPage() {
           </div>
         </div>
       </div>
-      <BlogDefault />
+      <BlogDefault posts={posts} />
       <Footer1 />
     </>
   );

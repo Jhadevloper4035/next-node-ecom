@@ -12,14 +12,27 @@ const backendBaseUrl = normalizeApiBaseUrl(
     process.env.NEXT_PUBLIC_API_URL,
 );
 
+const accessCookieName = process.env.ACCESS_COOKIE_NAME || "accessToken";
+const refreshCookieName = process.env.COOKIE_NAME || "refreshToken";
+
+function rewriteCookiePath(cookie) {
+  const name = cookie.slice(0, cookie.indexOf("="));
+  if (name !== accessCookieName && name !== refreshCookieName) return cookie;
+  const path = name === accessCookieName ? "/api/backend/v1" : "/api/backend/v1/auth";
+  return cookie.replace(/;\s*Path=[^;]*/i, `; Path=${path}`);
+}
+
 async function proxyRequest(request, context) {
   const { path = [] } = await context.params;
   const target = new URL(`${backendBaseUrl}/${path.join("/")}`);
   target.search = new URL(request.url).search;
 
   const headers = new Headers(request.headers);
+  const clientIp = headers.get("x-real-ip");
   headers.delete("host");
   headers.delete("connection");
+  ["forwarded", "x-forwarded-for", "x-forwarded-host", "x-forwarded-proto", "x-real-ip"].forEach((name) => headers.delete(name));
+  if (clientIp) headers.set("x-forwarded-for", clientIp);
 
   const method = request.method;
   const hasBody = !["GET", "HEAD"].includes(method);
@@ -33,6 +46,11 @@ async function proxyRequest(request, context) {
   const responseHeaders = new Headers(response.headers);
   responseHeaders.delete("content-encoding");
   responseHeaders.delete("content-length");
+  const setCookies = response.headers.getSetCookie?.() || response.headers.get("set-cookie")?.split(/,(?=\s*[^;\s,]+=)/) || [];
+  if (setCookies.length) {
+    responseHeaders.delete("set-cookie");
+    setCookies.forEach((cookie) => responseHeaders.append("set-cookie", rewriteCookiePath(cookie)));
+  }
 
   return new NextResponse(response.body, {
     status: response.status,

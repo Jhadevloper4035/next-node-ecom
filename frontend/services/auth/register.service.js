@@ -1,5 +1,4 @@
 import api from "../../api/api.config";
-import { setToken } from "@/utlis/auth.utlis";
 import { throwAuthError } from "./error.service";
 
 export const register = async (fullName, email, password, mobileNumber) => {
@@ -12,16 +11,7 @@ export const register = async (fullName, email, password, mobileNumber) => {
     }, {
       skipAuth: true,
     });
-    const data = response.data;
-    const normalized = {
-      ...data,
-      otpRequired: true,
-    };
-
-    if (data.token) {
-      setToken(data.token);
-    }
-    return normalized;
+    return response.data;
   } catch (error) {
     throwAuthError(error);
   }

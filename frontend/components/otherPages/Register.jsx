@@ -103,11 +103,9 @@ export default function Register() {
         formData.mobileNumber,
       );
 
-      toast("Registration initiated, please verify your email", "info");
+      toast("Check your email for the verification link", "info");
       setTimeout(() => {
-        router.push(
-          `/otp-verification?email=${encodeURIComponent(formData.email)}`,
-        );
+        router.push("/login");
       }, 100);
     } catch (err) {
       const errorMessage = userErrorMessage(err, "Registration failed. Please try again.");

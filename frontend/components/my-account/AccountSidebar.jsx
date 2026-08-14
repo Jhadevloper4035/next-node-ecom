@@ -19,9 +19,8 @@ export default function AccountSidebar() {
       dispatch(logout());
       router.push("/");
     } catch (error) {
-      console.error("Logout error:", error);
-      // dispatch(logout());
-      // router.push("/");
+      dispatch(logout());
+      router.push("/");
     }
   };
   return (

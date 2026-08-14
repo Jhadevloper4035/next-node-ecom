@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken, setToken, clearAuth } from "@/utlis/auth.utlis";
+import { clearAuth } from "@/utlis/auth.utlis";
 
 const normalizeApiBaseUrl = (url) => {
   const fallback = "http://localhost:5000/api";
@@ -21,26 +21,16 @@ let isRefreshing = false;
 // Queue to store requests that fail while refreshing is underway
 let failedQueue = [];
 
-const processQueue = (error, token = null) => {
+const processQueue = (error) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token);
+      prom.resolve();
     }
   });
   failedQueue = [];
 };
-
-api.interceptors.request.use((config) => {
-  if (!config.skipAuth) {
-    const token = getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
 
 api.interceptors.response.use(
   (res) => res,
@@ -48,17 +38,14 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Trigger refresh logic on 401 Unauthorized
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest?._retry && !originalRequest?.skipAuth) {
 
       // If a refresh is already in progress, wait for it to finish
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return api(originalRequest);
-          })
+          .then(() => api(originalRequest))
           .catch((err) => Promise.reject(err));
       }
 
@@ -75,22 +62,13 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
 
-        const newToken = refreshResponse.data?.data?.accessToken;
+        if (refreshResponse.status !== 200) throw new Error("Unable to refresh session");
+        processQueue(null);
 
-        if (!newToken) {
-          throw new Error("Missing access token in refresh response");
-        }
-
-        // Store new token and resume queued requests
-        setToken(newToken);
-        processQueue(null, newToken);
-
-        // Update current request and retry
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
 
       } catch (refreshError) {
-        processQueue(refreshError, null);
+        processQueue(refreshError);
 
         // If the refresh token itself is expired, log out the user
         clearAuth();

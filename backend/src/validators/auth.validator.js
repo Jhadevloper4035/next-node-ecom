@@ -43,11 +43,13 @@ exports.registerValidator = [
   mobileRule(),
 ];
 
-exports.verifyOtpValidator = [
-  emailRule(),
-  body("otp")
-    .matches(/^\d{6}$/)
-    .withMessage("OTP must be exactly 6 digits"),
+exports.tokenValidator = [
+  body("token")
+    .isString()
+    .withMessage("Token must be a string")
+    .bail()
+    .isLength({ min: 20 })
+    .withMessage("Token must be at least 20 characters"),
 ];
 
 exports.loginValidator = [
@@ -57,29 +59,15 @@ exports.loginValidator = [
     .withMessage("Password is required"),
 ];
 
-exports.resendOtpValidator = [emailRule()];
+exports.resendVerificationValidator = [emailRule()];
 
 exports.forgotPasswordValidator = [emailRule()];
 
 exports.resetPasswordValidator = [
-  body("token")
-    .isString()
-    .withMessage("Token must be a string")
-    .bail()
-    .isLength({ min: 20 })
-    .withMessage("Token must be at least 20 characters")
-    .notEmpty()
-    .withMessage("Token is required"),
-
+  ...exports.tokenValidator,
   passwordRule("password"),
 ];
 
-exports.refreshValidator = [
-  body("refreshToken")
-    .optional()
-    .isString()
-    .withMessage("refreshToken must be a string"),
-];
 
 /**
  * User Validators

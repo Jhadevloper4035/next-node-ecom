@@ -20,10 +20,8 @@ export default function Header2() {
       dispatch(logout());
       window.location.href = "/";
     } catch (error) {
-      console.error("Logout error:", error);
-      // Still logout even if API fails
-      // dispatch(logout());
-      // router.push("/");
+      dispatch(logout());
+      window.location.href = "/";
     }
   };
 

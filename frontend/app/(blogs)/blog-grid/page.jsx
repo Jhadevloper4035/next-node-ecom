@@ -4,8 +4,10 @@ import Footer1 from "@/components/footers/Footer1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Link from "next/link";
 import React from "react";
+import { getBlogs } from "@/lib/blogs";
 
-export default function BlogGridPage() {
+export default async function BlogGridPage() {
+  const posts = await getBlogs();
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" /> */}
@@ -40,7 +42,7 @@ export default function BlogGridPage() {
           </div>
         </div>
       </div>
-      <BlogGrid />
+      <BlogGrid posts={posts} />
       <Footer1 />
     </>
   );

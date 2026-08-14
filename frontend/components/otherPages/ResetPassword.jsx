@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { resetPassword } from "@/services/auth/reset.service";
 import { useToast } from "@/components/common/ToastContext";
 import { userErrorMessage } from "@/utlis/error.utlis";
 import styles from "./Login.module.css";
 
 export default function ResetPassword() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
@@ -19,9 +18,10 @@ export default function ResetPassword() {
   const toast = useToast();
 
   useEffect(() => {
-    const t = searchParams.get("token");
+    const t = new URLSearchParams(window.location.hash.slice(1)).get("token");
+    window.history.replaceState(null, "", window.location.pathname);
     if (t) setToken(t);
-  }, [searchParams]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

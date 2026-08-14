@@ -2,6 +2,7 @@ const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const User = require("../models/user.model");
+const Session = require("../models/session.model");
 const { toSafeUser } = require("../utils/safeUser");
 
 
@@ -37,9 +38,8 @@ exports.blockUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) throw new ApiError(404, "User not found");
   user.isBlocked = req.body.isBlocked;
-  if (req.body.isBlocked) user.refreshTokens = [];
   await user.save();
+  if (req.body.isBlocked) await Session.updateMany({ userId: user._id, isRevoked: false }, { $set: { isRevoked: true, revokedAt: new Date() } });
   return res.status(200).json(new ApiResponse({ message: req.body.isBlocked ? "User blocked" : "User unblocked", data: { user: toSafeUser(user) } }));
 });
-
 

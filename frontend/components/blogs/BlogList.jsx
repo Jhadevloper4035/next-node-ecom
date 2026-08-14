@@ -3,20 +3,19 @@ import Sidebar from "./Sidebar";
 import Pagination from "../common/Pagination";
 import Link from "next/link";
 import Image from "next/image";
-import { blogPosts6 } from "@/data/blogs";
-export default function BlogList() {
+export default function BlogList({ posts }) {
   return (
     <div className="main-content-page">
       <div className="container">
         <div className="row">
           <div className="col-lg-8 mb-lg-30">
-            {blogPosts6.slice(0, 5).map((post, i) => (
+            {posts.slice(0, 5).map((post, i) => (
               <div key={i} className="wg-blog style-row hover-image mb_40">
                 <div className="image">
                   <Image
                     className="lazyload"
                     alt=""
-                    src={post.imgSrc}
+                    src={post.image}
                     width={600}
                     height={399}
                   />
@@ -28,7 +27,7 @@ export default function BlogList() {
                         <div className="icon">
                           <i className="icon-calendar" />
                         </div>
-                        <p className="text-caption-1">{post.date}</p>
+                          <p className="text-caption-1">{new Date(post.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="meta-item gap-8">
                         <div className="icon">
@@ -44,13 +43,13 @@ export default function BlogList() {
                     </div>
                   </div>
                   <h5 className="title">
-                    <Link className="link" href={`/blog-detail/${post.id}`}>
+                    <Link className="link" href={`/blog-detail/${post.url}`}>
                       {post.title}
                     </Link>
                   </h5>
-                  <p>{post.description.split(" ").slice(0, 10).join(" ")}</p>
+                  <p>{(post.meta_description || post.text).split(" ").slice(0, 10).join(" ")}</p>
                   <Link
-                    href={`/blog-detail/${post.id}`}
+                    href={`/blog-detail/${post.url}`}
                     className="link text-button bot-button"
                   >
                     Read More

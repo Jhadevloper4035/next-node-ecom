@@ -1,22 +1,28 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { hydrate, updateUser } from "@/redux/authSlice";
+import { logout, updateUser } from "@/redux/authSlice";
 import { setInitialLoading } from "@/redux/uiSlice";
 import { useAxiosInterceptors } from "@/hooks/useAxiosInterceptors";
 import { useRouteLoadingState } from "@/hooks/useRouteLoadingState";
 import { getMe } from "@/services/user/me.service";
-import { getToken } from "@/utlis/auth.utlis";
+import { clearAuth } from "@/utlis/auth.utlis";
+
+const protectedRoutes = ["/my-account", "/my-account-address", "/my-account-orders", "/my-account-orders-details", "/wish-list", "/checkout", "/view-cart", "/shopping-cart"];
 
 export default function AuthHydrator() {
   const dispatch = useDispatch();
-  const { user, token: storeToken } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
+  const pathname = usePathname();
+  const router = useRouter();
 
   useAxiosInterceptors();
   useRouteLoadingState();
 
   useEffect(() => {
+    clearAuth();
     // Mark initial loading as complete after some time
     // This gives enough time for AuthHydrator and initial page components to trigger their API calls
     const timer = setTimeout(() => {
@@ -26,31 +32,19 @@ export default function AuthHydrator() {
   }, [dispatch]);
 
   useEffect(() => {
-    // 1. First, hydrate auth state (token) from cookies/storage
-    dispatch(hydrate());
-  }, [dispatch]);
-
-  useEffect(() => {
     const fetchUserData = async () => {
-      // Check for token in storage/cookies
-      const token = getToken();
-
-      // If we have a token but NO user data in slice, fetch user profile
-      if (token && !user) {
-        try {
-          const res = await getMe();
-          if (res.data?.user) {
-            dispatch(updateUser(res.data.user));
-          }
-        } catch (error) {
-          console.error("Session sync failed:", error);
-          // Token might be invalid/expired, middleware will handle redirection if needed
-        }
+      if (user) return;
+      try {
+        const res = await getMe();
+        if (res.data?.user) dispatch(updateUser(res.data.user));
+      } catch {
+        dispatch(logout());
+        if (protectedRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))) router.replace("/login");
       }
     };
 
     fetchUserData();
-  }, [dispatch, user]);
+  }, [dispatch, pathname, router, user]);
 
   return null; // This component renders nothing
 }

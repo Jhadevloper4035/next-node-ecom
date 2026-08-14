@@ -1,16 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearAuth, getToken } from "@/utlis/auth.utlis";
-
-const loadTokenFromCookies = () => {
-  if (typeof window !== "undefined") {
-    return getToken();
-  }
-  return null;
-};
+import { clearAuth } from "@/utlis/auth.utlis";
 
 const initialState = {
   user: null,
-  token: loadTokenFromCookies(),
   isLoading: false,
   error: null,
 };
@@ -19,14 +11,6 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    hydrate(state) {
-      if (typeof window !== "undefined") {
-        const token = getToken();
-        if (token) {
-          state.token = token;
-        }
-      }
-    },
     // Login start
     loginStart(state) {
       state.isLoading = true;
@@ -39,7 +23,6 @@ const authSlice = createSlice({
       // Defensive: extract user if it's nested
       const userData = action.payload.user;
       state.user = userData?.user || userData;
-      state.token = action.payload.token;
       state.error = null;
     },
     // Login failure
@@ -50,7 +33,6 @@ const authSlice = createSlice({
     // Logout
     logout(state) {
       state.user = null;
-      state.token = null;
       state.error = null;
       state.isLoading = false;
       clearAuth();
@@ -72,7 +54,6 @@ const authSlice = createSlice({
 });
 
 export const {
-  hydrate,
   loginStart,
   loginSuccess,
   loginFailure,

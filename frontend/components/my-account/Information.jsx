@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateProfile } from "@/services/user/profile.service";
-import { updateUser } from "@/redux/authSlice";
+import { changePassword } from "@/services/auth/change-password.service";
+import { logoutAllAPI } from "@/services/auth/logout.service";
+import { logout, updateUser } from "@/redux/authSlice";
 import { useToast } from "@/components/common/ToastContext";
 
 export default function Information() {
   const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const addToast = useToast();
 
@@ -22,9 +23,6 @@ export default function Information() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordType, setPasswordType] = useState("password");
-  const [confirmPasswordType, setConfirmPasswordType] = useState("password");
-  const [newPasswordType, setNewPasswordType] = useState("password");
 
   useEffect(() => {
     if (user) {
@@ -67,15 +65,10 @@ export default function Information() {
         mobileNumber: formData.mobileNumber,
       };
 
-      // Only add password fields if user is attempting to change password
-      if (formData.newPassword) {
-        payload.currentPassword = formData.password;
-        payload.newPassword = formData.newPassword;
-      }
-
       const response = await updateProfile(payload);
 
       if (response.success) {
+        if (formData.newPassword) await changePassword(formData.password, formData.newPassword);
         addToast("Profile updated successfully", "success");
         // Update local state if the API returns the updated user
         if (response.data) {
@@ -109,25 +102,18 @@ export default function Information() {
     }
   };
 
-  const togglePassword = () => {
-    setPasswordType((prevType) =>
-      prevType === "password" ? "text" : "password",
-    );
+  const handleLogoutAll = async () => {
+    if (!window.confirm("Log out from every device?")) return;
+    try {
+      await logoutAllAPI();
+      dispatch(logout());
+      window.location.href = "/";
+    } catch (error) {
+      addToast(error.message || "Could not log out other devices", "error");
+    }
   };
 
-  const toggleConfirmPassword = () => {
-    setConfirmPasswordType((prevType) =>
-      prevType === "password" ? "text" : "password",
-    );
-  };
-
-  const toggleNewPassword = () => {
-    setNewPasswordType((prevType) =>
-      prevType === "password" ? "text" : "password",
-    );
-  };
-
-  if (!user && token) {
+  if (!user) {
     return (
       <div className="my-account-content">
         <div
@@ -240,6 +226,21 @@ export default function Information() {
             </div> */}
           </div>
 
+          <div className="account-info mt-4">
+            <h5 className="title">Change Password</h5>
+            <div className="cols mb_20">
+              <fieldset>
+                <input type="password" name="password" placeholder="Current password" value={formData.password} onChange={handleChange} autoComplete="current-password" />
+              </fieldset>
+              <fieldset>
+                <input type="password" name="newPassword" placeholder="New password" value={formData.newPassword} onChange={handleChange} autoComplete="new-password" />
+              </fieldset>
+            </div>
+            <fieldset>
+              <input type="password" name="confirmPassword" placeholder="Confirm new password" value={formData.confirmPassword} onChange={handleChange} autoComplete="new-password" />
+            </fieldset>
+          </div>
+
           <div className="button-submit">
             <button
               className="tf-btn btn-fill"
@@ -249,6 +250,9 @@ export default function Information() {
               <span className="text text-button">
                 {isLoading ? "Updating..." : "Update Account"}
               </span>
+            </button>
+            <button className="tf-btn btn-outline ms-2" type="button" onClick={handleLogoutAll} disabled={isLoading}>
+              <span className="text text-button">Log Out All Devices</span>
             </button>
           </div>
         </form>

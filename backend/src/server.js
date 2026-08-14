@@ -5,6 +5,7 @@ const { connectDB } = require("./config/db");
 const { env } = require("./config/env");
 const { closeRedis } = require("./config/redis");
 const { initRateLimitStore } = require("./middlewares/rateLimiters");
+const { expirePendingOrders } = require("./services/checkout.service");
 
 const server = http.createServer(app);
 
@@ -12,6 +13,8 @@ async function bootstrap() {
   
   await connectDB();
   await initRateLimitStore();
+  await expirePendingOrders();
+  globalThis.setInterval(() => expirePendingOrders().catch((err) => console.error("Checkout expiry failed:", err.message)), 60_000).unref();
   console.log("SMTP:", env.smtpHost || "not set — emails disabled");
   console.log("Redis:", env.redisUrl || "not set — in-memory rate limiting");
   server.listen(env.port, () => console.log(`${env.appName} running on port ${env.port}`));

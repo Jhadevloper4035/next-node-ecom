@@ -211,8 +211,8 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
     const token = await createToken(PasswordResetToken, user._id, RESET_EXPIRES_MS);
     queueMail({
       to: user.email,
-      subject: `${env.appName} - Reset your password`,
-      html: passwordResetEmailTemplate({ appName: env.appName, resetLink: `${env.frontendUrl}/reset-password#token=${token}`, expiresMinutes: 15 }),
+      subject: "Curve & Comfort - Reset your password",
+      html: passwordResetEmailTemplate({ resetLink: `${env.frontendUrl}/reset-password#token=${token}`, expiresMinutes: 15 }),
     });
   }
   return res.status(200).json(new ApiResponse({ message: "If an account exists, a password reset link has been sent to your email.", data: null }));
@@ -231,7 +231,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
   user.tokenVersion += 1;
   await user.save();
   await Session.updateMany({ userId: user._id, isRevoked: false }, { $set: { isRevoked: true, revokedAt: new Date() } });
-  queueMail({ to: user.email, subject: `${env.appName} - Password changed`, html: passwordChangedEmailTemplate({ appName: env.appName }) });
+  queueMail({ to: user.email, subject: "Curve & Comfort - Password changed", html: passwordChangedEmailTemplate() });
 
   clearAuthCookies(res);
   return res.status(200).json(new ApiResponse({ message: "Password reset successful. Please login again.", data: null }));
@@ -251,6 +251,6 @@ exports.changePassword = asyncHandler(async (req, res) => {
   if (currentSession) filter._id = { $ne: currentSession._id };
   await Session.updateMany(filter, { $set: { isRevoked: true, revokedAt: new Date() } });
   setAccessToken(user, res);
-  queueMail({ to: user.email, subject: `${env.appName} - Password changed`, html: passwordChangedEmailTemplate({ appName: env.appName }) });
+  queueMail({ to: user.email, subject: "Curve & Comfort - Password changed", html: passwordChangedEmailTemplate() });
   return res.status(200).json(new ApiResponse({ message: "Password changed successfully.", data: null }));
 });

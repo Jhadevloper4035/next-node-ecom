@@ -13,6 +13,8 @@ const adminRoutes = require("./admin.route");
 const contactRoutes = require("./contact.route");
 const reviewRoutes = require("./review.route");
 const blogRoutes = require("./blog.route");
+const checkoutRoutes = require("./checkout.route");
+const orderRoutes = require("./order.route");
 
 
 router.use("/categories", categoryRoutes);
@@ -21,6 +23,8 @@ router.use("/address", addressRoutes);
 router.use("/contact", contactRoutes);
 router.use("/reviews", reviewRoutes);
 router.use("/blogs", blogRoutes);
+router.use("/checkout", checkoutRoutes);
+router.use("/orders", orderRoutes);
 
 
 router.use("/auth", authRoutes);

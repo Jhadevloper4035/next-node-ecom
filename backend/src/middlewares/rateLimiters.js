@@ -38,5 +38,6 @@ const lazyLimiter = (...options) => {
 const authLimiter = lazyLimiter(15, 120, "Too many requests. Please try again later.");
 const loginLimiter = lazyLimiter(env.loginWindow, env.loginMaxAttempts, "Too many login attempts. Please try again later.");
 const loginEmailLimiter = lazyLimiter(env.loginWindow, env.loginMaxAttempts, "Too many login attempts. Please try again later.", (req) => `email:${String(req.body?.email || "").toLowerCase()}`);
+const checkoutLimiter = lazyLimiter(10, 10, "Too many checkout attempts. Please try again later.", (req) => `user:${req.user?.id || req.ip}`);
 
-module.exports = { authLimiter, loginLimiter, loginEmailLimiter, initRateLimitStore };
+module.exports = { authLimiter, loginLimiter, loginEmailLimiter, checkoutLimiter, initRateLimitStore };

@@ -8,6 +8,8 @@ const { env } = require("./config/env");
 
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
+const requireFrontendOrigin = require("./middlewares/requireFrontendOrigin");
+const paymentController = require("./controllers/payment.controller");
 
 
 const routes = require("./routes");
@@ -20,10 +22,12 @@ if (env.trustProxy) app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors({ origin: env.corsOrigin.length ? env.corsOrigin : true, credentials: env.corsCredentials }));
+app.post("/api/v1/payments/cashfree/webhook", express.raw({ type: "application/json" }), paymentController.cashfreeWebhook);
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(mongoSanitize());
+app.use(requireFrontendOrigin([env.frontendUrl, ...env.corsOrigin]));
 
 app.use((req, _res, next) => {
   function clean(v) {

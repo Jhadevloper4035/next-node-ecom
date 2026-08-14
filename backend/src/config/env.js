@@ -40,6 +40,12 @@ const env = {
   cookiePath: process.env.COOKIE_PATH || "/api/v1/auth",
   accessCookiePath: process.env.ACCESS_COOKIE_PATH || "/api/v1",
 
+  cashfreeClientId: process.env.CASHFREE_CLIENT_ID || "",
+  cashfreeClientSecret: process.env.CASHFREE_CLIENT_SECRET || "",
+  cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || "sandbox",
+  cashfreeApiVersion: process.env.CASHFREE_API_VERSION || "2025-01-01",
+  checkoutExpiryMinutes: Number(process.env.CHECKOUT_EXPIRY_MINUTES || 15),
+
   verificationExpiry: Number(process.env.VERIFICATION_EXPIRES_MINUTES || 30),
 
   loginMaxAttempts: Number(process.env.LOGIN_MAX_ATTEMPTS || 8),

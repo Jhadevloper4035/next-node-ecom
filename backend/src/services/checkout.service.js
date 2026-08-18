@@ -9,6 +9,9 @@ const ApiError = require("../utils/ApiError");
 
 const toPaise = (amount) => Math.round(Number(amount) * 100);
 const orderNumber = () => `CC${Date.now().toString(36).toUpperCase()}${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+const paymentPlan = (totalPaise, paymentMethod) => paymentMethod === "cod"
+  ? { advancePaise: Math.ceil(totalPaise / 3), balanceDuePaise: totalPaise - Math.ceil(totalPaise / 3), paymentMethods: "upi,cc,dc" }
+  : { advancePaise: totalPaise, balanceDuePaise: 0, paymentMethods: paymentMethod === "upi" ? "upi" : "cc,dc" };
 
 const optionGroups = (product) => [
   ...(product.customizationGroups || []).map((group) => ({ key: group.key, label: group.label, options: group.options || [] })),
@@ -67,7 +70,7 @@ const addressSnapshot = (address) => ({
   line2: address.line2, landmark: address.landmark, city: address.city, state: address.state, country: address.country, postalCode: address.postalCode,
 });
 
-async function createCheckout({ user, items, addressId, idempotencyKey }) {
+async function createCheckout({ user, items, addressId, paymentMethod, idempotencyKey }) {
   const existing = await Order.findOne({ user: user.id, idempotencyKey }).populate("paymentTransaction");
   if (existing) return existing;
 
@@ -76,12 +79,13 @@ async function createCheckout({ user, items, addressId, idempotencyKey }) {
 
   const reserved = await reserveItems(items);
   const subtotalPaise = reserved.reduce((sum, item) => sum + item.unitPricePaise * item.quantity, 0);
-  const pricing = { subtotalPaise, discountPaise: 0, shippingPaise: 0, taxPaise: 0, totalPaise: subtotalPaise, currency: "INR" };
+  const plan = paymentPlan(subtotalPaise, paymentMethod);
+  const pricing = { subtotalPaise, discountPaise: 0, shippingPaise: 0, taxPaise: 0, totalPaise: subtotalPaise, advancePaise: plan.advancePaise, balanceDuePaise: plan.balanceDuePaise, currency: "INR" };
   let order;
   try {
-    order = await Order.create({ user: user.id, orderNumber: orderNumber(), items: reserved, addressSnapshot: addressSnapshot(address), pricing, paymentMethod: "cashfree", idempotencyKey, expiresAt: new Date(Date.now() + env.checkoutExpiryMinutes * 60_000) });
-    const cashfree = await createCashfreeOrder({ orderNumber: order.orderNumber, amountPaise: pricing.totalPaise, user, idempotencyKey });
-    const payment = await PaymentTransaction.create({ order: order._id, gateway: "cashfree", cfOrderId: String(cashfree.cf_order_id), paymentSessionId: cashfree.payment_session_id, amountPaise: pricing.totalPaise });
+    order = await Order.create({ user: user.id, orderNumber: orderNumber(), items: reserved, addressSnapshot: addressSnapshot(address), pricing, paymentMethod, idempotencyKey, expiresAt: new Date(Date.now() + env.checkoutExpiryMinutes * 60_000) });
+    const cashfree = await createCashfreeOrder({ orderNumber: order.orderNumber, amountPaise: pricing.advancePaise, user, idempotencyKey, paymentMethods: plan.paymentMethods });
+    const payment = await PaymentTransaction.create({ order: order._id, gateway: "cashfree", cfOrderId: String(cashfree.cf_order_id), paymentSessionId: cashfree.payment_session_id, amountPaise: pricing.advancePaise });
     order.paymentTransaction = payment._id;
     await order.save();
     return order.populate("paymentTransaction");
@@ -104,4 +108,4 @@ async function expirePendingOrders() {
   }
 }
 
-module.exports = { createCheckout, expirePendingOrders, releaseStock, transitions, toPaise };
+module.exports = { createCheckout, expirePendingOrders, releaseStock, transitions, toPaise, paymentPlan };

@@ -54,7 +54,6 @@ export default function ResetPassword() {
     <section className={`${styles.loginContainer} ${styles.authSingleColumn}`}>
       <div className={styles.loginLeft}>
         <div className={styles.loginFormWrapper}>
-          <Link href="/" className={styles.homeLink}>← Back to shopping</Link>
           <div className={styles.loginHead}>
             <p className={styles.eyebrow}>Account security</p>
             <h1>Create a new password</h1>

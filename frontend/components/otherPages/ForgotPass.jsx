@@ -39,9 +39,7 @@ export default function ForgotPass() {
     <section className={`${styles.loginContainer} ${styles.authSingleColumn}`}>
       <div className={styles.loginLeft}>
         <div className={styles.loginFormWrapper}>
-          <Link href="/" className={styles.homeLink}>← Back to shopping</Link>
           <div className={styles.loginHead}>
-            <p className={styles.eyebrow}>Account recovery</p>
             <h1>Forgot your password?</h1>
             <p>Enter your email and we’ll send a secure reset link.</p>
           </div>

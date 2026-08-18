@@ -27,7 +27,7 @@ exports.cashfreeWebhook = async (req, res) => {
   const transaction = await PaymentTransaction.findOne({ order: order._id });
   if (!transaction) return res.status(200).json(new ApiResponse({ message: "Webhook ignored" }));
 
-  if (isSuccess && paidPaise !== order.pricing.totalPaise) return res.status(400).json({ success: false, message: "Payment amount mismatch" });
+  if (isSuccess && paidPaise !== transaction.amountPaise) return res.status(400).json({ success: false, message: "Payment amount mismatch" });
 
   if (isSuccess && order.status === "pending_payment") {
     transaction.status = "paid";
@@ -36,7 +36,7 @@ exports.cashfreeWebhook = async (req, res) => {
     transaction.processedAt = new Date();
     await transaction.save();
     order.status = "confirmed";
-    order.paymentStatus = "paid";
+    order.paymentStatus = order.paymentMethod === "cod" ? "advance_paid" : "paid";
     await order.save();
     if (order.user?.email) sendMail({ to: order.user.email, subject: `${env.appName} order confirmed`, html: orderConfirmedEmailTemplate({ order }) }).catch((error) => console.error("Order email failed:", error.message));
   } else if (isFailure && order.status === "pending_payment") {

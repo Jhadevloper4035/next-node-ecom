@@ -8,26 +8,43 @@ import { useAppState } from "@/context/useAppState";
 import { useToast } from "@/components/common/ToastContext";
 import { getAllAddresses } from "@/services/address/address.service";
 import { createCheckout } from "@/services/checkout/checkout.service";
+import styles from "./Checkout.module.css";
 
+const money = (value) => `₹${Number(value || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const productHref = (product) => product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`;
-const productOptions = (product) => product.selectedOptions?.map((option) => `${option.label}: ${option.value}`).join(" / ") || "Standard";
+const paymentOptions = [
+  { id: "upi", title: "UPI", detail: "Pay securely with any UPI app." },
+  { id: "card", title: "Credit or debit card", detail: "Visa, Mastercard, RuPay and more." },
+  { id: "cod", title: "Cash on delivery", detail: "Pay one-third now; the remaining balance is due on delivery." },
+];
 
 export default function Checkout() {
   const { cartProducts, totalPrice } = useAppState();
   const toast = useToast();
   const [addresses, setAddresses] = useState([]);
   const [addressId, setAddressId] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("upi");
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cashfreeLoaded, setCashfreeLoaded] = useState(false);
   const idempotencyKey = useRef(null);
+  const total = Number(totalPrice || 0);
+  const codAdvance = Math.ceil(total * 100 / 3) / 100;
+  const codBalance = total - codAdvance;
+  const selectedAddress = addresses.find((address) => String(address._id) === addressId);
 
   useEffect(() => {
     getAllAddresses().then((response) => {
       const list = response.data || [];
       setAddresses(list);
       setAddressId(String((list.find((address) => address.isDefault) || list[0])?._id || ""));
-    }).catch(() => toast("Unable to load saved addresses.", "error"));
+    }).catch(() => toast("Unable to load saved addresses.", "error")).finally(() => setIsLoadingAddresses(false));
   }, [toast]);
+
+  const choosePayment = (method) => {
+    idempotencyKey.current = null;
+    setPaymentMethod(method);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,6 +54,7 @@ export default function Checkout() {
     try {
       const response = await createCheckout({
         addressId,
+        paymentMethod,
         idempotencyKey: (idempotencyKey.current ||= crypto.randomUUID()),
         items: cartProducts.map((product) => ({ productId: product.productId || product._id || product.id, quantity: product.quantity, selectedOptions: product.selectedOptions || [] })),
       });
@@ -49,51 +67,37 @@ export default function Checkout() {
     }
   };
 
-  if (!cartProducts.length) return <section className="flat-spacing"><div className="container text-center"><h3>Your cart is empty</h3><Link className="tf-btn btn-reset mt-3" href="/all-products"><span className="text">Continue shopping</span></Link></div></section>;
+  if (!cartProducts.length) return <section className={styles.page}><div className={styles.empty}><h1>Your cart is empty</h1><Link className={styles.primaryButton} href="/all-products">Continue shopping</Link></div></section>;
 
-  return (
-    <section>
-      <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="afterInteractive" onLoad={() => setCashfreeLoaded(true)} />
-      <div className="container">
-        <div className="row">
-          <div className="col-xl-6">
-            <form className="flat-spacing tf-page-checkout" onSubmit={handleSubmit}>
-              <div className="wrap">
-                <h5 className="title">Delivery address</h5>
-                <div className="info-box">
-                  {addresses.length ? addresses.map((address) => (
-                    <label className="d-block mb-3" key={address._id}>
-                      <input type="radio" name="address" value={address._id} checked={addressId === String(address._id)} onChange={(event) => setAddressId(event.target.value)} /> <strong>{address.label}</strong> — {address.line1}, {address.city}, {address.state} {address.postalCode}
-                    </label>
-                  )) : <p>Add a saved address before checkout. <Link href="/my-account-address">Manage addresses</Link></p>}
-                </div>
-              </div>
-              <div className="wrap">
-                <h5 className="title">Payment</h5>
-                <p className="text-secondary">Your final INR total is verified by the server before Cashfree opens.</p>
-                <button className="tf-btn btn-reset" type="submit" disabled={isSubmitting || !addressId || !cashfreeLoaded}><span className="text">{isSubmitting ? "Starting payment…" : "Pay securely"}</span></button>
-              </div>
-            </form>
-          </div>
-          <div className="col-xl-1"><div className="line-separation" /></div>
-          <div className="col-xl-5">
-            <div className="flat-spacing flat-sidebar-checkout">
-              <div className="sidebar-checkout-content">
-                <h5 className="title">Order summary</h5>
-                <div className="list-product">
-                  {cartProducts.map((product) => (
-                    <div key={product.id} className="item-product">
-                      <Link href={productHref(product)} className="img-product"><Image alt={product.title} src={product.imgSrc || "/images/placeholder.svg"} width={600} height={800} /></Link>
-                      <div className="content-box"><div className="info"><Link href={productHref(product)} className="name-product link text-title">{product.title}</Link><div className="variant text-caption-1 text-secondary">{productOptions(product)}</div></div><div className="total-price text-button"><span className="count">{product.quantity}</span> × <span className="price">₹{Number(product.price || 0).toFixed(2)}</span></div></div>
-                    </div>
-                  ))}
-                </div>
-                <div className="sec-total-price"><div className="top"><div className="item d-flex align-items-center justify-content-between text-button"><span>Cart estimate</span><span>₹{totalPrice.toFixed(2)}</span></div><div className="item d-flex align-items-center justify-content-between text-button"><span>Delivery</span><span>Included</span></div></div><div className="bottom"><h5 className="d-flex justify-content-between"><span>Server total</span><span className="total-price-checkout">Calculated at payment</span></h5></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
+  return <section className={styles.page}>
+    <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="afterInteractive" onLoad={() => setCashfreeLoaded(true)} />
+    <div className={styles.container}>
+      <header className={styles.header}><p>Secure checkout</p><h1>Choose payment method</h1><span>Delivery details and final availability are confirmed before payment.</span></header>
+      <div className={styles.layout}>
+        <main>
+          {isLoadingAddresses ? <div className={styles.card}>Loading saved addresses…</div> : !addresses.length ? <div className={`${styles.card} ${styles.noAddress}`}><div><p className={styles.eyebrow}>Delivery address required</p><h2>Add your delivery address first</h2><p>We need an address before showing payment options. It will be saved to your account for future orders.</p></div><Link href="/checkout/address" className={styles.primaryButton}>Add delivery address</Link></div> : <form onSubmit={handleSubmit}>
+            <section className={styles.card}>
+              <div className={styles.sectionHead}><div><p className={styles.eyebrow}>Delivering to</p><h2>Select an address</h2></div><Link href="/checkout/address">Add new</Link></div>
+              <div className={styles.addressList}>{addresses.map((address) => <label className={`${styles.address} ${addressId === String(address._id) ? styles.selected : ""}`} key={address._id}><input type="radio" name="address" value={address._id} checked={addressId === String(address._id)} onChange={(event) => setAddressId(event.target.value)} /><span><strong>{address.label || "Home"}{address.isDefault ? " · Default" : ""}</strong><small>{address.fullName} · {address.phone}</small><small>{address.line1}{address.line2 ? `, ${address.line2}` : ""}, {address.city}, {address.state} — {address.postalCode}</small></span></label>)}</div>
+            </section>
+            <section className={styles.card}>
+              <div className={styles.sectionHead}><div><p className={styles.eyebrow}>Payment</p><h2>How would you like to pay?</h2></div></div>
+              <div className={styles.paymentList}>{paymentOptions.map((option) => <label className={`${styles.paymentOption} ${paymentMethod === option.id ? styles.selected : ""}`} key={option.id}><input type="radio" name="paymentMethod" value={option.id} checked={paymentMethod === option.id} onChange={() => choosePayment(option.id)} /><span className={styles.paymentIcon}>{option.id === "upi" ? "₹" : option.id === "card" ? "▣" : "◌"}</span><span><strong>{option.title}</strong><small>{option.detail}</small>{option.id === "cod" && paymentMethod === "cod" && <small className={styles.advance}>Pay {money(codAdvance)} now · {money(codBalance)} on delivery</small>}</span></label>)}</div>
+              <button className={styles.primaryButton} type="submit" disabled={isSubmitting || !cashfreeLoaded}>{isSubmitting ? "Starting secure payment…" : paymentMethod === "cod" ? `Pay ${money(codAdvance)} advance` : `Pay ${money(total)}`}</button>
+              <p className={styles.paymentNote}>UPI and card payments are completed on Cashfree&apos;s secure checkout. We do not store payment details.</p>
+            </section>
+          </form>}
+        </main>
+        <aside className={styles.summary}>
+          <h2>Cart summary</h2>
+          {selectedAddress && <div className={styles.summaryAddress}><span>Delivering to</span><strong>{selectedAddress.fullName}</strong><small>{selectedAddress.city}, {selectedAddress.state} {selectedAddress.postalCode}</small></div>}
+          <div className={styles.items}>{cartProducts.map((product) => <div className={styles.item} key={product.id}><Link href={productHref(product)}><Image alt={product.title || "Product"} src={product.imgSrc || "/images/placeholder.svg"} width={72} height={88} /></Link><span><strong>{product.title || "Product"}</strong><small>Qty {product.quantity}</small></span><b>{money(product.price * product.quantity)}</b></div>)}</div>
+          <div className={styles.totalRow}><span>Cart total ({cartProducts.length} {cartProducts.length === 1 ? "item" : "items"})</span><strong>{money(total)}</strong></div>
+          <div className={styles.deliveryRow}><span>Delivery</span><strong>Included</strong></div>
+          <div className={styles.youPay}><span>{paymentMethod === "cod" ? "Pay today" : "You pay"}</span><strong>{money(paymentMethod === "cod" ? codAdvance : total)}</strong></div>
+          {paymentMethod === "cod" && <p className={styles.codNote}>Balance due on delivery: <strong>{money(codBalance)}</strong></p>}
+        </aside>
       </div>
-    </section>
-  );
+    </div>
+  </section>;
 }

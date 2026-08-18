@@ -20,3 +20,6 @@ docs/
 !.env.*.example
 !**/.env.example
 !**/.env.*.example
+.env
+.env
+.env

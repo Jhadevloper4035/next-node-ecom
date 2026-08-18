@@ -8,7 +8,7 @@ function requireCashfree() {
   if (!env.cashfreeClientId || !env.cashfreeClientSecret) throw new ApiError(503, "Payments are not configured");
 }
 
-async function createCashfreeOrder({ orderNumber, amountPaise, user, idempotencyKey }) {
+async function createCashfreeOrder({ orderNumber, amountPaise, user, idempotencyKey, paymentMethods }) {
   requireCashfree();
   const response = await globalThis.fetch(`${baseUrl()}/pg/orders`, {
     method: "POST",
@@ -22,7 +22,7 @@ async function createCashfreeOrder({ orderNumber, amountPaise, user, idempotency
       order_amount: Number((amountPaise / 100).toFixed(2)),
       order_currency: "INR",
       customer_details: { customer_id: user.id, customer_name: user.fullName, customer_email: user.email, customer_phone: user.mobileNumber },
-      order_meta: { return_url: `${env.frontendUrl}/checkout/confirmation?order_id={order_id}` },
+      order_meta: { return_url: `${env.frontendUrl}/checkout/confirmation?order_id={order_id}`, payment_methods: paymentMethods },
     }),
   });
   const body = await response.json().catch(() => ({}));

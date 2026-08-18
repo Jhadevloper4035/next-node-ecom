@@ -122,7 +122,6 @@ export default function Register() {
       <div className={styles.loginLeft}>
         <div className={`${styles.loginFormWrapper} ${styles.registerCard}`}>
           <div className={styles.registerTopline}>
-            <Link href="/" className={styles.homeLink}>← Back to shopping</Link>
             <span>Already a member? <Link href="/login">Sign in</Link></span>
           </div>
           <div className={styles.loginHead}>

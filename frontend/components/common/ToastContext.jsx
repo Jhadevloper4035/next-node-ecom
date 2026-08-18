@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 export function ToastProvider({ children }) {
@@ -19,6 +20,6 @@ export function ToastProvider({ children }) {
 }
 
 export function useToast() {
-  return (message, type = "info", duration = 3000) =>
-    (toast[type] || toast.info)(message, { autoClose: duration });
+  return useCallback((message, type = "info", duration = 3000) =>
+    (toast[type] || toast.info)(message, { autoClose: duration }), []);
 }

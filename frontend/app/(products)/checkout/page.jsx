@@ -43,33 +43,6 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <div
-        className="page-title"
-        style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
-      >
-        <div className="container">
-          <h1 className="heading text-center">Check Out</h1>
-          <ul className="breadcrumbs d-flex align-items-center justify-content-center">
-            <li>
-              <Link className="link" href={`/`}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <i className="icon-arrRight" />
-            </li>
-            <li>
-              <Link className="link" href={`/all-products`}>
-                Shop
-              </Link>
-            </li>
-            <li>
-              <i className="icon-arrRight" />
-            </li>
-            <li>View Cart</li>
-          </ul>
-        </div>
-      </div>
       <Checkout />
       <Footer1 />
     </>

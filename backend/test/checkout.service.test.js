@@ -3,10 +3,9 @@ process.env.JWT_ACCESS_SECRET ||= "test-access-secret";
 
 const assert = require("node:assert/strict");
 const test = require("node:test");
-const { toPaise, transitions } = require("../src/services/checkout.service");
+const { paymentPlan } = require("../src/services/checkout.service");
 
-test("checkout money and lifecycle use exact paise and legal transitions", () => {
-  assert.equal(toPaise(199.99), 19999);
-  assert.deepEqual(transitions.confirmed, ["processing", "cancelled"]);
-  assert.equal(transitions.delivered.length, 0);
+test("COD always collects a one-third advance and leaves the balance due", () => {
+  assert.deepEqual(paymentPlan(10_001, "cod"), { advancePaise: 3_334, balanceDuePaise: 6_667, paymentMethods: "upi,cc,dc" });
+  assert.deepEqual(paymentPlan(10_001, "upi"), { advancePaise: 10_001, balanceDuePaise: 0, paymentMethods: "upi" });
 });

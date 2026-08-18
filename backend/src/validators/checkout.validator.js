@@ -13,9 +13,10 @@ const itemRules = [
 exports.createCheckoutValidator = [
   ...itemRules,
   body("addressId").custom((id) => mongoose.Types.ObjectId.isValid(id)).withMessage("Invalid address"),
+  body("paymentMethod").isIn(["upi", "card", "cod"]).withMessage("Invalid payment method"),
   body("idempotencyKey").isUUID().withMessage("Invalid checkout request"),
   body().custom((_, { req }) => {
-    const allowed = new Set(["items", "addressId", "idempotencyKey"]);
+    const allowed = new Set(["items", "addressId", "paymentMethod", "idempotencyKey"]);
     const unknown = Object.keys(req.body || {}).filter((key) => !allowed.has(key));
     if (unknown.length) throw new Error(`Unknown fields: ${unknown.join(", ")}`);
     return true;

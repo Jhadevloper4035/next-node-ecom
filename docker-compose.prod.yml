@@ -63,10 +63,13 @@ services:
       NODE_ENV: production
       PORT: "5000"
       REDIS_URL: redis://redis:6379
+      QUEUE_REDIS_URL: redis://queue-redis:6379
       COOKIE_SECURE: "true"
       TRUST_PROXY: "true"
     depends_on:
       redis:
+        condition: service_healthy
+      queue-redis:
         condition: service_healthy
     networks: [app_network]
     healthcheck:
@@ -101,8 +104,28 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  queue-redis:
+    image: redis:7-alpine
+    container_name: curve-comfort-queue-redis-prod
+    restart: always
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy noeviction
+    expose:
+      - "6379"
+    volumes:
+      - queue_redis_data:/data
+    networks: [app_network]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+
 volumes:
   redis_data:
+  queue_redis_data:
 
 networks:
   app_network:

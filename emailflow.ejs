@@ -1,0 +1,166 @@
+# Build Steps: Priority Email Queue — next-node-ecom
+
+Based on actually reading your repo. Reference code is in the zip already
+shared; this is the step order to apply it.
+
+---
+
+## What's already true about your repo (no need to re-check)
+
+- [x] `config/mailer.js` already sends mail via `sendMail({to, subject, html})`
+- [x] `utils/emailTemplates.js` already has all 4 templates you need
+- [x] `config/redis.js` exists but uses `node-redis`, not `ioredis`
+- [x] 5 places currently send email fire-and-forget with no retry:
+      `auth.controller.js` (4 spots), `payment.controller.js` (1),
+      `order.controller.js` (1)
+- [x] Redis in `docker-compose.yml` is configured as an LRU cache
+      (`--maxmemory-policy allkeys-lru`) — unsafe for a queue as-is
+- [x] No newsletter/bulk email exists anywhere — only transactional mail
+- [x] `server.js` already runs background work in-process (the
+      `expirePendingOrders` interval) — same pattern applies here
+
+---
+
+## Engineering rules for every step below
+
+- [ ] Reuse `sendMail()` and the existing templates — don't recreate them
+- [ ] One queue, not two — no bulk tier until a bulk feature exists
+- [ ] One process — no separate worker deploy target for now
+- [ ] Match existing file/naming style in `backend/src`
+- [ ] Small, reviewable change per step — confirm each step works before
+      moving to the next
+
+---
+
+## Step 1 — Fix the Redis eviction risk first
+
+Do this before any queue code exists, so there's nothing to lose yet.
+
+- [ ] Decide: dedicated second Redis container (recommended) vs.
+      switching the existing Redis to `noeviction` + more memory (simpler,
+      but affects the cache's behavior when full)
+- [ ] Apply whichever you chose in `docker-compose.yml`
+- [ ] Confirm both containers/the single container start healthy with
+      `make dev-up`
+
+**Check:** Redis is reachable and its eviction policy no longer risks
+dropping queue data.
+
+---
+
+## Step 2 — Install dependencies
+
+- [ ] `npm install bullmq ioredis` inside `backend/`
+- [ ] Confirm `backend/package.json` lists both
+
+**Check:** `npm ls bullmq ioredis` shows both installed.
+
+---
+
+## Step 3 — Add the queue Redis connection
+
+- [ ] Add `queueRedisUrl` to `config/env.js`, reading `QUEUE_REDIS_URL`,
+      falling back to the existing `redisUrl` if unset
+- [ ] Add a new `config/queueRedis.js` — a dedicated `ioredis` connection
+      for BullMQ, separate from the existing cache client
+
+**Check:** connection can be created without throwing when the app
+boots (log a line confirming it, same as the existing Redis/SMTP log
+lines in `server.js`).
+
+---
+
+## Step 4 — Add the priority + queue definition
+
+- [ ] Add `queues/email.priority.js` — the 4 email types this app
+      actually sends, each mapped to a priority number
+- [ ] Add `queues/email.queue.js` — the queue itself plus one
+      `enqueueEmail(type, to, data, opts)` function everything else calls
+
+**Check:** from a throwaway script, `enqueueEmail(...)` resolves without
+error and a job shows up in Redis (`redis-cli` or a quick job-count
+check).
+
+---
+
+## Step 5 — Add the worker
+
+- [ ] Add `queues/email.worker.js` — maps each email type straight to
+      its existing template function and calls the existing `sendMail()`
+- [ ] Start it from `server.js`, in `bootstrap()`, next to the existing
+      `expirePendingOrders()` setup — not a separate script
+
+**Check:** `enqueueEmail(...)` from Step 4's test now results in an
+actual email landing in Mailpit, and a "sent" line in the worker log.
+
+---
+
+## Step 6 — Replace the 4 call sites in `auth.controller.js`
+
+- [ ] Remove the local `queueMail()` helper and its now-unused imports
+- [ ] Replace the verification-email call in `sendVerificationEmail()`
+- [ ] Replace the reset-email call in `forgotPassword`
+- [ ] Replace the password-changed call in `resetPassword`
+- [ ] Replace the password-changed call in `changePassword`
+
+**Check:** signup, forgot-password, reset-password, and change-password
+flows each still trigger the right email, now via the queue.
+
+---
+
+## Step 7 — Replace the call site in `payment.controller.js`
+
+- [ ] Remove now-unused `sendMail`/template imports
+- [ ] Replace the order-confirmed call in the Cashfree webhook handler
+- [ ] Add a `jobId` keyed on the order ID, since webhooks can fire more
+      than once for the same event
+
+**Check:** trigger the webhook twice for the same order (or simulate a
+retry) and confirm only one email actually sends.
+
+---
+
+## Step 8 — Replace the call site in `order.controller.js`
+
+- [ ] Same replacement as Step 7, in the `getMyOrder` fallback path
+- [ ] Same `jobId` pattern for dedupe
+
+**Check:** the order-status-check fallback still emails correctly, no
+duplicate sends when both this path and the webhook fire for the same
+order.
+
+---
+
+## Step 9 — Verify retry behavior
+
+- [ ] Temporarily point `SMTP_HOST` at something invalid, trigger an
+      email, confirm the worker retries with backoff instead of failing
+      once and giving up
+- [ ] Restore `SMTP_HOST`, confirm a manually re-queued job now succeeds
+
+**Check:** a transient SMTP outage no longer means a silently lost
+email — it retries and recovers.
+
+---
+
+## Step 10 — Clean up
+
+- [ ] Search the backend for any remaining direct `sendMail(...)` calls
+      outside the worker — there should be none
+- [ ] Remove any now-dead imports left behind in the 3 controller files
+- [ ] Update `.env.development` / prod secrets with `QUEUE_REDIS_URL` if
+      you went with the dedicated-container option
+
+**Check:** `grep -rn "sendMail(" backend/src` only shows the definition
+in `config/mailer.js` and the one call inside `queues/email.worker.js`.
+
+---
+
+## Explicitly not doing right now
+
+- [ ] No bulk/newsletter queue — nothing sends bulk email yet
+- [ ] No dashboard (Bull Board) — not needed at this volume
+- [ ] No separate worker process/deploy target — stays in the API process
+
+
+

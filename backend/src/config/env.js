@@ -15,6 +15,7 @@ const env = {
 
   mongoUri: need("MONGODB_URI"),
   redisUrl: process.env.REDIS_URL || null,
+  queueRedisUrl: process.env.QUEUE_REDIS_URL || process.env.REDIS_URL || null,
   cacheEnabled: process.env.CACHE_ENABLED !== "false" && Boolean(process.env.REDIS_URL),
   cachePrefix: process.env.CACHE_PREFIX || "curve-comfort:v1",
   cacheDefaultTtlSeconds: Number(process.env.CACHE_DEFAULT_TTL_SECONDS || 300),
@@ -45,7 +46,8 @@ const env = {
   cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || "sandbox",
   cashfreeApiVersion: process.env.CASHFREE_API_VERSION || "2025-01-01",
   cashfreeWebhookUrl: process.env.CASHFREE_WEBHOOK_URL || "",
-  checkoutExpiryMinutes: Number(process.env.CHECKOUT_EXPIRY_MINUTES || 15),
+  // Cashfree requires an expiry strictly greater than 15 minutes.
+  checkoutExpiryMinutes: Math.max(Number(process.env.CHECKOUT_EXPIRY_MINUTES || 16), 16),
 
   verificationExpiry: Number(process.env.VERIFICATION_EXPIRES_MINUTES || 30),
 

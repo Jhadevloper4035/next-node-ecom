@@ -4,9 +4,7 @@ const PaymentTransaction = require("../models/paymentTransaction.model");
 const { releaseStock } = require("../services/checkout.service");
 const { removePurchasedCartItems } = require("../services/cart.service");
 const { verifyCashfreeWebhook } = require("../services/payment.service");
-const { sendMail } = require("../config/mailer");
-const { orderConfirmedEmailTemplate } = require("../utils/emailTemplates");
-const { env } = require("../config/env");
+const { enqueueEmail } = require("../queues/email.queue");
 
 const paymentData = (payload) => payload?.data?.payment || payload?.payment || {};
 const orderData = (payload) => payload?.data?.order || payload?.order || {};
@@ -43,7 +41,12 @@ exports.cashfreeWebhook = async (req, res) => {
     transaction.processedAt = new Date();
     await transaction.save();
     await removePurchasedCartItems(confirmedOrder.user._id, confirmedOrder.items);
-    if (confirmedOrder.user?.email) sendMail({ to: confirmedOrder.user.email, subject: `${env.appName} order confirmed`, html: orderConfirmedEmailTemplate({ order: confirmedOrder }) }).catch((error) => console.error("Order email failed:", error.message));
+    if (confirmedOrder.user?.email) enqueueEmail({
+      type: "orderConfirmed",
+      to: confirmedOrder.user.email,
+      data: { order: confirmedOrder.toObject() },
+      jobId: `order-confirmed-${confirmedOrder._id}`,
+    }).catch((error) => console.error("Order email queue failed:", error.message));
   } else if (isFailure) {
     const failedOrder = await Order.findOneAndUpdate(
       { _id: order._id, status: "pending_payment" },

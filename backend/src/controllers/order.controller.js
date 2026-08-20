@@ -4,9 +4,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const Order = require("../models/order.model");
 const { getCashfreeOrder } = require("../services/payment.service");
 const { removePurchasedCartItems } = require("../services/cart.service");
-const { sendMail } = require("../config/mailer");
-const { orderConfirmedEmailTemplate } = require("../utils/emailTemplates");
-const { env } = require("../config/env");
+const { enqueueEmail } = require("../queues/email.queue");
 const { releaseStock, transitions } = require("../services/checkout.service");
 
 const findOrder = (orderId, userId) => Order.findOne({ orderNumber: orderId, user: userId }).populate({ path: "paymentTransaction", select: "status cfPaymentId amountPaise currency" });
@@ -36,7 +34,12 @@ exports.getMyOrder = asyncHandler(async (req, res) => {
         await order.paymentTransaction.save();
         confirmedOrder.paymentTransaction.status = "paid";
         await removePurchasedCartItems(confirmedOrder.user, confirmedOrder.items);
-        if (req.userDoc?.email) sendMail({ to: req.userDoc.email, subject: `${env.appName} order confirmed`, html: orderConfirmedEmailTemplate({ order: confirmedOrder }) }).catch((error) => console.error("Order email failed:", error.message));
+        if (req.userDoc?.email) enqueueEmail({
+          type: "orderConfirmed",
+          to: req.userDoc.email,
+          data: { order: confirmedOrder.toObject() },
+          jobId: `order-confirmed-${confirmedOrder._id}`,
+        }).catch((error) => console.error("Order email queue failed:", error.message));
         order = confirmedOrder;
       }
     } catch (error) {

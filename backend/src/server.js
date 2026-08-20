@@ -4,6 +4,9 @@ const app = require("./app");
 const { connectDB } = require("./config/db");
 const { env } = require("./config/env");
 const { closeRedis } = require("./config/redis");
+const { closeQueueRedis } = require("./config/queueRedis");
+const { closeEmailQueue } = require("./queues/email.queue");
+const { closeEmailWorker, startEmailWorker } = require("./workers/email.worker");
 const { initRateLimitStore } = require("./middlewares/rateLimiters");
 const { expirePendingOrders } = require("./services/checkout.service");
 
@@ -13,18 +16,22 @@ async function bootstrap() {
   
   await connectDB();
   await initRateLimitStore();
+  startEmailWorker();
   await expirePendingOrders();
   globalThis.setInterval(() => expirePendingOrders().catch((err) => console.error("Checkout expiry failed:", err.message)), 60_000).unref();
   console.log("SMTP:", env.smtpHost || "not set — emails disabled");
   console.log("Redis:", env.redisUrl || "not set — in-memory rate limiting");
+  console.log("Email queue:", env.queueRedisUrl || "not set — emails disabled");
   server.listen(env.port, () => console.log(`${env.appName} running on port ${env.port}`));
 }
 
 const shutdown = async () => {
   server.close();
+  await Promise.all([closeEmailWorker(), closeEmailQueue()]);
   await Promise.all([
     mongoose.connection.close(false),
     closeRedis(),
+    closeQueueRedis(),
   ]);
   process.exit(0);
 };

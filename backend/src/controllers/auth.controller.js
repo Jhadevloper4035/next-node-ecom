@@ -7,8 +7,7 @@ const ApiResponse = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const { env } = require("../config/env");
-const { sendMail } = require("../config/mailer");
-const { verificationEmailTemplate, passwordResetEmailTemplate, passwordChangedEmailTemplate } = require("../utils/emailTemplates");
+const { enqueueEmail } = require("../queues/email.queue");
 const { signAccessToken, createRefreshToken, hashRefreshToken } = require("../config/token");
 const { toSafeUser } = require("../utils/safeUser");
 
@@ -44,10 +43,6 @@ function requestMeta(req) {
   };
 }
 
-function queueMail(mail) {
-  sendMail(mail).catch((error) => console.error("Email delivery failed:", error.message));
-}
-
 async function createToken(TokenModel, userId, expiresInMs) {
   const token = crypto.randomBytes(32).toString("hex");
   await TokenModel.deleteMany({ userId });
@@ -61,14 +56,13 @@ async function createToken(TokenModel, userId, expiresInMs) {
 
 async function sendVerificationEmail(user) {
   const token = await createToken(EmailVerificationToken, user._id, env.verificationExpiry * 60 * 1000);
-  queueMail({
+  await enqueueEmail({
+    type: "verification",
     to: user.email,
-    subject: "Curve & Comfort - Verify your email",
-    html: verificationEmailTemplate({
-      appName: env.appName,
+    data: {
       verificationLink: `${env.frontendUrl}/verify-email#token=${token}`,
       expiresMinutes: env.verificationExpiry,
-    }),
+    },
   });
 }
 
@@ -209,10 +203,10 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   if (user && !user.isBlocked) {
     const token = await createToken(PasswordResetToken, user._id, RESET_EXPIRES_MS);
-    queueMail({
+    await enqueueEmail({
+      type: "passwordReset",
       to: user.email,
-      subject: "Curve & Comfort - Reset your password",
-      html: passwordResetEmailTemplate({ resetLink: `${env.frontendUrl}/reset-password#token=${token}`, expiresMinutes: 15 }),
+      data: { resetLink: `${env.frontendUrl}/reset-password#token=${token}`, expiresMinutes: 15 },
     });
   }
   return res.status(200).json(new ApiResponse({ message: "If an account exists, a password reset link has been sent to your email.", data: null }));
@@ -231,7 +225,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
   user.tokenVersion += 1;
   await user.save();
   await Session.updateMany({ userId: user._id, isRevoked: false }, { $set: { isRevoked: true, revokedAt: new Date() } });
-  queueMail({ to: user.email, subject: "Curve & Comfort - Password changed", html: passwordChangedEmailTemplate() });
+  await enqueueEmail({ type: "passwordChanged", to: user.email });
 
   clearAuthCookies(res);
   return res.status(200).json(new ApiResponse({ message: "Password reset successful. Please login again.", data: null }));
@@ -251,6 +245,6 @@ exports.changePassword = asyncHandler(async (req, res) => {
   if (currentSession) filter._id = { $ne: currentSession._id };
   await Session.updateMany(filter, { $set: { isRevoked: true, revokedAt: new Date() } });
   setAccessToken(user, res);
-  queueMail({ to: user.email, subject: "Curve & Comfort - Password changed", html: passwordChangedEmailTemplate() });
+  await enqueueEmail({ type: "passwordChanged", to: user.email });
   return res.status(200).json(new ApiResponse({ message: "Password changed successfully.", data: null }));
 });

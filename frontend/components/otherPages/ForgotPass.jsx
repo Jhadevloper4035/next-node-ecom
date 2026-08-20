@@ -64,7 +64,8 @@ export default function ForgotPass() {
               className={styles.loginBtn}
               disabled={isLoading}
             >
-              {isLoading ? "Submitting..." : "Submit"}
+              <i className="icon icon-mail" aria-hidden="true" />
+              <span>{isLoading ? "Submitting..." : "Submit"}</span>
             </button>
           </form>
 

@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const Address = require("../models/address.model");
 const { sendSuccess, sendError, isDuplicateErr } = require("../helper/request");
 
+const editableFields = ["label", "fullName", "phone", "alternatePhone", "line1", "line2", "landmark", "city", "state", "country", "postalCode", "isDefault"];
+
 // ================= GET ALL =================
 exports.getAllAddresses = async (req, res) => {
     try {
@@ -74,7 +76,7 @@ exports.updateMyAddress = async (req, res, next) => {
             return sendError(res, "Address not found", 404);
         }
 
-        Object.assign(address, req.body);
+        Object.assign(address, Object.fromEntries(editableFields.filter((field) => field in req.body).map((field) => [field, req.body[field]])));
         await address.save();
 
         return sendSuccess(res, address, "Address updated successfully");
@@ -172,4 +174,3 @@ exports.setDefaultAddress = async (req, res, next) => {
         session.endSession();
     }
 };
-

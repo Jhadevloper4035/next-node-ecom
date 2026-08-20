@@ -51,10 +51,8 @@ const columns = [
 const payments = [
   ["Visa", "/images/weaccepts/w23-pf-visa.webp"],
   ["Mastercard", "/images/weaccepts/w23-pf-master-card.webp"],
-  ["Maestro", "/images/weaccepts/w23-pf-maestro.webp"],
   ["American Express", "/images/weaccepts/w23-pf-american-express.webp"],
   ["RuPay", "/images/weaccepts/w23-pf-rupay.webp"],
-  ["Diners Club", "/images/weaccepts/w23-pf-dinners-club.webp"],
   ["Wallet", "/images/weaccepts/w23-pf-wallet.webp"],
   ["Net Banking", "/images/weaccepts/w23-pf-net-banking.webp"],
 ];

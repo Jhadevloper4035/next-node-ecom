@@ -29,8 +29,8 @@ export default function AccountSidebar() {
         <div className="account-avatar">
           <div className="image">
             <Image
-              alt=""
-              src="/images/placeholder.svg"
+              alt="Default profile avatar"
+              src="/images/default-profile.png"
               width={281}
               height={280}
             />
@@ -137,6 +137,7 @@ export default function AccountSidebar() {
                 cursor: "pointer",
                 textAlign: "left",
                 width: "100%",
+                color: "#181818",
               }}
             >
               <svg

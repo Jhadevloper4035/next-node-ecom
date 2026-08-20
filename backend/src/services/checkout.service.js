@@ -3,6 +3,7 @@ const Address = require("../models/address.model");
 const Order = require("../models/order.model");
 const PaymentTransaction = require("../models/paymentTransaction.model");
 const Product = require("../models/product.model");
+const Coupon = require("../models/coupon.model");
 const { env } = require("../config/env");
 const { createCashfreeOrder } = require("./payment.service");
 const ApiError = require("../utils/ApiError");
@@ -12,10 +13,24 @@ const orderNumber = () => `CC${Date.now().toString(36).toUpperCase()}${crypto.ra
 const paymentPlan = (totalPaise, paymentMethod) => paymentMethod === "cod"
   ? { advancePaise: Math.ceil(totalPaise / 3), balanceDuePaise: totalPaise - Math.ceil(totalPaise / 3), paymentMethods: "upi,cc,dc" }
   : { advancePaise: totalPaise, balanceDuePaise: 0, paymentMethods: paymentMethod === "upi" ? "upi" : "cc,dc" };
+const percentageDiscount = (subtotalPaise, discountPercent) => Math.floor(subtotalPaise * discountPercent / 100);
+
+async function getCoupon(code) {
+  if (!code) return null;
+  const coupon = await Coupon.findOne({
+    code: code.toUpperCase(),
+    isActive: true,
+    $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
+  }).lean();
+  if (!coupon) throw new ApiError(400, "Coupon is invalid or expired");
+  return coupon;
+}
 
 const optionGroups = (product) => [
-  ...(product.customizationGroups || []).map((group) => ({ key: group.key, label: group.label, options: group.options || [] })),
-  ...Object.entries(product.optionPricing || {}).map(([key, options]) => ({ key: key.replace(/s$/, ""), label: key, options: options || [] })),
+  ...Object.entries(product.optionPricing || {}).map(([key, options]) => ({ key: key.replace(/s$/, ""), label: key, options: (options || []).filter((option) => option.isActive !== false) })),
+  ...(product.customizationGroups || [])
+    .filter((group) => group.isActive !== false)
+    .map((group) => ({ key: group.key, label: group.label, isRequired: group.isRequired === true, options: (group.options || []).filter((option) => option.isActive !== false) })),
 ];
 
 function priceItem(product, selectedOptions = []) {
@@ -36,6 +51,9 @@ function priceItem(product, selectedOptions = []) {
     const optionPrice = option.priceOverride === null || option.priceOverride === undefined ? toPaise(option.priceDelta || 0) : toPaise(option.priceOverride);
     unitPricePaise = option.priceOverride === null || option.priceOverride === undefined ? unitPricePaise + optionPrice : optionPrice;
     snapshot.push({ key: group.key, label: group.label, value: option.label });
+  }
+  for (const group of optionGroups(product)) {
+    if (group.isRequired && !seen.has(group.key)) throw new ApiError(400, `Select ${group.label}`);
   }
   return { unitPricePaise, selectedOptions: snapshot };
 }
@@ -70,21 +88,27 @@ const addressSnapshot = (address) => ({
   line2: address.line2, landmark: address.landmark, city: address.city, state: address.state, country: address.country, postalCode: address.postalCode,
 });
 
-async function createCheckout({ user, items, addressId, paymentMethod, idempotencyKey }) {
+async function createCheckout({ user, items, addressId, paymentMethod, couponCode, idempotencyKey }) {
   const existing = await Order.findOne({ user: user.id, idempotencyKey }).populate("paymentTransaction");
   if (existing) return existing;
+  const activeCheckout = await findActiveCheckout(user.id);
+  if (activeCheckout) return activeCheckout;
 
   const address = await Address.findOne({ _id: addressId, user: user.id, isActive: true }).lean();
   if (!address) throw new ApiError(404, "Address not found");
 
+  const coupon = await getCoupon(couponCode);
   const reserved = await reserveItems(items);
   const subtotalPaise = reserved.reduce((sum, item) => sum + item.unitPricePaise * item.quantity, 0);
-  const plan = paymentPlan(subtotalPaise, paymentMethod);
-  const pricing = { subtotalPaise, discountPaise: 0, shippingPaise: 0, taxPaise: 0, totalPaise: subtotalPaise, advancePaise: plan.advancePaise, balanceDuePaise: plan.balanceDuePaise, currency: "INR" };
+  const discountPaise = coupon ? percentageDiscount(subtotalPaise, coupon.discountPercent) : 0;
+  const totalPaise = subtotalPaise - discountPaise;
+  const plan = paymentPlan(totalPaise, paymentMethod);
+  const pricing = { subtotalPaise, discountPaise, shippingPaise: 0, taxPaise: 0, totalPaise, advancePaise: plan.advancePaise, balanceDuePaise: plan.balanceDuePaise, currency: "INR" };
+  const expiresAt = new Date(Date.now() + env.checkoutExpiryMinutes * 60_000);
   let order;
   try {
-    order = await Order.create({ user: user.id, orderNumber: orderNumber(), items: reserved, addressSnapshot: addressSnapshot(address), pricing, paymentMethod, idempotencyKey, expiresAt: new Date(Date.now() + env.checkoutExpiryMinutes * 60_000) });
-    const cashfree = await createCashfreeOrder({ orderNumber: order.orderNumber, amountPaise: pricing.advancePaise, user, idempotencyKey, paymentMethods: plan.paymentMethods });
+    order = await Order.create({ user: user.id, orderNumber: orderNumber(), items: reserved, addressSnapshot: addressSnapshot(address), pricing, paymentMethod, couponCode: coupon?.code || "", idempotencyKey, expiresAt });
+    const cashfree = await createCashfreeOrder({ orderNumber: order.orderNumber, amountPaise: pricing.advancePaise, user, idempotencyKey, paymentMethods: plan.paymentMethods, expiresAt });
     const payment = await PaymentTransaction.create({ order: order._id, gateway: "cashfree", cfOrderId: String(cashfree.cf_order_id), paymentSessionId: cashfree.payment_session_id, amountPaise: pricing.advancePaise });
     order.paymentTransaction = payment._id;
     await order.save();
@@ -94,6 +118,12 @@ async function createCheckout({ user, items, addressId, paymentMethod, idempoten
     if (order) await Order.updateOne({ _id: order._id }, { $set: { status: "payment_failed", paymentStatus: "failed" } });
     throw error;
   }
+}
+
+function findActiveCheckout(userId) {
+  return Order.findOne({ user: userId, status: "pending_payment", expiresAt: { $gt: new Date() } })
+    .sort({ createdAt: -1 })
+    .populate("paymentTransaction");
 }
 
 const transitions = {
@@ -108,4 +138,4 @@ async function expirePendingOrders() {
   }
 }
 
-module.exports = { createCheckout, expirePendingOrders, releaseStock, transitions, toPaise, paymentPlan };
+module.exports = { createCheckout, expirePendingOrders, findActiveCheckout, percentageDiscount, priceItem, releaseStock, transitions, toPaise, paymentPlan };

@@ -106,7 +106,8 @@ export default function ResetPassword() {
               className={styles.loginBtn}
               disabled={isLoading}
             >
-              {isLoading ? "Resetting..." : "Reset Password"}
+              <i className="icon icon-security" aria-hidden="true" />
+              <span>{isLoading ? "Resetting..." : "Reset Password"}</span>
             </button>
           </form>
         </div>

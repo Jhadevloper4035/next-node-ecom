@@ -16,6 +16,7 @@ if (fs.existsSync(envPath)) {
 }
 
 const Category = require("./src/models/category.model");
+const Coupon = require("./src/models/coupon.model");
 const Product = require("./src/models/product.model");
 const Review = require("./src/models/review.model");
 const { closeRedis, initRedis } = require("./src/config/redis");
@@ -269,6 +270,25 @@ async function seedReviewsForProducts(productDocs) {
   }
 }
 
+async function seedCoupons() {
+  await Coupon.bulkWrite([
+    {
+      updateOne: {
+        filter: { code: "WELCOME10" },
+        update: { $set: { code: "WELCOME10", title: "Welcome Offer", description: "Get 10% off your order.", discountPercent: 10, isActive: true, expiresAt: null } },
+        upsert: true,
+      },
+    },
+    {
+      updateOne: {
+        filter: { code: "COMFORT20" },
+        update: { $set: { code: "COMFORT20", title: "Comfort Savings", description: "Get 20% off your order.", discountPercent: 20, isActive: true, expiresAt: null } },
+        upsert: true,
+      },
+    },
+  ]);
+}
+
 // ---------- run ----------
 async function run() {
   await connectDB();
@@ -284,6 +304,7 @@ async function run() {
 
     const productDocs = await seedProductsOneByOne(mappedProducts);
     await seedReviewsForProducts(productDocs);
+    await seedCoupons();
     await invalidateNamespaces(["products", "reviews"]);
 
     console.log("✅ Seeding completed successfully");

@@ -44,6 +44,7 @@ const env = {
   cashfreeClientSecret: process.env.CASHFREE_CLIENT_SECRET || "",
   cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || "sandbox",
   cashfreeApiVersion: process.env.CASHFREE_API_VERSION || "2025-01-01",
+  cashfreeWebhookUrl: process.env.CASHFREE_WEBHOOK_URL || "",
   checkoutExpiryMinutes: Number(process.env.CHECKOUT_EXPIRY_MINUTES || 15),
 
   verificationExpiry: Number(process.env.VERIFICATION_EXPIRES_MINUTES || 30),

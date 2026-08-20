@@ -34,7 +34,7 @@ export default function Orers() {
                 <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td>{order.status.replaceAll("_", " ")}</td>
                 <td>{money(order.pricing?.totalPaise)} for {order.items.length} items</td>
-                <td><Link href={`/checkout/confirmation?order_id=${encodeURIComponent(order.orderNumber)}`} className="tf-btn btn-fill radius-4"><span className="text">View</span></Link></td>
+                <td><Link href={`/my-account-orders-details?order_id=${encodeURIComponent(order.orderNumber)}`} className="tf-btn btn-fill radius-4"><span className="text">View</span></Link></td>
               </tr>)}
               {!orders.length && <tr><td colSpan="5">{error || "No orders yet."}</td></tr>}
             </tbody>

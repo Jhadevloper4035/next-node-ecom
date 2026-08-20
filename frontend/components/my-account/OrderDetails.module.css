@@ -1,0 +1,39 @@
+.detailsGrid {
+  border-top: 1px dashed var(--line);
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 28px;
+  padding-top: 28px;
+}
+
+.panel {
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.addressLine {
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.summary {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 0;
+}
+
+.total {
+  border-top-color: var(--line);
+}
+
+.actions {
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+  padding-top: 20px;
+}
+
+@media (max-width: 767px) {
+  .detailsGrid { grid-template-columns: 1fr; }
+}

@@ -136,7 +136,7 @@ export default function Details1({ product }) {
 
   const cartItemId = [
     product?.id,
-    ...selectedOptions.map((option) => `${option.key}:${option.value}`),
+    ...selectedOptions.map((option) => `${option.key}:${option.value}`).sort(),
   ]
     .filter(Boolean)
     .join("__");

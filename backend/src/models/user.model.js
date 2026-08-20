@@ -3,6 +3,12 @@ const bcrypt = require("bcryptjs");
 
 const ROLES = ["user", "admin"];
 
+const cartItemSchema = new mongoose.Schema({
+  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  quantity: { type: Number, required: true, min: 1, max: 20 },
+  selectedOptions: [{ key: String, label: String, value: String }],
+}, { _id: false });
+
 const UserSchema = new mongoose.Schema({
   fullName: { type: String, required: true, minlength: 2, maxlength: 60, trim: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -15,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   failedLoginAttempts: { type: Number, default: 0 },
   lockedUntil: { type: Date, default: null },
   tokenVersion: { type: Number, default: 0 },
+  cartItems: { type: [cartItemSchema], default: [] },
 }, { timestamps: true });
 
 UserSchema.pre("save", async function (next) {

@@ -1,0 +1,38 @@
+.addressBook { text-align: left; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.toolbar p, .modalHeader p { margin: 0 0 4px; color: var(--primary); font-size: 14px; font-weight: 500; line-height: 22px; }
+.toolbar h2, .modalHeader h2 { margin: 0; color: var(--main); font-size: 28px; font-weight: 500; line-height: 36px; }
+.addButton, .editButton, .deleteButton, .cancelButton, .saveButton { border-radius: 4px; padding: 10px 24px; font: inherit; font-size: 16px; font-weight: 600; line-height: 26px; cursor: pointer; transition: all .3s ease; }
+.addButton, .editButton, .saveButton { border: 1px solid var(--main); background: var(--main); color: var(--white); }
+.addButton:hover, .editButton:hover, .saveButton:hover:not(:disabled) { border-color: var(--primary); background: var(--primary); }
+.addressList { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; text-align: left; }
+.addressCard { display: grid; grid-template-rows: auto 1fr auto; border: 1px solid var(--line); border-radius: 4px; background: var(--white); overflow: hidden; }
+.addressLabel { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; background: var(--surface); border-bottom: 1px solid var(--line); color: var(--main); font-size: 16px; font-weight: 600; line-height: 26px; }
+.addressLabel small { color: var(--primary); font-size: 14px; font-weight: 500; line-height: 22px; }
+.addressDetails { display: grid; align-content: start; gap: 6px; padding: 20px; color: var(--secondary); font-size: 16px; line-height: 26px; }
+.addressDetails strong { color: var(--main); font-size: 18px; font-weight: 600; line-height: 26px; }
+.addressDetails small { color: var(--secondary); font-size: 14px; line-height: 22px; }
+.addressActions { display: flex; gap: 12px; padding: 16px 20px; border-top: 1px solid var(--line); }
+.deleteButton, .cancelButton { border: 1px solid var(--line); background: var(--white); color: var(--main); }
+.deleteButton:hover, .cancelButton:hover { border-color: var(--main); background: var(--surface); }
+.emptyState { padding: 28px; border: 1px solid var(--line); border-radius: 4px; color: var(--secondary); font-size: 16px; line-height: 26px; text-align: center; }
+.modalBackdrop { position: fixed; inset: 0; z-index: 1050; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, .45); }
+.modal { width: min(720px, 100%); max-height: calc(100vh - 40px); overflow: auto; border-radius: 4px; background: var(--white); box-shadow: 0 20px 60px rgba(0, 0, 0, .2); }
+.modalHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 28px; border-bottom: 1px solid var(--line); }
+.modalHeader h2 { font-size: 24px; line-height: 32px; }
+.closeButton { width: 36px; height: 36px; border: 0; border-radius: 4px; background: transparent; color: var(--main); font-size: 28px; line-height: 1; cursor: pointer; }
+.closeButton:hover { background: var(--surface); }
+.addressForm { padding: 28px; }
+.formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.field { display: grid; gap: 8px; color: var(--main); font-size: 16px; font-weight: 500; line-height: 26px; }
+.field input { box-sizing: border-box; width: 100%; height: 48px; border: 1px solid var(--line); border-radius: 4px; padding: 0 14px; background: var(--white); color: var(--main); font: inherit; font-size: 16px; font-weight: 400; outline: none; }
+.field input::placeholder { color: var(--secondary); opacity: .7; }
+.field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(226, 49, 49, .12); }
+.field input[readonly] { background: var(--surface); color: var(--secondary); cursor: default; }
+.fullWidth { grid-column: 1 / -1; }
+.defaultToggle { display: flex; align-items: center; gap: 10px; margin-top: 20px; color: var(--main); font-size: 14px; font-weight: 500; line-height: 22px; cursor: pointer; }
+.defaultToggle input { width: 18px; height: 18px; accent-color: var(--primary); }
+.modalActions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; }
+.saveButton:disabled { opacity: .65; cursor: wait; }
+@media (max-width: 900px) { .addressList { grid-template-columns: 1fr; } }
+@media (max-width: 575px) { .toolbar { align-items: flex-start; flex-direction: column; } .addButton { width: 100%; } .modalBackdrop { padding: 12px; } .modalHeader, .addressForm { padding: 20px; } .formGrid { grid-template-columns: 1fr; } .fullWidth { grid-column: auto; } .modalActions { flex-direction: column-reverse; } .modalActions button { width: 100%; } }

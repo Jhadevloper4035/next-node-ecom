@@ -9,14 +9,34 @@ const requireRole = require("../src/middlewares/requireRole");
 const { checkoutLimiter } = require("../src/middlewares/rateLimiters");
 const app = require("../src/app");
 
+const controllers = {
+  address: require("../src/controllers/address.controller"),
+  admin: require("../src/controllers/admin.controller"),
+  auth: require("../src/controllers/auth.controller"),
+  blog: require("../src/controllers/blog.controller"),
+  cart: require("../src/controllers/cart.controller"),
+  category: require("../src/controllers/category.controller"),
+  checkout: require("../src/controllers/checkout.controller"),
+  contact: require("../src/controllers/contact.controller"),
+  coupon: require("../src/controllers/coupon.controller"),
+  health: require("../src/controllers/health.controller"),
+  order: require("../src/controllers/order.controller"),
+  payment: require("../src/controllers/payment.controller"),
+  product: require("../src/controllers/product.controller"),
+  review: require("../src/controllers/review.controller"),
+  user: require("../src/controllers/user.controller"),
+};
+
 const routers = {
   address: require("../src/routes/address.route"),
   admin: require("../src/routes/admin.route"),
   auth: require("../src/routes/auth.route"),
   blog: require("../src/routes/blog.route"),
+  cart: require("../src/routes/cart.route"),
   category: require("../src/routes/category.route"),
   checkout: require("../src/routes/checkout.route"),
   contact: require("../src/routes/contact.route"),
+  coupon: require("../src/routes/coupon.route"),
   order: require("../src/routes/order.route"),
   product: require("../src/routes/product.route"),
   review: require("../src/routes/review.route"),
@@ -28,13 +48,53 @@ const expected = {
   admin: "GET /users|PATCH /users/:id/role|PATCH /users/:id/block",
   auth: "POST /register|POST /verify-email|POST /resend-verification|POST /login|POST /refresh|POST /logout|POST /logout-all|GET /me|POST /forgot-password|POST /reset-password|POST /change-password",
   blog: "GET /|GET /:url",
+  cart: "GET /|PUT /",
   category: "POST /|GET /|GET /tree|GET /stats|GET /slug/:slug|GET /:id|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|GET /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
-  checkout: "POST /",
+  checkout: "GET /active|POST /",
   contact: "POST /submit",
+  coupon: "GET /:code|POST /|PATCH /:couponId",
   order: "GET /|GET /:orderId|PATCH /:orderId/status",
   product: "GET /|GET /slug/:slug|GET /category/:categorySlug|GET /category/:categorySlug/subcategory/:subcategorySlug|POST /|PUT /:id|DELETE /:id",
   review: "GET /product/:productId|POST /product/:productId",
   user: "GET /profile|PATCH /profile",
+};
+
+const controllerHandlers = {
+  address: {
+    "GET /": "getAllAddresses", "POST /": "createMyAddress", "PUT /:addressId": "updateMyAddress",
+    "DELETE /:addressId": "deleteMyAddress", "PATCH /:addressId/default": "setDefaultAddress",
+  },
+  admin: { "GET /users": "listUsers", "PATCH /users/:id/role": "updateUserRole", "PATCH /users/:id/block": "blockUser" },
+  auth: {
+    "POST /register": "register", "POST /verify-email": "verifyEmail", "POST /resend-verification": "resendVerification",
+    "POST /login": "login", "POST /refresh": "refresh", "POST /logout": "logout", "POST /logout-all": "logoutAll",
+    "GET /me": "me", "POST /forgot-password": "forgotPassword", "POST /reset-password": "resetPassword",
+    "POST /change-password": "changePassword",
+  },
+  blog: { "GET /": "listBlogs", "GET /:url": "getBlogByUrl" },
+  cart: { "GET /": "getCart", "PUT /": "replaceCart" },
+  category: {
+    "POST /": "createCategory", "GET /": "getCategories", "GET /tree": "getCategoryTree", "GET /stats": "getCategoryStats",
+    "GET /slug/:slug": "getCategoryBySlug", "GET /:id": "getCategoryById", "PUT /:id": "updateCategory",
+    "DELETE /:id": "deleteCategory", "POST /:id/restore": "restoreCategory", "PATCH /bulk": "bulkUpdateCategories",
+    "POST /bulk-delete": "bulkDeleteCategories", "POST /:parentId/subcategories": "createSubcategory",
+    "GET /:parentId/subcategories": "getSubcategories", "PUT /:parentId/subcategories/reorder": "reorderSubcategories",
+  },
+  checkout: { "GET /active": "getActiveCheckout", "POST /": "createCheckout" },
+  contact: { "POST /submit": "submitContact" },
+  coupon: { "GET /:code": "getCoupon", "POST /": "createCoupon", "PATCH /:couponId": "updateCoupon" },
+  order: { "GET /": "listMyOrders", "GET /:orderId": "getMyOrder", "PATCH /:orderId/status": "updateOrderStatus" },
+  product: {
+    "GET /": "listProducts", "GET /slug/:slug": "getBySlug", "GET /category/:categorySlug": "getByCategorySlug",
+    "GET /category/:categorySlug/subcategory/:subcategorySlug": "getByCategoryAndSubcategorySlug",
+    "POST /": "createProduct", "PUT /:id": "updateProduct", "DELETE /:id": "softDeleteProduct",
+  },
+  review: { "GET /product/:productId": "listProductReviews", "POST /product/:productId": "createProductReview" },
+  user: { "GET /profile": "getProfile", "PATCH /profile": "updateProfile" },
+};
+
+const intentionallyUnroutedControllers = {
+  category: ["moveSubcategory"],
 };
 
 const getRoute = (router, method, path) => router.stack.find((layer) => layer.route?.path === path && layer.route.methods[method])?.route;
@@ -48,11 +108,58 @@ test("every declared backend endpoint has the expected method and path", () => {
   }
 });
 
+test("controller coverage includes every declared endpoint", () => {
+  for (const [routeGroup, endpoints] of Object.entries(controllerHandlers)) {
+    assert.deepEqual(Object.keys(endpoints).sort(), specs(expected[routeGroup]), `${routeGroup} controller coverage is incomplete`);
+  }
+});
+
+test("every exported controller is covered by a route test", () => {
+  const routedControllers = new Set(
+    Object.entries(controllerHandlers).flatMap(([routeGroup, endpoints]) =>
+      Object.values(endpoints).map((controllerName) => `${routeGroup}.${controllerName}`),
+    ),
+  );
+  routedControllers.add("health.health");
+  routedControllers.add("payment.cashfreeWebhook");
+
+  for (const [controllerGroup, controller] of Object.entries(controllers)) {
+    const unrouted = Object.keys(controller).filter((name) => !routedControllers.has(`${controllerGroup}.${name}`));
+    assert.deepEqual(unrouted, intentionallyUnroutedControllers[controllerGroup] || [], `${controllerGroup} has an untested controller`);
+  }
+});
+
+for (const [routeGroup, endpoints] of Object.entries(controllerHandlers)) {
+  for (const [endpoint, controllerName] of Object.entries(endpoints)) {
+    test(`${routeGroup} ${endpoint} uses ${controllerName}`, () => {
+      const [method, path] = endpoint.split(" ");
+      const handlers = routeHandlers(routeGroup, method.toLowerCase(), path);
+      assert.equal(
+        handlers.at(-1),
+        controllers[routeGroup][controllerName],
+        `${routeGroup} ${endpoint} must end at ${controllerName}`,
+      );
+    });
+  }
+}
+
+test("health endpoint uses health controller", () => {
+  const apiRoutes = require("../src/routes");
+  assert.equal(getRoute(apiRoutes, "get", "/health").stack.at(-1).handle, controllers.health.health);
+});
+
+test("Cashfree webhook uses payment controller", () => {
+  const webhook = app._router.stack.find((layer) => layer.route?.path === "/api/v1/payments/cashfree/webhook")?.route;
+  assert.equal(webhook.stack.at(-1).handle, controllers.payment.cashfreeWebhook);
+});
+
 test("all private endpoints include authentication", () => {
   const privateRoutes = {
     address: expected.address,
     admin: expected.admin,
     checkout: expected.checkout,
+    cart: expected.cart,
+    coupon: expected.coupon,
     order: expected.order,
     user: expected.user,
     auth: "POST /logout-all|GET /me|POST /change-password",
@@ -74,6 +181,7 @@ test("admin and payment routes retain their authorization and abuse controls", (
     ["admin", "get", "/users"], ["admin", "patch", "/users/:id/role"], ["admin", "patch", "/users/:id/block"],
     ["category", "post", "/"], ["category", "get", "/stats"], ["category", "put", "/:id"], ["category", "delete", "/:id"], ["category", "post", "/:id/restore"], ["category", "patch", "/bulk"], ["category", "post", "/bulk-delete"], ["category", "post", "/:parentId/subcategories"], ["category", "put", "/:parentId/subcategories/reorder"],
     ["product", "post", "/"], ["product", "put", "/:id"], ["product", "delete", "/:id"], ["order", "patch", "/:orderId/status"],
+    ["coupon", "post", "/"], ["coupon", "patch", "/:couponId"],
   ];
   for (const [name, method, path] of adminRoutes) {
     const handlers = routeHandlers(name, method, path);
@@ -88,7 +196,7 @@ test("admin and payment routes retain their authorization and abuse controls", (
 test("the API index mounts every route group and health endpoint", () => {
   const index = require("../src/routes");
   const mounted = index.stack.filter((layer) => layer.name === "router").map((layer) => layer.regexp.toString());
-  for (const prefix of ["categories", "product", "address", "contact", "reviews", "blogs", "checkout", "orders", "auth", "users", "admin"]) {
+  for (const prefix of ["categories", "product", "address", "contact", "reviews", "blogs", "checkout", "orders", "cart", "coupons", "auth", "users", "admin"]) {
     assert.ok(mounted.some((regexp) => regexp.includes(prefix)), `${prefix} is not mounted`);
   }
   assert.ok(getRoute(index, "get", "/health"), "health endpoint is missing");

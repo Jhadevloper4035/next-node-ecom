@@ -267,7 +267,8 @@ export default function Register() {
               className={styles.loginBtn}
               disabled={isLoading}
             >
-              {isLoading ? "Signing up..." : "Register"}
+              <i className="icon icon-user" aria-hidden="true" />
+              <span>{isLoading ? "Signing up..." : "Register"}</span>
             </button>
           </form>
 

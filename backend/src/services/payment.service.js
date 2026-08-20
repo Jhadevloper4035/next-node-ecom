@@ -8,7 +8,7 @@ function requireCashfree() {
   if (!env.cashfreeClientId || !env.cashfreeClientSecret) throw new ApiError(503, "Payments are not configured");
 }
 
-async function createCashfreeOrder({ orderNumber, amountPaise, user, idempotencyKey, paymentMethods }) {
+async function createCashfreeOrder({ orderNumber, amountPaise, user, idempotencyKey, paymentMethods, expiresAt }) {
   requireCashfree();
   const response = await globalThis.fetch(`${baseUrl()}/pg/orders`, {
     method: "POST",
@@ -22,11 +22,30 @@ async function createCashfreeOrder({ orderNumber, amountPaise, user, idempotency
       order_amount: Number((amountPaise / 100).toFixed(2)),
       order_currency: "INR",
       customer_details: { customer_id: user.id, customer_name: user.fullName, customer_email: user.email, customer_phone: user.mobileNumber },
-      order_meta: { return_url: `${env.frontendUrl}/checkout/confirmation?order_id={order_id}`, payment_methods: paymentMethods },
+      order_expiry_time: expiresAt.toISOString(),
+      order_meta: {
+        return_url: `${env.frontendUrl}/checkout/confirmation?order_id={order_id}`,
+        payment_methods: paymentMethods,
+        ...(env.cashfreeWebhookUrl && { notify_url: env.cashfreeWebhookUrl }),
+      },
     }),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok || !body.payment_session_id) throw new ApiError(502, body.message || "Unable to start payment");
+  return body;
+}
+
+async function getCashfreeOrder(orderNumber) {
+  requireCashfree();
+  const response = await globalThis.fetch(`${baseUrl()}/pg/orders/${encodeURIComponent(orderNumber)}`, {
+    headers: {
+      "x-api-version": env.cashfreeApiVersion,
+      "x-client-id": env.cashfreeClientId,
+      "x-client-secret": env.cashfreeClientSecret,
+    },
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) throw new ApiError(502, body.message || "Unable to check payment status");
   return body;
 }
 
@@ -38,4 +57,4 @@ function verifyCashfreeWebhook({ signature, timestamp, rawBody }) {
   return received.length === generated.length && crypto.timingSafeEqual(received, generated);
 }
 
-module.exports = { createCashfreeOrder, verifyCashfreeWebhook };
+module.exports = { createCashfreeOrder, getCashfreeOrder, verifyCashfreeWebhook };

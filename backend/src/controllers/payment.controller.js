@@ -2,6 +2,7 @@ const ApiResponse = require("../utils/ApiResponse");
 const Order = require("../models/order.model");
 const PaymentTransaction = require("../models/paymentTransaction.model");
 const { releaseStock } = require("../services/checkout.service");
+const { removePurchasedCartItems } = require("../services/cart.service");
 const { verifyCashfreeWebhook } = require("../services/payment.service");
 const { sendMail } = require("../config/mailer");
 const { orderConfirmedEmailTemplate } = require("../utils/emailTemplates");
@@ -22,33 +23,40 @@ exports.cashfreeWebhook = async (req, res) => {
   const paidPaise = Math.round(Number(payment.payment_amount) * 100);
   const isSuccess = payment.payment_status === "SUCCESS" || payload.type === "PAYMENT_SUCCESS_WEBHOOK";
   const isFailure = payment.payment_status === "FAILED" || payload.type === "PAYMENT_FAILED_WEBHOOK";
-  const order = await Order.findOne({ orderNumber }).populate("user");
+  const order = await Order.findOne({ orderNumber });
   if (!order) return res.status(200).json(new ApiResponse({ message: "Webhook ignored" }));
   const transaction = await PaymentTransaction.findOne({ order: order._id });
   if (!transaction) return res.status(200).json(new ApiResponse({ message: "Webhook ignored" }));
 
   if (isSuccess && paidPaise !== transaction.amountPaise) return res.status(400).json({ success: false, message: "Payment amount mismatch" });
 
-  if (isSuccess && order.status === "pending_payment") {
+  if (isSuccess) {
+    const confirmedOrder = await Order.findOneAndUpdate(
+      { _id: order._id, status: "pending_payment" },
+      { $set: { status: "confirmed", paymentStatus: order.paymentMethod === "cod" ? "advance_paid" : "paid" } },
+      { new: true },
+    ).populate("user");
+    if (!confirmedOrder) return res.status(200).json(new ApiResponse({ message: "Webhook ignored" }));
     transaction.status = "paid";
     transaction.cfPaymentId = paymentId || transaction.cfPaymentId;
     transaction.rawWebhookPayload = rawBody;
     transaction.processedAt = new Date();
     await transaction.save();
-    order.status = "confirmed";
-    order.paymentStatus = order.paymentMethod === "cod" ? "advance_paid" : "paid";
-    await order.save();
-    if (order.user?.email) sendMail({ to: order.user.email, subject: `${env.appName} order confirmed`, html: orderConfirmedEmailTemplate({ order }) }).catch((error) => console.error("Order email failed:", error.message));
-  } else if (isFailure && order.status === "pending_payment") {
+    await removePurchasedCartItems(confirmedOrder.user._id, confirmedOrder.items);
+    if (confirmedOrder.user?.email) sendMail({ to: confirmedOrder.user.email, subject: `${env.appName} order confirmed`, html: orderConfirmedEmailTemplate({ order: confirmedOrder }) }).catch((error) => console.error("Order email failed:", error.message));
+  } else if (isFailure) {
+    const failedOrder = await Order.findOneAndUpdate(
+      { _id: order._id, status: "pending_payment" },
+      { $set: { status: "payment_failed", paymentStatus: "failed" } },
+      { new: true },
+    );
+    if (!failedOrder) return res.status(200).json(new ApiResponse({ message: "Webhook ignored" }));
     transaction.status = "failed";
     transaction.cfPaymentId = paymentId || transaction.cfPaymentId;
     transaction.rawWebhookPayload = rawBody;
     transaction.processedAt = new Date();
     await transaction.save();
-    order.status = "payment_failed";
-    order.paymentStatus = "failed";
-    await order.save();
-    await releaseStock(order.items);
+    await releaseStock(failedOrder.items);
   }
   return res.status(200).json(new ApiResponse({ message: "Webhook processed" }));
 };

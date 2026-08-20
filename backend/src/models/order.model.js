@@ -27,6 +27,7 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, enum: ["pending_payment", "confirmed", "processing", "shipped", "delivered", "payment_failed", "cancelled", "refunded"], default: "pending_payment", index: true },
   paymentStatus: { type: String, enum: ["pending", "advance_paid", "paid", "failed", "refunded"], default: "pending" },
   paymentMethod: { type: String, enum: ["upi", "card", "cod"], required: true },
+  couponCode: { type: String, default: "" },
   paymentTransaction: { type: mongoose.Schema.Types.ObjectId, ref: "PaymentTransaction", default: null },
   idempotencyKey: { type: String, required: true },
   expiresAt: { type: Date, required: true, index: true },

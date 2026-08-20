@@ -15,6 +15,8 @@ const reviewRoutes = require("./review.route");
 const blogRoutes = require("./blog.route");
 const checkoutRoutes = require("./checkout.route");
 const orderRoutes = require("./order.route");
+const cartRoutes = require("./cart.route");
+const couponRoutes = require("./coupon.route");
 
 
 router.use("/categories", categoryRoutes);
@@ -25,6 +27,8 @@ router.use("/reviews", reviewRoutes);
 router.use("/blogs", blogRoutes);
 router.use("/checkout", checkoutRoutes);
 router.use("/orders", orderRoutes);
+router.use("/cart", cartRoutes);
+router.use("/coupons", couponRoutes);
 
 
 router.use("/auth", authRoutes);

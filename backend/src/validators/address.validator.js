@@ -207,6 +207,13 @@ exports.updateAddressValidator = [
     .optional()
     .isBoolean()
     .withMessage("isDefault must be boolean."),
+
+  body().custom((_, { req }) => {
+    const allowed = new Set(["label", "fullName", "phone", "alternatePhone", "line1", "line2", "landmark", "city", "state", "country", "postalCode", "isDefault"]);
+    const unknownFields = Object.keys(req.body || {}).filter((key) => !allowed.has(key));
+    if (unknownFields.length) throw new Error(`Unknown fields: ${unknownFields.join(", ")}`);
+    return true;
+  }),
 ];
 
 // ================= DELETE & DEFAULT =================

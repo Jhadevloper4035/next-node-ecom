@@ -179,7 +179,8 @@ export default function Login() {
               className={styles.loginBtn}
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              <i className="icon icon-security" aria-hidden="true" />
+              <span>{isLoading ? "Signing in..." : "Sign In"}</span>
             </button>
           </form>
 

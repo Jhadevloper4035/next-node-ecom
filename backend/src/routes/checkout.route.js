@@ -6,5 +6,6 @@ const validator = require("../validators/checkout.validator");
 const controller = require("../controllers/checkout.controller");
 
 router.post("/", auth, checkoutLimiter, validator.createCheckoutValidator, validate, controller.createCheckout);
+router.get("/active", auth, controller.getActiveCheckout);
 
 module.exports = router;

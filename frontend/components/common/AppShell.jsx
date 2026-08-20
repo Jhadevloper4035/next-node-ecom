@@ -19,6 +19,7 @@ import AuthHydrator from "@/components/common/AuthHydrator";
 import { ToastProvider } from "@/components/common/ToastContext";
 import Header from "@/components/headers/Header2";
 import GlobalSpinner from "@/components/common/GlobalSpinner";
+import CartPersistence from "@/components/common/CartPersistence";
 
 export default function AppShell({ children }) {
   const [scrollDirection, setScrollDirection] = useState("up");
@@ -147,6 +148,7 @@ export default function AppShell({ children }) {
         <Suspense fallback={null}>
           <AuthHydrator />
         </Suspense>
+        <CartPersistence />
         <RtlToggler />
         <Header />
         <div id="wrapper">{children}</div>

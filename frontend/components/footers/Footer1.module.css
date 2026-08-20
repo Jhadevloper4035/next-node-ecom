@@ -1,13 +1,13 @@
-.compactFooter { background: #eeeeee !important; border-top: 1px solid #ececec; color: #282828; font-family: "Kumbh Sans", sans-serif;  padding-top: 28px; }
+.compactFooter { background: #000 !important; border-top: 1px solid #222; color: #fff; font-family: "Kumbh Sans", sans-serif;  padding-top: 28px; }
 .inner { width: min(100%, 1140px); margin: 0 auto; padding: 38px 20px 20px; }
-.compactFooter h2 { margin: 0 0 14px; color: #181818 !important; font-size: 16px; font-weight: 700; line-height: 1.25; }
-.compactFooter p { margin: 0; color: #4d4e4f !important; font-size: 14px; line-height: 1.55; }
+.compactFooter h2 { margin: 0 0 14px; color: #fff !important; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.compactFooter p { margin: 0; color: #fff !important; font-size: 14px; line-height: 1.55; }
 .linkGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 28px; min-height: 248px; padding-bottom: 30px; }
 .column { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
-.column a, .legalRow a { color: #4d4e4f; font-size: 14px; line-height: 1.5; text-decoration: none; }
-.column a:hover, .legalRow a:hover { color: #e43131; }
-.discoveryGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px; padding: 23px 0; border-top: 1px solid #ededed; }
-.utilityRow { display: flex; justify-content: space-between; gap: 28px; padding: 32px 0; border-top: 2px solid #e3e3e3; }
+.column a, .legalRow a { color: #fff; font-size: 14px; line-height: 1.5; text-decoration: none; }
+.column a:hover, .legalRow a:hover { color: #fff; }
+.discoveryGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px; padding: 23px 0; border-top: 1px solid #333; }
+.utilityRow { display: flex; justify-content: space-between; gap: 28px; padding: 32px 0; border-top: 2px solid #333; }
 .payments, .socialSection ul { display: flex; align-items: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .payments { flex-wrap: wrap; }
 .payments img { width: auto; height: 42px; object-fit: contain; }
@@ -19,8 +19,8 @@
 .socialSection li:nth-child(3) a { background: #bd1e2d; }
 .socialSection li:nth-child(4) a { background: #147cc0; font-size: 17px; }
 .socialSection li:nth-child(5) a { background: #e20d16; }
-.legalRow { display: flex; align-items: center; flex-direction: column; gap: 12px; padding-top: 28px; border-top: 2px solid #e3e3e3; text-align: center; }
+.legalRow { display: flex; align-items: center; flex-direction: column; gap: 12px; padding-top: 28px; border-top: 2px solid #333; text-align: center; }
 .legalRow > div { display: flex; flex-wrap: wrap; gap: 14px; }
 @media (max-width: 1100px) { .linkGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); min-height: 0; } .discoveryGrid { gap: 24px; } }
 @media (max-width: 760px) { .inner { padding: 32px 24px 96px; } .linkGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; padding-bottom: 26px; } .discoveryGrid { grid-template-columns: 1fr; gap: 20px; } .utilityRow { align-items: flex-start; flex-direction: column; padding: 26px 0; } .socialSection { text-align: left; } .socialSection ul { justify-content: flex-start; } }
-@media (max-width: 420px) { .inner { padding-right: 16px; padding-left: 16px; } .linkGrid { grid-template-columns: 1fr; gap: 24px; } .payments img { height: 34px; max-width: calc(50vw - 22px); } .socialSection li a { width: 36px; height: 36px; font-size: 18px; } .legalRow { align-items: flex-start; text-align: left; } .legalRow > div { gap: 10px 14px; } }
+@media (max-width: 420px) { .inner { padding-right: 16px; padding-left: 16px; } .payments img { height: 34px; max-width: calc(50vw - 22px); } .socialSection li a { width: 36px; height: 36px; font-size: 18px; } .legalRow { align-items: flex-start; text-align: left; } .legalRow > div { gap: 10px 14px; } }

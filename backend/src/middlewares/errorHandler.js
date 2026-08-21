@@ -8,7 +8,7 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
     ? "Something went wrong. Please try again later."
     : err.message || "Internal Server Error";
 
-  if (status >= 500) console.error(`[${req.method} ${req.originalUrl}]`, err.message);
+  if (status >= 500) console.error(`[${req.method} ${req.path}]`, err.message);
   res.status(status).json(new ApiResponse({
     success: false,
     message,

@@ -33,7 +33,7 @@ function normalizeCartItems(items) {
 async function getCartItems(user) {
   const productIds = user.cartItems.map((item) => item.product);
   const products = await Product.find({ _id: { $in: productIds }, isActive: true, isDeleted: false })
-    .select("title slug basePrice images stock inStock")
+    .select("title slug basePrice gstPercent category images stock inStock")
     .lean();
   const productsById = new Map(products.map((product) => [String(product._id), product]));
 
@@ -47,6 +47,8 @@ async function getCartItems(user) {
       title: product.title,
       slug: product.slug,
       price: product.basePrice,
+      gstPercent: product.gstPercent,
+      category: product.category,
       imgSrc: product.images?.[0] || "/images/placeholder.svg",
       inStock: product.inStock,
       quantity: item.quantity,

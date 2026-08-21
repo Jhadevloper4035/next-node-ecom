@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { clearCart } from "@/redux/cartSlice";
+import { removePurchasedProducts } from "@/redux/cartSlice";
 import { getOrder } from "@/services/checkout/checkout.service";
 
 function CheckoutConfirmationPage() {
@@ -12,26 +12,28 @@ function CheckoutConfirmationPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [state, setState] = useState("Confirming your payment…");
+  const detailsHref = orderId ? `/my-account-orders-details?order_id=${encodeURIComponent(orderId)}` : "/my-account-orders";
 
   useEffect(() => {
     if (!orderId) return setState("Order reference is missing.");
-    let attempts = 0;
     const check = async () => {
       try {
         const order = (await getOrder(orderId)).data.order;
         if (order.status === "confirmed") {
-          dispatch(clearCart());
+          dispatch(removePurchasedProducts(order.items || []));
           return router.replace(`/my-account-orders-details?order_id=${encodeURIComponent(order.orderNumber)}`);
         }
-        if (["payment_failed", "cancelled"].includes(order.status)) return setState(`Order ${order.orderNumber} was not completed.`);
-      } catch { return setState("We could not find that order."); }
-      if (++attempts < 5) setTimeout(check, 2_000);
-      else setState("Payment is still being confirmed. We will email you when it is complete.");
+        if (["failed", "user_dropped", "cancelled"].includes(order.activePaymentTransaction?.status)) {
+          return router.replace(`/my-account-orders-details?order_id=${encodeURIComponent(order.orderNumber)}&payment=failed`);
+        }
+        if (order.status === "pending_payment") return router.replace(`/my-account-orders-details?order_id=${encodeURIComponent(order.orderNumber)}&payment=pending`);
+        return setState(`Order ${order.orderNumber} was not completed.`);
+      } catch {
+        router.replace(`${detailsHref}${detailsHref.includes("?") ? "&" : "?"}payment=pending`);
+      }
     };
     check();
-  }, [dispatch, orderId, router]);
-
-  const detailsHref = orderId ? `/my-account-orders-details?order_id=${encodeURIComponent(orderId)}` : "/my-account-orders";
+  }, [detailsHref, dispatch, orderId, router]);
   return <section className="flat-spacing"><div className="container text-center"><h2>{state}</h2><Link className="tf-btn btn-reset mt-3" href={detailsHref}><span className="text">View order details</span></Link><Link className="d-block mt-3" href="/my-account-orders">My orders</Link></div></section>;
 }
 

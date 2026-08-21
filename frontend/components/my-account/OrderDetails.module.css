@@ -30,10 +30,35 @@
 
 .actions {
   border-top: 1px solid var(--line);
+  display: flex;
+  gap: 12px;
   margin-top: 28px;
   padding-top: 20px;
 }
 
+.paymentFailed {
+  background: #fff3f1;
+  border: 1px solid #f0b5ad;
+  color: #7f2720;
+  display: grid;
+  gap: 4px;
+  line-height: 1.5;
+  margin-top: 24px;
+  padding: 16px;
+}
+
+.paymentPending {
+  background: #fff8e7;
+  border: 1px solid #ecd28b;
+  color: #6c5314;
+  display: grid;
+  gap: 4px;
+  line-height: 1.5;
+  margin-top: 24px;
+  padding: 16px;
+}
+
 @media (max-width: 767px) {
   .detailsGrid { grid-template-columns: 1fr; }
+  .actions { flex-direction: column; }
 }

@@ -2,7 +2,7 @@ import Footer1 from "@/components/footers/Footer1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Login from "@/components/otherPages/Login";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 
 export const metadata = {
   title: "Login || Modave - Multipurpose React Nextjs eCommerce Template",
@@ -14,7 +14,9 @@ export default function LoginPage() {
     <>
       {/* <Topbar6 bgColor="bg-main" /> */}
       {/* header2 will be inserted by RootLayout */}
-      <Login />
+      <Suspense fallback={null}>
+        <Login />
+      </Suspense>
       <Footer1 />
     </>
   );

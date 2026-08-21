@@ -6,7 +6,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const auth = require("../src/middlewares/auth");
 const requireRole = require("../src/middlewares/requireRole");
-const { checkoutLimiter } = require("../src/middlewares/rateLimiters");
+const { checkoutLimiter, emailResendLimiter, refundLimiter } = require("../src/middlewares/rateLimiters");
 const app = require("../src/app");
 
 const controllers = {
@@ -45,15 +45,15 @@ const routers = {
 
 const expected = {
   address: "GET /|POST /|PUT /:addressId|DELETE /:addressId|PATCH /:addressId/default",
-  admin: "GET /users|PATCH /users/:id/role|PATCH /users/:id/block",
+  admin: "GET /dashboard|GET /monitoring|GET /payments|POST /payments/:orderId/reconcile|GET /users|PATCH /users/:id/role|PATCH /users/:id/block",
   auth: "POST /register|POST /verify-email|POST /resend-verification|POST /login|POST /refresh|POST /logout|POST /logout-all|GET /me|POST /forgot-password|POST /reset-password|POST /change-password",
   blog: "GET /|GET /:url",
   cart: "GET /|PUT /",
   category: "POST /|GET /|GET /tree|GET /stats|GET /slug/:slug|GET /:id|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|GET /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
-  checkout: "GET /active|POST /",
+  checkout: "DELETE /:orderId|GET /active|POST /|POST /:orderId/retry",
   contact: "POST /submit",
   coupon: "GET /:code|POST /|PATCH /:couponId",
-  order: "GET /|GET /:orderId|PATCH /:orderId/status",
+  order: "GET /|GET /:orderId|PATCH /:orderId/status|POST /:orderId/refunds|POST /:orderId/emails/:emailEventId/resend",
   product: "GET /|GET /slug/:slug|GET /category/:categorySlug|GET /category/:categorySlug/subcategory/:subcategorySlug|POST /|PUT /:id|DELETE /:id",
   review: "GET /product/:productId|POST /product/:productId",
   user: "GET /profile|PATCH /profile",
@@ -64,7 +64,7 @@ const controllerHandlers = {
     "GET /": "getAllAddresses", "POST /": "createMyAddress", "PUT /:addressId": "updateMyAddress",
     "DELETE /:addressId": "deleteMyAddress", "PATCH /:addressId/default": "setDefaultAddress",
   },
-  admin: { "GET /users": "listUsers", "PATCH /users/:id/role": "updateUserRole", "PATCH /users/:id/block": "blockUser" },
+  admin: { "GET /dashboard": "dashboard", "GET /monitoring": "monitoring", "GET /payments": "paymentTimeline", "POST /payments/:orderId/reconcile": "reconcilePayment", "GET /users": "listUsers", "PATCH /users/:id/role": "updateUserRole", "PATCH /users/:id/block": "blockUser" },
   auth: {
     "POST /register": "register", "POST /verify-email": "verifyEmail", "POST /resend-verification": "resendVerification",
     "POST /login": "login", "POST /refresh": "refresh", "POST /logout": "logout", "POST /logout-all": "logoutAll",
@@ -80,10 +80,10 @@ const controllerHandlers = {
     "POST /bulk-delete": "bulkDeleteCategories", "POST /:parentId/subcategories": "createSubcategory",
     "GET /:parentId/subcategories": "getSubcategories", "PUT /:parentId/subcategories/reorder": "reorderSubcategories",
   },
-  checkout: { "GET /active": "getActiveCheckout", "POST /": "createCheckout" },
+  checkout: { "GET /active": "getActiveCheckout", "POST /": "createCheckout", "POST /:orderId/retry": "retryCheckout", "DELETE /:orderId": "cancelActiveCheckout" },
   contact: { "POST /submit": "submitContact" },
   coupon: { "GET /:code": "getCoupon", "POST /": "createCoupon", "PATCH /:couponId": "updateCoupon" },
-  order: { "GET /": "listMyOrders", "GET /:orderId": "getMyOrder", "PATCH /:orderId/status": "updateOrderStatus" },
+  order: { "GET /": "listMyOrders", "GET /:orderId": "getMyOrder", "PATCH /:orderId/status": "updateOrderStatus", "POST /:orderId/refunds": "createRefund", "POST /:orderId/emails/:emailEventId/resend": "resendEmail" },
   product: {
     "GET /": "listProducts", "GET /slug/:slug": "getBySlug", "GET /category/:categorySlug": "getByCategorySlug",
     "GET /category/:categorySlug/subcategory/:subcategorySlug": "getByCategoryAndSubcategorySlug",
@@ -178,9 +178,9 @@ test("all private endpoints include authentication", () => {
 
 test("admin and payment routes retain their authorization and abuse controls", () => {
   const adminRoutes = [
-    ["admin", "get", "/users"], ["admin", "patch", "/users/:id/role"], ["admin", "patch", "/users/:id/block"],
+    ["admin", "get", "/dashboard"], ["admin", "get", "/monitoring"], ["admin", "get", "/payments"], ["admin", "post", "/payments/:orderId/reconcile"], ["admin", "get", "/users"], ["admin", "patch", "/users/:id/role"], ["admin", "patch", "/users/:id/block"],
     ["category", "post", "/"], ["category", "get", "/stats"], ["category", "put", "/:id"], ["category", "delete", "/:id"], ["category", "post", "/:id/restore"], ["category", "patch", "/bulk"], ["category", "post", "/bulk-delete"], ["category", "post", "/:parentId/subcategories"], ["category", "put", "/:parentId/subcategories/reorder"],
-    ["product", "post", "/"], ["product", "put", "/:id"], ["product", "delete", "/:id"], ["order", "patch", "/:orderId/status"],
+    ["product", "post", "/"], ["product", "put", "/:id"], ["product", "delete", "/:id"], ["order", "patch", "/:orderId/status"], ["order", "post", "/:orderId/refunds"], ["order", "post", "/:orderId/emails/:emailEventId/resend"],
     ["coupon", "post", "/"], ["coupon", "patch", "/:couponId"],
   ];
   for (const [name, method, path] of adminRoutes) {
@@ -191,6 +191,8 @@ test("admin and payment routes retain their authorization and abuse controls", (
     assert.equal(error?.statusCode, 403, `${name} ${method} ${path} must require admin`);
   }
   assert.ok(routeHandlers("checkout", "post", "/").includes(checkoutLimiter), "checkout must be rate limited");
+  assert.ok(routeHandlers("order", "post", "/:orderId/refunds").includes(refundLimiter), "refunds must be rate limited");
+  assert.ok(routeHandlers("order", "post", "/:orderId/emails/:emailEventId/resend").includes(emailResendLimiter), "email resend must be rate limited");
 });
 
 test("the API index mounts every route group and health endpoint", () => {

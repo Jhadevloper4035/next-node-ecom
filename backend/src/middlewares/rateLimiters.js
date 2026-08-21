@@ -14,6 +14,8 @@ function createLimiters(createStore = () => undefined) {
     login: limiter("login-ip", env.loginWindow, env.loginMaxAttempts, "Too many login attempts. Please try again later."),
     loginEmail: limiter("login-email", env.loginWindow, env.loginMaxAttempts, "Too many login attempts. Please try again later.", (req) => `email:${String(req.body?.email || "").toLowerCase()}`),
     checkout: limiter("checkout", 10, 10, "Too many checkout attempts. Please try again later.", (req) => `user:${req.user?.id || req.ip}`),
+    refund: limiter("refund", 10, 10, "Too many refund requests. Please try again later.", (req) => `user:${req.user?.id || req.ip}`),
+    emailResend: limiter("email-resend", 10, 10, "Too many email resend requests. Please try again later.", (req) => `user:${req.user?.id || req.ip}`),
   };
 }
 
@@ -38,5 +40,7 @@ module.exports = {
   loginLimiter: useLimiter("login"),
   loginEmailLimiter: useLimiter("loginEmail"),
   checkoutLimiter: useLimiter("checkout"),
+  refundLimiter: useLimiter("refund"),
+  emailResendLimiter: useLimiter("emailResend"),
   initRateLimitStore,
 };

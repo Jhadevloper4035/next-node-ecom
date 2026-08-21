@@ -1,9 +1,27 @@
 require("dotenv").config();
+const { URL } = require("node:url");
 
 function need(name) {
   const v = process.env[name];
   if (!v) throw new Error(`Missing required env var: ${name}`);
   return v;
+}
+
+function isHttpsUrl(value) {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function validateProductionPaymentConfig(config) {
+  if (config.nodeEnv !== "production") return;
+  if (!config.cashfreeClientId || !config.cashfreeClientSecret) throw new Error("Production requires Cashfree credentials");
+  if (config.cashfreeEnvironment !== "production") throw new Error("Production requires CASHFREE_ENVIRONMENT=production");
+  if (!isHttpsUrl(config.cashfreeWebhookUrl)) throw new Error("Production requires an HTTPS CASHFREE_WEBHOOK_URL");
+  if (!isHttpsUrl(config.frontendUrl)) throw new Error("Production requires an HTTPS FRONTEND_URL");
+  if (!config.supportEmail) throw new Error("Production requires SUPPORT_EMAIL");
 }
 
 const env = {
@@ -46,8 +64,11 @@ const env = {
   cashfreeEnvironment: process.env.CASHFREE_ENVIRONMENT || "sandbox",
   cashfreeApiVersion: process.env.CASHFREE_API_VERSION || "2025-01-01",
   cashfreeWebhookUrl: process.env.CASHFREE_WEBHOOK_URL || "",
+  cashfreeWebhookToleranceSeconds: Math.max(Number(process.env.CASHFREE_WEBHOOK_TOLERANCE_SECONDS || 300), 30),
+  paymentPayloadRetentionDays: Math.max(Number(process.env.PAYMENT_PAYLOAD_RETENTION_DAYS || 90), 1),
   // Cashfree requires an expiry strictly greater than 15 minutes.
   checkoutExpiryMinutes: Math.max(Number(process.env.CHECKOUT_EXPIRY_MINUTES || 16), 16),
+  pendingPaymentReviewMinutes: Math.max(Number(process.env.PENDING_PAYMENT_REVIEW_MINUTES || 10), 1),
 
   verificationExpiry: Number(process.env.VERIFICATION_EXPIRES_MINUTES || 30),
 
@@ -61,7 +82,10 @@ const env = {
   smtpUser: process.env.SMTP_USER,
   smtpPass: process.env.SMTP_PASS,
   mailFrom: process.env.MAIL_FROM || `"${process.env.APP_NAME || "NodeAuthMVC"}" <no-reply@example.com>`,
+  supportEmail: process.env.SUPPORT_EMAIL || "",
 
 };
 
-module.exports = { env };
+validateProductionPaymentConfig(env);
+
+module.exports = { env, validateProductionPaymentConfig };

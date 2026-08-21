@@ -18,7 +18,7 @@ export default function CheckoutPage() {
     if (user) {
       setIsLoading(false);
     } else {
-      router.replace("/login");
+      router.replace("/login?next=%2Fcheckout");
     }
   }, [isInitialLoading, router, user]);
 

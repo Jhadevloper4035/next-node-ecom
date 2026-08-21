@@ -6,13 +6,14 @@ const asyncHandler = require("../utils/asyncHandler");
 const availableCoupon = (code) => Coupon.findOne({
   code: code.toUpperCase(),
   isActive: true,
+  $and: [{ $or: [{ startsAt: null }, { startsAt: { $lte: new Date() } }] }],
   $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
 });
 
 exports.getCoupon = asyncHandler(async (req, res) => {
   const coupon = await availableCoupon(req.params.code);
   if (!coupon) throw new ApiError(404, "Coupon is invalid or expired");
-  return res.json(new ApiResponse({ data: { coupon: { code: coupon.code, title: coupon.title, description: coupon.description, discountPercent: coupon.discountPercent } } }));
+  return res.json(new ApiResponse({ data: { coupon: { code: coupon.code, title: coupon.title, description: coupon.description, discountPercent: coupon.discountPercent, minOrderPaise: coupon.minOrderPaise, maxDiscountPaise: coupon.maxDiscountPaise, allowedProductIds: coupon.allowedProductIds, allowedCategoryIds: coupon.allowedCategoryIds } } }));
 });
 
 exports.createCoupon = asyncHandler(async (req, res) => {

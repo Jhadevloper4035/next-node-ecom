@@ -52,7 +52,7 @@ export default function AppShell({ children }) {
 
   useEffect(() => {
     const handleScroll = () => {
-      const header = document.querySelector("header");
+      const header = document.querySelector("header#header");
       if (!header) return;
 
       if (window.scrollY > 100) {
@@ -115,7 +115,7 @@ export default function AppShell({ children }) {
   }, []);
 
   useEffect(() => {
-    const header = document.querySelector("header");
+    const header = document.querySelector("header#header");
     if (!header) return;
 
     header.style.top = scrollDirection === "up" ? "0px" : "-185px";

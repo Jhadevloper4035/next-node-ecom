@@ -118,6 +118,7 @@ exports.createProductValidator = [
   body("description").isString().trim().isLength({ min: 10, max: 2000 }),
 
   body("basePrice").isFloat({ min: 0 }),
+  body("gstPercent").optional().isFloat({ min: 0, max: 100 }),
   body("currency").optional().isIn(["INR", "USD", "EUR", "GBP"]),
   body("stock").optional().isInt({ min: 0 }),
 
@@ -190,6 +191,7 @@ exports.updateProductValidator = [
   body("description").optional().isString().trim().isLength({ min: 10, max: 2000 }),
 
   body("basePrice").optional().isFloat({ min: 0 }),
+  body("gstPercent").optional().isFloat({ min: 0, max: 100 }),
   body("currency").optional().isIn(["INR", "USD", "EUR", "GBP"]),
   body("stock").optional().isInt({ min: 0 }),
 

@@ -5,24 +5,56 @@ import Script from "next/script";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { useAppState } from "@/context/useAppState";
 import { useToast } from "@/components/common/ToastContext";
+import { clearCart, removeInvalidProducts } from "@/redux/cartSlice";
 import { getAllAddresses } from "@/services/address/address.service";
-import { createCheckout, getActiveCheckout, getOrder } from "@/services/checkout/checkout.service";
+import { cancelCheckout, createCheckout, getActiveCheckout, getOrder, retryCheckout } from "@/services/checkout/checkout.service";
 import { getCoupon } from "@/services/coupon/coupon.service";
 import { getMe } from "@/services/user/me.service";
 import styles from "./Checkout.module.css";
 
 const money = (value) => `₹${Number(value || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const productHref = (product) => product.slug ? `/product/${product.slug}` : `/product-detail/${product.id}`;
 const paymentOptions = [
   { id: "upi", title: "UPI", detail: "Pay securely with any UPI app." },
   { id: "card", title: "Credit or debit card", detail: "Visa, Mastercard, RuPay and more." },
   { id: "cod", title: "Cash on delivery", detail: "Pay one-third now; the remaining balance is due on delivery." },
 ];
+const paymentAttempt = (order) => order?.activePaymentTransaction || order?.paymentTransaction;
+const sameId = (left, right) => String(left || "") === String(right || "");
+
+function cartPricing(items, coupon) {
+  const lines = items.map((item) => ({
+    item,
+    subtotalPaise: Math.round(Number(item.price || 0) * Number(item.quantity || 0) * 100),
+    gstPercent: Number(item.gstPercent ?? 18),
+  }));
+  const subtotalPaise = lines.reduce((sum, line) => sum + line.subtotalPaise, 0);
+  const restricted = coupon && ((coupon.allowedProductIds || []).length || (coupon.allowedCategoryIds || []).length);
+  const eligibleLines = coupon ? lines.filter(({ item }) => !restricted || (coupon.allowedProductIds || []).some((id) => sameId(id, item.productId || item.product)) || (coupon.allowedCategoryIds || []).some((id) => sameId(id, item.category))) : [];
+  let eligibleSubtotalPaise = eligibleLines.reduce((sum, line) => sum + line.subtotalPaise, 0);
+  let discountPaise = coupon && eligibleSubtotalPaise ? Math.min(Math.floor(eligibleSubtotalPaise * Number(coupon.discountPercent || 0) / 100), Number(coupon.maxDiscountPaise || Infinity)) : 0;
+  let remainingDiscountPaise = discountPaise;
+  const eligible = new Set(eligibleLines);
+  const taxPaise = lines.reduce((sum, line) => {
+    let lineDiscountPaise = 0;
+    if (eligible.has(line)) {
+      lineDiscountPaise = eligibleSubtotalPaise === line.subtotalPaise
+        ? remainingDiscountPaise
+        : Math.floor(remainingDiscountPaise * line.subtotalPaise / eligibleSubtotalPaise);
+      eligibleSubtotalPaise -= line.subtotalPaise;
+      remainingDiscountPaise -= lineDiscountPaise;
+    }
+    return sum + Math.round((line.subtotalPaise - lineDiscountPaise) * line.gstPercent / 100);
+  }, 0);
+
+  return { subtotalPaise, discountPaise, taxPaise, totalPaise: subtotalPaise - discountPaise + taxPaise };
+}
 
 export default function Checkout() {
-  const { cartProducts, totalPrice } = useAppState();
+  const { cartProducts } = useAppState();
+  const dispatch = useDispatch();
   const toast = useToast();
   const router = useRouter();
   const [addresses, setAddresses] = useState([]);
@@ -37,12 +69,28 @@ export default function Checkout() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [activeCheckout, setActiveCheckout] = useState(null);
   const idempotencyKey = useRef(null);
-  const total = Number(totalPrice || 0);
-  const couponDiscount = appliedCoupon ? Number((total * appliedCoupon.discountPercent / 100).toFixed(2)) : 0;
-  const payableTotal = total - couponDiscount;
+  const estimatedPricing = cartPricing(cartProducts, appliedCoupon);
+  const total = estimatedPricing.subtotalPaise / 100;
+  const couponDiscount = estimatedPricing.discountPaise / 100;
+  const estimatedTax = estimatedPricing.taxPaise / 100;
+  const payableTotal = estimatedPricing.totalPaise / 100;
   const codAdvance = Math.ceil(payableTotal * 100 / 3) / 100;
   const codBalance = payableTotal - codAdvance;
   const selectedAddress = addresses.find((address) => String(address._id) === addressId);
+  const activePayment = paymentAttempt(activeCheckout?.order);
+  const activePaymentStatus = activePayment?.status;
+  const isPendingPayment = activePaymentStatus === "pending" && Boolean(activePayment?.cfPaymentId);
+  const canRetryPayment = ["failed", "user_dropped"].includes(activePaymentStatus);
+  const reservedPricing = activeCheckout?.order?.pricing;
+  const summaryItems = activeCheckout ? activeCheckout.order.items || [] : cartProducts;
+  const summarySubtotal = reservedPricing ? reservedPricing.subtotalPaise / 100 : total;
+  const summaryDiscount = reservedPricing ? reservedPricing.discountPaise / 100 : couponDiscount;
+  const summaryShipping = reservedPricing ? reservedPricing.shippingPaise / 100 : 0;
+  const summaryTax = reservedPricing ? reservedPricing.taxPaise / 100 : estimatedTax;
+  const summaryTotal = reservedPricing ? reservedPricing.totalPaise / 100 : payableTotal;
+  const summaryAdvance = reservedPricing ? reservedPricing.advancePaise / 100 : codAdvance;
+  const summaryBalance = reservedPricing ? reservedPricing.balanceDuePaise / 100 : codBalance;
+  const summaryPaymentMethod = activeCheckout?.order?.paymentMethod || paymentMethod;
 
   useEffect(() => {
     let current = true;
@@ -54,6 +102,10 @@ export default function Checkout() {
       .catch(() => router.replace(`/login?next=${encodeURIComponent("/checkout")}`));
     return () => { current = false; };
   }, [router]);
+
+  useEffect(() => {
+    if (cartProducts.length) setActiveCheckout(null);
+  }, [cartProducts.length]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -74,7 +126,10 @@ export default function Checkout() {
         const latestOrder = (await getOrder(pendingOrder.orderNumber)).data.order;
         if (!current) return;
         if (latestOrder.status === "confirmed") return router.replace(`/my-account-orders-details?order_id=${encodeURIComponent(latestOrder.orderNumber)}`);
-        if (latestOrder.status === "pending_payment") setActiveCheckout({ order: latestOrder, paymentMode: activeResponse.data.paymentMode });
+        if (latestOrder.status === "pending_payment" && !cartProducts.length) {
+          dispatch(clearCart());
+          setActiveCheckout({ order: latestOrder, paymentMode: activeResponse.data.paymentMode });
+        }
       } catch {
         if (current) toast("Unable to load checkout details.", "error");
       } finally {
@@ -84,7 +139,7 @@ export default function Checkout() {
 
     loadCheckout();
     return () => { current = false; };
-  }, [isAuthenticated, router, toast]);
+  }, [cartProducts.length, dispatch, isAuthenticated, router, toast]);
 
   const choosePayment = (method) => {
     idempotencyKey.current = null;
@@ -98,7 +153,7 @@ export default function Checkout() {
   };
 
   const startPayment = (order, paymentMode) => {
-    const paymentSessionId = order.paymentTransaction?.paymentSessionId;
+    const paymentSessionId = paymentAttempt(order)?.paymentSessionId;
     if (!paymentSessionId) {
       toast("This payment session is no longer available. Please start checkout again.", "error");
       return false;
@@ -121,6 +176,35 @@ export default function Checkout() {
     if (!startPayment(activeCheckout.order, activeCheckout.paymentMode)) setIsSubmitting(false);
   };
 
+  const retryPayment = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await retryCheckout(activeCheckout.order.orderNumber);
+      const nextOrder = response.data.order;
+      setActiveCheckout({ order: nextOrder, paymentMode: response.data.paymentMode });
+      if (!startPayment(nextOrder, response.data.paymentMode)) setIsSubmitting(false);
+    } catch (error) {
+      const message = error?.response?.data?.message || error?.message || "Unable to start another payment attempt.";
+      if (/expired/i.test(message)) setActiveCheckout(null);
+      toast(message, "error");
+      setIsSubmitting(false);
+    }
+  };
+
+  const cancelCurrentCheckout = async () => {
+    setIsSubmitting(true);
+    try {
+      await cancelCheckout(activeCheckout.order.orderNumber);
+      idempotencyKey.current = null;
+      setActiveCheckout(null);
+      toast("Checkout cancelled. You can now update your order and start again.", "success");
+    } catch (error) {
+      toast(error?.response?.data?.message || error?.message || "Unable to cancel the active checkout.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const applyCoupon = async () => {
     if (!couponCode.trim()) return toast("Enter a coupon code.", "error");
     try {
@@ -137,6 +221,10 @@ export default function Checkout() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!addressId) return toast("Choose a delivery address first.", "error");
+    if (cartProducts.some((product) => !/^[a-f\d]{24}$/i.test(String(product.productId || product.product || product._id || product.id || "")))) {
+      dispatch(removeInvalidProducts());
+      return toast("An unavailable item was removed from your cart. Add it again to continue.", "error");
+    }
     setIsSubmitting(true);
     try {
       const response = await createCheckout({
@@ -144,8 +232,13 @@ export default function Checkout() {
         paymentMethod,
         couponCode: appliedCoupon?.code,
         idempotencyKey: (idempotencyKey.current ||= crypto.randomUUID()),
-        items: cartProducts.map((product) => ({ productId: product.productId || product._id || product.id, quantity: product.quantity, selectedOptions: product.selectedOptions || [] })),
+        items: cartProducts.map((product) => ({ productId: product.productId || product.product || product._id || product.id, quantity: product.quantity, selectedOptions: product.selectedOptions || [] })),
       });
+      dispatch(clearCart());
+      if (response.data.order.status === "confirmed") {
+        return router.replace(`/my-account-orders-details?order_id=${encodeURIComponent(response.data.order.orderNumber)}`);
+      }
+      setActiveCheckout({ order: response.data.order, paymentMode: response.data.paymentMode });
       if (!startPayment(response.data.order, response.data.paymentMode)) setIsSubmitting(false);
     } catch (error) {
       idempotencyKey.current = null;
@@ -156,7 +249,7 @@ export default function Checkout() {
 
   if (isAuthenticated === null) return <section className={styles.page}><div className={styles.empty}>Checking your account…</div></section>;
   if (!isAuthenticated) return null;
-  if (!cartProducts.length && !activeCheckout) return <section className={styles.page}><div className={styles.empty}><h1>Your cart is empty</h1><Link className={styles.primaryButton} href="/all-products">Continue shopping</Link></div></section>;
+  if (!cartProducts.length && !activeCheckout) return <section className={styles.page}><div className={styles.empty}><p className={styles.eyebrow}>Checkout</p><h1>Nothing is ready for checkout</h1><p className={styles.emptyCopy}>Add a product to your cart, then return here to choose delivery and payment.</p><Link className={styles.primaryButton} href="/all-products">Explore furniture</Link><Link className={styles.emptyLink} href="/shopping-cart">View cart</Link></div></section>;
 
   return <section className={styles.page}>
     <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="afterInteractive" onLoad={markCashfreeReady} onReady={markCashfreeReady} onError={() => setCashfreeError(true)} />
@@ -164,7 +257,14 @@ export default function Checkout() {
       <div className={styles.header}><p>Secure checkout</p><h1>Choose payment method</h1><span>Delivery details and final availability are confirmed before payment.</span></div>
       <div className={styles.layout}>
         <main>
-          {isLoadingAddresses ? <div className={styles.card}>Loading saved addresses…</div> : activeCheckout ? <section className={styles.card}><div className={styles.sectionHead}><div><p className={styles.eyebrow}>Payment not finished</p><h2>Resume your secure payment</h2></div></div><p>Your order #{activeCheckout.order.orderNumber} is reserved until {new Date(activeCheckout.order.expiresAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}. Resume the same Cashfree session to complete payment.</p><button className={styles.primaryButton} type="button" disabled={isSubmitting} onClick={resumePayment}>{isSubmitting ? "Opening secure payment…" : "Resume secure payment"}</button><Link className={styles.secondaryLink} href={`/my-account-orders-details?order_id=${encodeURIComponent(activeCheckout.order.orderNumber)}`}>View order details</Link></section> : !addresses.length ? <div className={`${styles.card} ${styles.noAddress}`}><div><p className={styles.eyebrow}>Delivery address required</p><h2>Add your delivery address first</h2><p>We need an address before showing payment options. It will be saved to your account for future orders.</p></div><Link href="/checkout/address" className={styles.primaryButton}>Add delivery address</Link></div> : <form onSubmit={handleSubmit}>
+          {isLoadingAddresses ? <div className={styles.card}>Loading saved addresses…</div> : activeCheckout ? <section className={styles.card}>
+            <div className={styles.sectionHead}><div><p className={styles.eyebrow}>Payment not finished</p><h2>{isPendingPayment ? "Payment is being verified" : canRetryPayment ? "Try your payment again" : "Resume your secure payment"}</h2></div></div>
+            <p>Your order #{activeCheckout.order.orderNumber} is reserved until {new Date(activeCheckout.order.expiresAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}. {isPendingPayment ? "We are confirming your payment with Cashfree. Do not pay again while its status is uncertain." : canRetryPayment ? "Start a new payment attempt to complete your order." : "Resume the same Cashfree session to complete payment."}</p>
+            <div className={styles.reservedOrder}><strong>Reserved order #{activeCheckout.order.orderNumber}</strong>{activeCheckout.order.items?.map((item) => <span key={item._id || `${item.product}-${item.title}`}>{item.title} · Qty {item.quantity} · {money(item.unitPricePaise * item.quantity / 100)}</span>)}<small>Delivering to {activeCheckout.order.addressSnapshot?.fullName}, {activeCheckout.order.addressSnapshot?.line1}, {activeCheckout.order.addressSnapshot?.city}</small></div>
+            {isPendingPayment ? <button className={styles.primaryButton} type="button" disabled>Payment is being verified</button> : <button className={styles.primaryButton} type="button" disabled={isSubmitting} onClick={canRetryPayment ? retryPayment : resumePayment}>{isSubmitting ? "Opening secure payment…" : canRetryPayment ? "Try payment again" : "Resume secure payment"}</button>}
+            {!isPendingPayment && <button className={styles.cancelButton} type="button" disabled={isSubmitting} onClick={cancelCurrentCheckout}>Cancel checkout and start new</button>}
+            <Link className={styles.secondaryLink} href={`/my-account-orders-details?order_id=${encodeURIComponent(activeCheckout.order.orderNumber)}`}>View order details</Link>
+          </section> : !addresses.length ? <div className={`${styles.card} ${styles.noAddress}`}><div><p className={styles.eyebrow}>Delivery address required</p><h2>Add your delivery address first</h2><p>We need an address before showing payment options. It will be saved to your account for future orders.</p></div><Link href="/checkout/address" className={styles.primaryButton}>Add delivery address</Link></div> : <form onSubmit={handleSubmit}>
             <section className={styles.card}>
               <div className={styles.sectionHead}><div><p className={styles.eyebrow}>Delivering to</p><h2>Select an address</h2></div><Link href="/checkout/address">Add new</Link></div>
               <div className={styles.addressList}>{addresses.map((address) => <label className={`${styles.address} ${addressId === String(address._id) ? styles.selected : ""}`} key={address._id}><input type="radio" name="address" value={address._id} checked={addressId === String(address._id)} onChange={(event) => setAddressId(event.target.value)} /><span><strong>{address.label || "Home"}{address.isDefault ? " · Default" : ""}</strong><small>{address.fullName} · {address.phone}</small><small>{address.line1}{address.line2 ? `, ${address.line2}` : ""}, {address.city}, {address.state} — {address.postalCode}</small></span></label>)}</div>
@@ -178,15 +278,16 @@ export default function Checkout() {
           </form>}
         </main>
         <aside className={styles.summary}>
-          <h2>Cart summary</h2>
+          <h2>{activeCheckout ? "Reserved order summary" : "Cart summary"}</h2>
           {selectedAddress && <div className={styles.summaryAddress}><span>Delivering to</span><strong>{selectedAddress.fullName}</strong><small>{selectedAddress.city}, {selectedAddress.state} {selectedAddress.postalCode}</small></div>}
-          <div className={styles.items}>{cartProducts.map((product) => <div className={styles.item} key={product.id}><Link href={productHref(product)}><Image alt={product.title || "Product"} src={product.imgSrc || "/images/placeholder.svg"} width={72} height={88} /></Link><span><strong>{product.title || "Product"}</strong><small>Qty {product.quantity}</small></span><b>{money(product.price * product.quantity)}</b></div>)}</div>
-          <div className={styles.coupon}><label htmlFor="couponCode">Have a coupon?</label><div><input id="couponCode" value={couponCode} onChange={(event) => { setCouponCode(event.target.value.toUpperCase()); setAppliedCoupon(null); }} placeholder="Enter code" /><button type="button" onClick={applyCoupon}>Apply</button></div>{appliedCoupon && <small><strong>{appliedCoupon.title}</strong> — {appliedCoupon.description} · {appliedCoupon.discountPercent}% off</small>}</div>
-          <div className={styles.totalRow}><span>Cart total ({cartProducts.length} {cartProducts.length === 1 ? "item" : "items"})</span><strong>{money(total)}</strong></div>
-          {appliedCoupon && <div className={styles.discountRow}><span>Coupon discount</span><strong>−{money(couponDiscount)}</strong></div>}
-          <div className={styles.deliveryRow}><span>Delivery</span><strong>Included</strong></div>
-          <div className={styles.youPay}><span>{paymentMethod === "cod" ? "Pay today" : "You pay"}</span><strong>{money(paymentMethod === "cod" ? codAdvance : payableTotal)}</strong></div>
-          {paymentMethod === "cod" && <p className={styles.codNote}>Balance due on delivery: <strong>{money(codBalance)}</strong></p>}
+          <div className={styles.items}>{summaryItems.map((product) => <div className={styles.item} key={String(product.id || product._id || product.product)}><Image alt={product.title || "Product"} src={activeCheckout ? product.image || "/images/placeholder.svg" : product.imgSrc || "/images/placeholder.svg"} width={72} height={88} /><span><strong>{product.title || "Product"}</strong><small>Qty {product.quantity}</small></span><b>{money(activeCheckout ? product.unitPricePaise * product.quantity / 100 : product.price * product.quantity)}</b></div>)}</div>
+          {!activeCheckout && <div className={styles.coupon}><label htmlFor="couponCode">Have a coupon?</label><div><input id="couponCode" value={couponCode} onChange={(event) => { setCouponCode(event.target.value.toUpperCase()); setAppliedCoupon(null); }} placeholder="Enter code" /><button type="button" onClick={applyCoupon}>Apply</button></div>{appliedCoupon && <small><strong>{appliedCoupon.title}</strong> — {appliedCoupon.description} · {appliedCoupon.discountPercent}% off</small>}</div>}
+          <div className={styles.totalRow}><span>{activeCheckout ? "Order total" : "Cart total"} ({summaryItems.length} {summaryItems.length === 1 ? "item" : "items"})</span><strong>{money(summarySubtotal)}</strong></div>
+          {summaryDiscount > 0 && <div className={styles.discountRow}><span>{activeCheckout ? "Coupon discount" : "Estimated coupon discount"}</span><strong>−{money(summaryDiscount)}</strong></div>}
+          <div className={styles.deliveryRow}><span>Delivery</span><strong>{summaryShipping > 0 ? money(summaryShipping) : "Included"}</strong></div>
+          {summaryTax > 0 && <div className={styles.deliveryRow}><span>{activeCheckout ? "GST" : "Estimated GST"}</span><strong>{money(summaryTax)}</strong></div>}
+          <div className={styles.youPay}><span>{summaryPaymentMethod === "cod" ? "Pay today" : "You pay"}</span><strong>{money(summaryPaymentMethod === "cod" ? summaryAdvance : summaryTotal)}</strong></div>
+          {summaryPaymentMethod === "cod" && <p className={styles.codNote}>Balance due on delivery: <strong>{money(summaryBalance)}</strong></p>}
         </aside>
       </div>
     </div>

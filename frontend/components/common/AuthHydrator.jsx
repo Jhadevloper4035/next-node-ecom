@@ -39,7 +39,7 @@ export default function AuthHydrator() {
         if (res.data?.user) dispatch(updateUser(res.data.user));
       } catch {
         dispatch(logout());
-        if (protectedRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))) router.replace("/login");
+        if (protectedRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
       }
     };
 

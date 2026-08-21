@@ -7,6 +7,8 @@ export const metadata = {
   description: "View your Curve & Comfort order details.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function MyAccountOrdersDetailsPage() {
   return (
     <>

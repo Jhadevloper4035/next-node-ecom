@@ -24,6 +24,10 @@ button.primaryButton { margin-top: 22px; width: 100%; }
 .primaryButton:disabled { cursor: wait; opacity: .65; }
 .paymentNote { font-size: 13px; line-height: 1.5; margin: 13px 0 0; }
 .secondaryLink { color: #292929; display: inline-block; font-size: 14px; font-weight: 700; margin-top: 16px; text-decoration: underline; }
+.cancelButton { background: transparent; border: 0; color: #737373; cursor: pointer; font-size: 13px; margin-top: 14px; padding: 0; text-decoration: underline; }
+.cancelButton:disabled { cursor: wait; opacity: .65; }
+.reservedOrder { border: 1px solid #e5e5e5; display: grid; gap: 5px; margin-top: 16px; padding: 14px; }
+.reservedOrder span, .reservedOrder small { color: #737373; font-size: 13px; }
 .summary { padding: 22px; position: sticky; top: 20px; }
 .summary h2 { border-bottom: 1px solid #e5e5e5; padding-bottom: 19px; }
 .summaryAddress { border-bottom: 1px solid #e8e8e8; display: grid; gap: 3px; padding: 16px 0; }
@@ -51,8 +55,11 @@ button.primaryButton { margin-top: 22px; width: 100%; }
 .noAddress { align-items: center; display: flex; gap: 20px; justify-content: space-between; }
 .noAddress p { line-height: 1.55; margin: 10px 0 0; max-width: 590px; }
 .noAddress .primaryButton { flex: 0 0 auto; }
-.empty { margin: 50px auto; max-width: 500px; padding: 42px; text-align: center; }
-.empty h1 { margin: 0 0 20px; }
+.empty { margin: 24px auto; max-width: 520px; padding: 44px 36px; text-align: center; }
+.empty h1 { font-size: clamp(26px, 4vw, 34px); line-height: 1.2; margin: 0 0 12px; }
+.emptyCopy { color: #737373; line-height: 1.55; margin: 0 auto 24px; max-width: 360px; }
+.empty .primaryButton { min-width: 180px; }
+.emptyLink { color: #555; display: block; font-size: 13px; font-weight: 700; margin-top: 16px; text-decoration: underline; }
 .addressForm { max-width: 760px; }
 .addressPageContent { align-items: start; display: grid; gap: 24px; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 1180px; }
 .addressPageContent .card { margin-bottom: 0; }

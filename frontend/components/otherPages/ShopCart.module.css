@@ -5,14 +5,7 @@
 .headingRow span { color: #777; font-size: 16px; font-weight: 500; }
 .layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(310px, .85fr); gap: 24px; align-items: start; }
 .itemsPanel, .summary, .empty { border: 1px solid #e7e3de; border-radius: 6px; background: #fff; box-shadow: 0 8px 26px rgba(39, 31, 24, .05); }
-.delivery { display: flex; justify-content: space-between; gap: 20px; padding: 19px 22px; border-bottom: 1px solid #eeeae5; border-radius: 6px 6px 0 0; background: #fffaf7; }
-.delivery strong { color: #333; font-size: 15px; }
-.delivery p, .saveNote, .loginNote { margin: 4px 0 0; color: #777; font-size: 12px; line-height: 1.45; }
-.pinForm { display: flex; align-self: start; }
-.pinForm input { width: 158px; height: 40px; padding: 0 12px; border: 1px solid #ddd; border-radius: 3px 0 0 3px; color: #222; font: inherit; font-size: 13px; outline: none; }
-.pinForm input:focus { border-color: var(--primary); }
-.pinForm button { height: 40px; min-width: 72px; border: 1px solid var(--primary); border-radius: 0 3px 3px 0; background: #fff; color: var(--primary); font-size: 12px; font-weight: 700; cursor: pointer; }
-.pinForm button:disabled { cursor: not-allowed; opacity: .45; }
+.saveNote, .loginNote { margin: 4px 0 0; color: #777; font-size: 12px; line-height: 1.45; }
 .item { display: grid; grid-template-columns: 168px minmax(0, 1fr) auto; gap: 20px; padding: 22px; border-bottom: 1px solid #eeeae5; }
 .item:last-child { border-bottom: 0; }
 .image { position: relative; display: block; min-height: 168px; overflow: hidden; border-radius: 3px; background: #f0efed; }
@@ -46,4 +39,4 @@
 .empty { max-width: 520px; margin: 0 auto; padding: 48px; text-align: center; }
 .empty h1 { margin: 0 0 10px; font-size: 24px; }
 .empty p { margin: 0 0 24px; color: #777; }
-@media (max-width: 767px) { .cartPage { padding: 32px 14px 52px; } .layout { grid-template-columns: 1fr; } .delivery { flex-direction: column; } .pinForm input { flex: 1; } .item { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 14px; } .image { align-self: start; height: 128px; min-height: 0; } .itemTotal { grid-column: 2; min-width: 0; flex-direction: row; align-items: center; justify-content: space-between; } .summary { position: static; } }
+@media (max-width: 767px) { .cartPage { padding: 32px 14px 52px; } .layout { grid-template-columns: 1fr; } .item { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 14px; } .image { align-self: start; height: 128px; min-height: 0; } .itemTotal { grid-column: 2; min-width: 0; flex-direction: row; align-items: center; justify-content: space-between; } .summary { position: static; } }

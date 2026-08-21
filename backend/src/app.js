@@ -51,11 +51,6 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use((req, _res, next) => {
-  console.log(req.method, req.originalUrl);
-  next();
-});
-
 app.get("/", (_req, res) => res.json({ ok: true, name: env.appName }));
 
 app.use("/api/v1", routes);

@@ -6,6 +6,8 @@ import { replaceCart } from "@/redux/cartSlice";
 import { logout } from "@/redux/authSlice";
 import { getCart, saveCart } from "@/services/cart/cart.service";
 
+const cartOwnerKey = "cartOwnerId";
+
 const cartItemKey = (item) => `${item.productId || item._id || item.id}:${(item.selectedOptions || [])
   .map((option) => `${option.key}:${option.value}`)
   .sort()
@@ -53,8 +55,11 @@ export default function CartPersistence() {
     getCart()
       .then((response) => {
         if (cancelled) return;
-        const items = mergeCartItems(response.data?.items || [], cartRef.current);
+        const savedItems = response.data?.items || [];
+        const previousOwnerId = localStorage.getItem(cartOwnerKey);
+        const items = previousOwnerId === String(userId) ? savedItems : mergeCartItems(savedItems, cartRef.current);
         dispatch(replaceCart(items));
+        localStorage.setItem(cartOwnerKey, String(userId));
       })
       .catch((error) => {
         if (error.response?.status === 401) {

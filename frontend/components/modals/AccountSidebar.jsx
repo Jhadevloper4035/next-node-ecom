@@ -1,6 +1,10 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 export default function AccountSidebar() {
+  const user = useSelector((state) => state.auth.user);
   return (
     <div className="offcanvas offcanvas-start canvas-sidebar" id="mbAccount">
       <div className="canvas-wrapper">
@@ -18,8 +22,8 @@ export default function AccountSidebar() {
               <div className="image">
                 <img src="/images/default-profile.png" alt="Default profile avatar" />
               </div>
-              <h6 className="mb_4">Tony Nguyen</h6>
-              <div className="body-text-1">themesflat@gmail.com</div>
+              <h6 className="mb_4">{user?.fullName || "Guest User"}</h6>
+              <div className="body-text-1">{user?.email || ""}</div>
             </div>
             <ul className="my-account-nav">
               <li>

@@ -5,7 +5,9 @@ const calculateTotal = (cartProducts) =>
   cartProducts.reduce((acc, p) => acc + (p.quantity || 0) * (p.price || 0), 0);
 
 const sameCartId = (a, b) => String(a) === String(b);
-const cartItemKey = (item) => `${item.productId || item._id || item.id}:${(item.selectedOptions || [])
+const productId = (item) => item.productId || item.product || item._id || item.id;
+const isCheckoutProduct = (item) => /^[a-f\d]{24}$/i.test(String(productId(item) || ""));
+const cartItemKey = (item) => `${productId(item)}:${(item.selectedOptions || [])
   .map((option) => `${option.key}:${option.value}`)
   .sort()
   .join("|")}`;
@@ -27,7 +29,13 @@ const loadCartFromStorage = () => {
   if (typeof window !== "undefined") {
     try {
       const items = JSON.parse(localStorage.getItem("cartList"));
-      return Array.isArray(items) ? mergeDuplicateItems(items) : [];
+      if (!Array.isArray(items)) return [];
+
+      const checkoutItems = items.filter(isCheckoutProduct);
+      if (checkoutItems.length !== items.length) {
+        localStorage.setItem("cartList", JSON.stringify(checkoutItems));
+      }
+      return mergeDuplicateItems(checkoutItems);
     } catch (e) {
       return [];
     }
@@ -51,6 +59,7 @@ const cartSlice = createSlice({
         id: product.id || product._id || id,
         quantity: qty,
       };
+      if (item && !isCheckoutProduct(item)) return;
       const exists = state.cartProducts.find((p) => item && cartItemKey(p) === cartItemKey(item));
       if (!exists) {
         if (item) {
@@ -97,8 +106,23 @@ const cartSlice = createSlice({
         localStorage.removeItem("cartList");
       }
     },
+    removePurchasedProducts(state, action) {
+      const purchased = new Set(action.payload.map(cartItemKey));
+      state.cartProducts = state.cartProducts.filter((item) => !purchased.has(cartItemKey(item)));
+      state.totalPrice = calculateTotal(state.cartProducts);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cartList", JSON.stringify(state.cartProducts));
+      }
+    },
+    removeInvalidProducts(state) {
+      state.cartProducts = state.cartProducts.filter(isCheckoutProduct);
+      state.totalPrice = calculateTotal(state.cartProducts);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cartList", JSON.stringify(state.cartProducts));
+      }
+    },
     replaceCart(state, action) {
-      state.cartProducts = mergeDuplicateItems(action.payload);
+      state.cartProducts = mergeDuplicateItems(action.payload.filter(isCheckoutProduct));
       state.totalPrice = calculateTotal(state.cartProducts);
       if (typeof window !== "undefined") {
         localStorage.setItem("cartList", JSON.stringify(state.cartProducts));
@@ -107,6 +131,6 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addProduct, updateQuantity, removeProduct, clearCart, replaceCart } =
+export const { addProduct, updateQuantity, removeProduct, clearCart, removeInvalidProducts, removePurchasedProducts, replaceCart } =
   cartSlice.actions;
 export default cartSlice.reducer;

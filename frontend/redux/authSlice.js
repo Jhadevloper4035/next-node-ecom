@@ -36,6 +36,7 @@ const authSlice = createSlice({
       state.error = null;
       state.isLoading = false;
       clearAuth();
+      if (typeof window !== "undefined") localStorage.removeItem("cartOwnerId");
     },
     // Update user
     updateUser(state, action) {

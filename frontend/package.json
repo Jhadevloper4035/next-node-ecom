@@ -11,10 +11,10 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@reduxjs/toolkit": "^2.11.2",
-    "axios": "^1.7.9",
+    "axios": "^1.15.2",
     "bootstrap": "^5.3.2",
     "drift-zoom": "^1.5.1",
-    "next": "15.1.6",
+    "next": "^16.3.1",
     "photoswipe": "^5.4.4",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -22,7 +22,7 @@
     "react-redux": "^9.2.0",
     "react-toastify": "^11.1.0",
     "sass": "^1.82.0",
-    "swiper": "^11.1.15"
+    "swiper": "^14.1.0"
   },
   "devDependencies": {
     "@types/node": "25.5.0",

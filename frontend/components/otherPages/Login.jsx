@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { login as loginService } from "@/services/auth/login.service";
 import { resendVerification } from "@/services/auth/resend-verification.service";
@@ -17,13 +17,16 @@ export default function Login() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const toast = useToast();
+  const nextPath = searchParams.get("next");
+  const redirectPath = nextPath?.startsWith("/") && !nextPath.startsWith("//") && !nextPath.startsWith("/\\") ? nextPath : "/";
 
   useEffect(() => {
-    if (user) router.replace("/");
-  }, [router, user]);
+    if (user) router.replace(redirectPath);
+  }, [redirectPath, router, user]);
 
   if (user) return null;
 
@@ -84,11 +87,8 @@ export default function Login() {
             }),
           );
         }
-        // wait for state update and storage write before redirecting
         toast("Logged in successfully", "success");
-        setTimeout(() => {
-          router.push("/");
-        }, 200);
+        router.replace(redirectPath);
       }
     } catch (err) {
       const errorMessage = userErrorMessage(err, "Login failed. Please try again.");

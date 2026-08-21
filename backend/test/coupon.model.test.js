@@ -15,4 +15,7 @@ test("coupon requires a title and description", async () => {
     new Coupon({ code: "MISSING", discountPercent: 10 }).validate(),
     (error) => Boolean(error.errors.title && error.errors.description),
   );
+  assert.equal(Coupon.schema.path("usageLimit").options.default, null);
+  assert.equal(Coupon.schema.path("perUserLimit").options.default, null);
+  assert.equal(Coupon.schema.path("minOrderPaise").options.default, 0);
 });

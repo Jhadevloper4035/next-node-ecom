@@ -31,7 +31,18 @@ export default function OrderDetails() {
 
   useEffect(() => {
     if (!orderId) return setError("Choose an order from My Orders to view its details.");
-    getOrder(orderId).then((response) => setOrder(response.data.order)).catch(() => setError("We could not find that order."));
+    let active = true;
+    const loadOrder = async () => {
+      try {
+        const response = await getOrder(orderId);
+        if (!active) return;
+        setOrder(response.data.order);
+      } catch {
+        if (active) setError("We could not find that order.");
+      }
+    };
+    loadOrder();
+    return () => { active = false; };
   }, [orderId]);
 
   if (error) return <div className="my-account-content"><p>{error}</p><Link className="tf-btn btn-fill radius-4 mt-3" href="/my-account-orders"><span className="text">My orders</span></Link></div>;
@@ -39,6 +50,12 @@ export default function OrderDetails() {
 
   const address = order.addressSnapshot || {};
   const addressLines = deliveryLines(address);
+  const advancePaidPaise = order.advancePaidPaise || order.pricing?.advancePaise;
+  const codBalanceDuePaise = order.codBalanceDuePaise ?? order.pricing?.balanceDuePaise;
+  const paymentStatus = order.activePaymentTransaction?.status;
+  const paymentFailed = ["failed", "user_dropped", "cancelled"].includes(paymentStatus);
+  const paymentPending = order.status === "pending_payment" && paymentStatus === "pending";
+  const paymentReady = order.status === "pending_payment" && !paymentFailed && !paymentPending;
 
   return (
     <div className="my-account-content">
@@ -59,6 +76,10 @@ export default function OrderDetails() {
             <div className="item"><div className="text-2 text_black-2">Items</div><div className="text-2 mt_4 fw-6">{order.items.length} {order.items.length === 1 ? "item" : "items"}</div></div>
             <div className="item"><div className="text-2 text_black-2">Order total</div><div className="text-2 mt_4 fw-6">{money(order.pricing?.totalPaise)}</div></div>
           </div>
+
+          {paymentFailed && <div className={styles.paymentFailed}><strong>Payment was not completed</strong><span>Your order is still reserved. Try payment again before {dateTime(order.expiresAt)} to confirm it.</span></div>}
+          {paymentPending && <div className={styles.paymentPending}><strong>Payment is being verified</strong><span>Your order is reserved while Cashfree confirms the payment. We will email you as soon as it is confirmed. Do not make another payment yet.</span></div>}
+          {paymentReady && <div className={styles.paymentPending}><strong>Payment is pending</strong><span>Your order is reserved. Complete payment before {dateTime(order.expiresAt)} to confirm it.</span></div>}
 
           <div className="widget-tabs style-3 widget-order-tab">
             <div className="widget-content-tab">
@@ -89,8 +110,8 @@ export default function OrderDetails() {
                       <li className="d-flex justify-content-between text-2 mt_4"><span>Delivery</span><span>{order.pricing?.shippingPaise ? money(order.pricing.shippingPaise) : "Included"}</span></li>
                       {order.pricing?.taxPaise > 0 && <li className="d-flex justify-content-between text-2 mt_4"><span>Tax</span><span>{money(order.pricing.taxPaise)}</span></li>}
                       <li className={`d-flex justify-content-between text-2 mt_8 pt_8 line-bt ${styles.total}`}><span className="fw-6">Order total</span><span className="fw-6">{money(order.pricing?.totalPaise)}</span></li>
-                      {order.pricing?.advancePaise > 0 && <li className="d-flex justify-content-between text-2 mt_4"><span>Paid today</span><span>{money(order.pricing.advancePaise)}</span></li>}
-                      {order.pricing?.balanceDuePaise > 0 && <li className="d-flex justify-content-between text-2 mt_4"><span>Balance due on delivery</span><span>{money(order.pricing.balanceDuePaise)}</span></li>}
+                      {advancePaidPaise > 0 && <li className="d-flex justify-content-between text-2 mt_4"><span>{paymentPending ? "Payment being verified" : order.paymentMethod === "cod" ? "COD advance paid" : "Paid today"}</span><span>{money(advancePaidPaise)}</span></li>}
+                      {codBalanceDuePaise > 0 && <li className="d-flex justify-content-between text-2 mt_4"><span>{order.codBalanceStatus === "collected" ? "COD balance collected" : "Balance due on delivery"}</span><span>{money(codBalanceDuePaise)}</span></li>}
                     </ul>
                   </div>
                 </div>
@@ -98,7 +119,7 @@ export default function OrderDetails() {
             </div>
           </div>
 
-          <div className={styles.actions}><Link className="tf-btn btn-fill radius-4" href="/my-account-orders"><span className="text">Back to my orders</span></Link></div>
+          <div className={styles.actions}>{(paymentFailed || paymentReady) && <Link className="tf-btn btn-fill radius-4" href="/checkout"><span className="text">{paymentFailed ? "Try payment again" : "Complete payment"}</span></Link>}<Link className="tf-btn btn-fill radius-4" href="/my-account-orders"><span className="text">Back to my orders</span></Link></div>
         </div>
       </div>
     </div>

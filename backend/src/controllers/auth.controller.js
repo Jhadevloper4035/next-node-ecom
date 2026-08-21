@@ -8,7 +8,7 @@ const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const { env } = require("../config/env");
 const { enqueueEmail } = require("../queues/email.queue");
-const { signAccessToken, createRefreshToken, hashRefreshToken } = require("../config/token");
+const { signAccessToken, verifyAccessToken, createRefreshToken, hashRefreshToken } = require("../config/token");
 const { toSafeUser } = require("../utils/safeUser");
 
 const RESET_EXPIRES_MS = 15 * 60 * 1000;
@@ -103,6 +103,51 @@ async function revokeFamilyForReuse(tokenHash) {
   }
 }
 
+async function getAccessUser(req) {
+  const header = req.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : req.cookies?.[env.accessCookieName];
+  if (!token) return null;
+
+  let decoded;
+  try {
+    decoded = verifyAccessToken(token);
+  } catch {
+    return null;
+  }
+  if (decoded.type !== "access") return null;
+
+  const user = await User.findById(decoded.sub);
+  if (!user || user.isBlocked || decoded.tokenVersion !== user.tokenVersion) return null;
+  return user;
+}
+
+async function refreshSession(req, res) {
+  const token = req.cookies?.[env.cookieName];
+  if (!token) return null;
+
+  const tokenHash = hashRefreshToken(token);
+  const session = await Session.findOneAndUpdate(
+    { tokenHash, isRevoked: false, expiresAt: { $gt: new Date() } },
+    { $set: { isRevoked: true, revokedAt: new Date() } },
+    { new: true },
+  );
+  if (!session) {
+    await revokeFamilyForReuse(tokenHash);
+    clearAuthCookies(res);
+    return null;
+  }
+
+  const user = await User.findById(session.userId);
+  if (!user || user.isBlocked) {
+    clearAuthCookies(res);
+    return null;
+  }
+
+  const { session: replacement } = await issueTokens(user, req, res, session.familyId);
+  await Session.findByIdAndUpdate(session._id, { $set: { replacedByToken: replacement._id } });
+  return user;
+}
+
 exports.register = asyncHandler(async (req, res) => {
   const { fullName, email, password, mobileNumber } = req.body;
   let user = await User.findOne({ email });
@@ -160,24 +205,8 @@ exports.login = asyncHandler(async (req, res) => {
 });
 
 exports.refresh = asyncHandler(async (req, res) => {
-  const token = req.cookies?.[env.cookieName];
-  if (!token) throw new ApiError(401, "Unauthorized");
-
-  const tokenHash = hashRefreshToken(token);
-  const session = await Session.findOneAndUpdate(
-    { tokenHash, isRevoked: false, expiresAt: { $gt: new Date() } },
-    { $set: { isRevoked: true, revokedAt: new Date() } },
-    { new: true },
-  );
-  if (!session) {
-    await revokeFamilyForReuse(tokenHash);
-    throw new ApiError(401, "Unauthorized");
-  }
-
-  const user = await User.findById(session.userId);
-  if (!user || user.isBlocked) throw new ApiError(401, "Unauthorized");
-  const { session: replacement } = await issueTokens(user, req, res, session.familyId);
-  await Session.findByIdAndUpdate(session._id, { $set: { replacedByToken: replacement._id } });
+  const user = await refreshSession(req, res);
+  if (!user) throw new ApiError(401, "Unauthorized");
   return res.status(200).json(new ApiResponse({ message: "Token refreshed", data: null }));
 });
 
@@ -196,7 +225,8 @@ exports.logoutAll = asyncHandler(async (req, res) => {
 });
 
 exports.me = asyncHandler(async (req, res) => {
-  return res.status(200).json(new ApiResponse({ message: "OK", data: { user: toSafeUser(req.userDoc) } }));
+  const user = await getAccessUser(req) || await refreshSession(req, res);
+  return res.status(200).json(new ApiResponse({ message: "OK", data: { user: user ? toSafeUser(user) : null } }));
 });
 
 exports.forgotPassword = asyncHandler(async (req, res) => {

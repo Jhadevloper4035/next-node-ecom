@@ -33,10 +33,11 @@ export default function AuthHydrator() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (user) return;
+      if (user || pathname === "/forget-password" || pathname === "/reset-password") return;
       try {
         const res = await getMe();
         if (res.data?.user) dispatch(updateUser(res.data.user));
+        else throw new Error("No active session");
       } catch {
         dispatch(logout());
         if (protectedRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))) router.replace(`/login?next=${encodeURIComponent(pathname)}`);

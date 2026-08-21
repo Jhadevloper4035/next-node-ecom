@@ -162,7 +162,7 @@ test("all private endpoints include authentication", () => {
     coupon: expected.coupon,
     order: expected.order,
     user: expected.user,
-    auth: "POST /logout-all|GET /me|POST /change-password",
+    auth: "POST /logout-all|POST /change-password",
     category: "POST /|GET /stats|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
     product: "POST /|PUT /:id|DELETE /:id",
     review: "POST /product/:productId",

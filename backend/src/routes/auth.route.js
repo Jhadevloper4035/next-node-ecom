@@ -28,7 +28,7 @@ router.post("/refresh", authLimiter, authCtrl.refresh);
 router.post("/logout", authLimiter, authCtrl.logout);
 router.post("/logout-all", auth, authCtrl.logoutAll);
 
-router.get("/me", auth, authCtrl.me);
+router.get("/me", authCtrl.me);
 
 router.post("/forgot-password", authLimiter, v.forgotPasswordValidator, validate, authCtrl.forgotPassword);
 

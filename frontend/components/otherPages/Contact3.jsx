@@ -31,8 +31,7 @@ export default function Contact3() {
       setSuccess(true);
       formRef.current.reset();
       router.push("/contact-success");
-    } catch (error) {
-      console.log(error);
+    } catch {
       setSuccess(false);
       handleShowMessage();
     }

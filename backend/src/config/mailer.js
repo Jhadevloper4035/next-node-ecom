@@ -18,7 +18,6 @@ async function sendMail({ to, subject, html }) {
   const t = getTransporter();
   if (!t) throw new Error(`SMTP_HOST not set; cannot send email: ${subject}`);
   await t.sendMail({ from: env.mailFrom, to, subject, html });
-  console.log("Email sent to:", to);
 }
 
 module.exports = { sendMail };

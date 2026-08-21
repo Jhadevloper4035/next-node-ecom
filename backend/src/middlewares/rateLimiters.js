@@ -29,7 +29,6 @@ async function initRateLimitStore() {
     const client = await initRedis();
     if (!client) return;
     limiters = createLimiters((name) => new RedisStore({ sendCommand: (...args) => client.sendCommand(args), prefix: `curve-comfort:rate-limit:${name}:` }));
-    console.log("Redis rate-limit store connected.");
   } catch (error) {
     console.warn("Redis unavailable, using in-memory:", error.message);
   }

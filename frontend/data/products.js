@@ -5086,15 +5086,3 @@ export const allProducts = [
   ...products62,
   ...products63,
 ];
-
-const returnLastid = () => {
-  let id = 1;
-  allProducts.forEach((elm) => {
-    if (elm.id >= id) {
-      id = elm.id;
-    }
-  });
-  return id;
-};
-
-console.log(returnLastid());

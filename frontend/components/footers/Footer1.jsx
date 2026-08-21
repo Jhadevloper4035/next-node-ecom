@@ -131,7 +131,7 @@ export default function Footer1({ hasPaddingBottom = false }) {
           <div className={styles.legalRow}>
             <div>
               <Link href="/">Home</Link>
-              <Link href="/sitemap">Sitemap</Link>
+              <Link href="/sitemap.xml">Sitemap</Link>
               <Link href="/term-of-use">Terms of Use</Link>
               <Link href="/privacy-policy">Privacy Policy</Link>
               <Link href="/refund-policy">Refund Policy</Link>

@@ -91,8 +91,6 @@ exports.getCategories = async (req, res) => {
 
     const filter = { isDeleted: false, isActive: true };
 
-    console.log("Query parent:", req.query.parent);
-
     if (req.query.parent === undefined) {
       filter.parent = null; // only top-level categories by default
     }

@@ -98,7 +98,6 @@ function startEmailWorker() {
     await sendMail({ to: job.data.to, ...email });
   }, { connection });
 
-  emailWorker.on("completed", (job) => console.log(`Email job ${job.id} sent.`));
   emailWorker.on("failed", (job, error) => console.error(`Email job ${job?.id || "unknown"} failed:`, error.message));
   return emailWorker;
 }

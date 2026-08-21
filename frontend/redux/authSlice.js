@@ -18,7 +18,6 @@ const authSlice = createSlice({
     },
     // Login success
     loginSuccess(state, action) {
-      console.log("auth/loginSuccess payload:", action.payload);
       state.isLoading = false;
       // Defensive: extract user if it's nested
       const userData = action.payload.user;

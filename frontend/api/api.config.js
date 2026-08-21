@@ -53,8 +53,6 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        console.log("Token expired. Refreshing...");
-
         // Use clean axios call to the refresh endpoint
         const refreshResponse = await axios.post(
           `${api.defaults.baseURL}/v1/auth/refresh`,

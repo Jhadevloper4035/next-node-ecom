@@ -38,10 +38,7 @@ async function bootstrap() {
   globalThis.setInterval(() => monitorOutboxEvents().catch((err) => console.error("Outbox monitor failed:", err.message)), 5 * 60_000).unref();
   globalThis.setInterval(() => recoverFailedEmailEvents().catch((err) => console.error("Email recovery failed:", err.message)), 5 * 60_000).unref();
   globalThis.setInterval(() => redactExpiredPaymentPayloads().catch(() => console.error("Payment payload retention failed")), 24 * 60 * 60_000).unref();
-  console.log("SMTP configured:", Boolean(env.smtpHost));
-  console.log("Redis configured:", Boolean(env.redisUrl));
-  console.log("Email queue configured:", Boolean(env.queueRedisUrl));
-  server.listen(env.port, () => console.log(`${env.appName} running on port ${env.port}`));
+  server.listen(env.port);
 }
 
 const shutdown = async () => {

@@ -74,7 +74,6 @@ export default function ColorSelect({
   }, [propsColorOptions, selectedProduct, activeColor]);
 
   const handleSelectColor = (value) => {
-    console.log(value);
     if (setActiveColor) {
       setActiveColor(value);
     } else {

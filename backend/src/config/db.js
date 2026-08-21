@@ -13,7 +13,6 @@ async function connectDB() {
     await mongoose.disconnect();
     throw new Error("Production MongoDB must use a replica set to support checkout transactions");
   }
-  console.log("MongoDB connected");
 }
 
 module.exports = { connectDB, supportsTransactions };

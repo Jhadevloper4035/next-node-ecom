@@ -39,10 +39,7 @@ const initRedis = async () => {
 
   initialization = redisClient
     .connect()
-    .then(() => {
-      console.log("Redis connected.");
-      return redisClient;
-    })
+    .then(() => redisClient)
     .catch((error) => {
       logRedisError(error);
       return null;

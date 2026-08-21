@@ -32,6 +32,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
 COPY --chown=appuser:appgroup src ./src
+COPY --chown=appuser:appgroup scripts ./scripts
 
 USER appuser
 

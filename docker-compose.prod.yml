@@ -15,6 +15,7 @@ services:
         condition: service_healthy
       backend:
         condition: service_healthy
+        restart: true
     networks: [app_network]
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/nginx-health >/dev/null || exit 1"]

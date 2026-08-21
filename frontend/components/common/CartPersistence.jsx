@@ -67,7 +67,6 @@ export default function CartPersistence() {
           dispatch(logout());
           return;
         }
-        console.error("Failed to load saved cart:", error);
       })
       .finally(() => {
         if (!cancelled) setReadyUserId(userId);
@@ -84,7 +83,6 @@ export default function CartPersistence() {
     const timer = setTimeout(() => {
       saveCart(cartPayload(cartProducts)).catch((error) => {
         if (error.response?.status === 401) dispatch(logout());
-        else console.error("Failed to save cart:", error);
       });
     }, 300);
 

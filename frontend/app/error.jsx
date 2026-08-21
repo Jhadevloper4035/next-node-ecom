@@ -1,13 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 
-export default function ErrorPage({ error, reset }) {
-  useEffect(() => {
-    console.error("Application error:", error);
-  }, [error]);
-
+export default function ErrorPage({ reset }) {
   return (
     <section
       className="flat-spacing"

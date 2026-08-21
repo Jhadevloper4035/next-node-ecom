@@ -41,9 +41,8 @@ export default function SearchModal() {
         );
         setLoadedItems(mapProductsForCards(response?.data || []));
         setVisibleCount(8);
-      } catch (error) {
+      } catch {
         if (!controller.signal.aborted) {
-          console.error("Failed to search products:", error);
           setLoadedItems([]);
         }
       } finally {

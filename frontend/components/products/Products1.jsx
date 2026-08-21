@@ -49,8 +49,7 @@ export default function Products1({ parentClass = "flat-spacing" }) {
             payload: [Math.min(...prices), Math.max(...prices)],
           });
         }
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
+      } catch {
       } finally {
         setInitialLoading(false);
       }

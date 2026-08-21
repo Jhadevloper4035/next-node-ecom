@@ -51,9 +51,7 @@ export default function Slider1({
         }
 
         driftInstances.push(drift);
-      } catch (error) {
-        console.warn("Product zoom disabled:", error);
-      }
+      } catch {}
     });
 
     const zoomElements = document.querySelectorAll(".tf-image-zoom");
@@ -82,9 +80,7 @@ export default function Slider1({
         try {
           drift.disable?.();
           drift.destroy?.();
-        } catch (error) {
-          console.warn("Product zoom cleanup skipped:", error);
-        }
+        } catch {}
       });
     };
   }, []); // Empty dependency array to run only once on mount

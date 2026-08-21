@@ -2,8 +2,6 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/redux/authSlice";
 import { logoutAPI } from "@/services/auth/logout.service";
-import { getMe } from "@/services/user/me.service";
-import { updateUser } from "@/redux/authSlice";
 import Nav from "./Nav";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,17 +20,6 @@ export default function Header2() {
     } catch (error) {
       dispatch(logout());
       window.location.href = "/";
-    }
-  };
-
-  const handleGetMe = async () => {
-    try {
-      const response = await getMe();
-      if (response.data?.user) {
-        dispatch(updateUser(response.data.user));
-      }
-    } catch (error) {
-      console.error("Failed to fetch user in header:", error);
     }
   };
 

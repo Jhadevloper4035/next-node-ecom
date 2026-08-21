@@ -36,8 +36,7 @@ export default function RelatedProducts({ currentProductId, categorySlug, subcat
           (p) => String(p.id) !== String(currentProductId)
         );
         setRelatedProducts(filtered);
-      } catch (error) {
-        console.error("Failed to fetch related products:", error);
+      } catch {
         setRelatedProducts([]);
       } finally {
         setLoading(false);

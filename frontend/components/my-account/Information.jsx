@@ -95,7 +95,6 @@ export default function Information() {
         addToast(response.message || "Failed to update profile", "error");
       }
     } catch (error) {
-      console.error("Profile update error:", error);
       addToast(error.message || "Something went wrong", "error");
     } finally {
       setIsLoading(false);

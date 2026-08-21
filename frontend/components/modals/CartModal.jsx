@@ -67,9 +67,7 @@ export default function CartModal() {
       try {
         const response = await getAllProducts({ page: 1, limit: 8 });
         setRecommendedProducts(mapProductsForCards(response?.data || []));
-      } catch (error) {
-        console.error("Failed to fetch cart recommendations:", error);
-      }
+      } catch {}
     };
 
     loadRecommended();

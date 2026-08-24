@@ -22,7 +22,7 @@ export default async function BlogDetailsPage1({ params }) {
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" /> */}
-      <BlogDetail1 blog={blog} />
+      <BlogDetail1 blog={blog} posts={posts} />
       <RelatedBlogs posts={posts} currentUrl={blog.url} />
       <Footer1 />
     </>

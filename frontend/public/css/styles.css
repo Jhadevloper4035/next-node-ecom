@@ -14449,6 +14449,50 @@ ul.breadcrumbs i {
   font-size: 20px;
 }
 
+.blog-detail-wrap>.inner>.heading h3 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.18;
+}
+
+.blog-article-content {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.blog-article-content>* {
+  margin: 0 0 20px;
+}
+
+.blog-article-content>:last-child {
+  margin-bottom: 0;
+}
+
+.blog-article-content h1,
+.blog-article-content h2,
+.blog-article-content h3,
+.blog-article-content h4 {
+  margin-top: 36px;
+  margin-bottom: 14px;
+  line-height: 1.25;
+}
+
+.blog-article-content h1 { font-size: 30px; }
+.blog-article-content h2 { font-size: 26px; }
+.blog-article-content h3 { font-size: 22px; }
+.blog-article-content h4 { font-size: 19px; }
+
+.blog-article-content ul,
+.blog-article-content ol {
+  padding-left: 24px;
+}
+
+.blog-article-content li+li {
+  margin-top: 8px;
+}
+
 .blog-detail-wrap>.inner .related-post {
   position: relative;
   display: flex;
@@ -19132,6 +19176,28 @@ ul.list-text.type-number {
   .blog-detail-wrap>.inner {
     padding: 15px 15px 0;
   }
+
+  .blog-article-content {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .blog-article-content>* {
+    margin-bottom: 16px;
+  }
+
+  .blog-article-content h1,
+  .blog-article-content h2,
+  .blog-article-content h3,
+  .blog-article-content h4 {
+    margin-top: 28px;
+    margin-bottom: 12px;
+  }
+
+  .blog-article-content h1 { font-size: 26px; }
+  .blog-article-content h2 { font-size: 23px; }
+  .blog-article-content h3 { font-size: 20px; }
+  .blog-article-content h4 { font-size: 18px; }
 
   .wg-blog .image {
     margin-bottom: 16px;

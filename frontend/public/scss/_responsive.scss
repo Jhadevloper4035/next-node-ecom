@@ -3071,6 +3071,28 @@
     }
   }
 
+  .blog-article-content {
+    font-size: 15px;
+    line-height: 1.7;
+
+    > * {
+      margin-bottom: 16px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin-top: 28px;
+      margin-bottom: 12px;
+    }
+
+    h1 { font-size: 26px; }
+    h2 { font-size: 23px; }
+    h3 { font-size: 20px; }
+    h4 { font-size: 18px; }
+  }
+
   .wg-blog {
     .image {
       margin-bottom: 16px;

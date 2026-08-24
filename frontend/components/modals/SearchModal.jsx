@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 import ProductCard1 from "../productCards/ProductCard1";
 import { getAllProducts } from "@/services/product/product.service";
@@ -156,9 +157,18 @@ export default function SearchModal() {
             </ul>
           </div> */}
           <div>
-            <h6 className="mb_16">
-              {query.trim() ? "Search Results" : "Recently viewed products"}
-            </h6>
+            <div className="d-flex align-items-center justify-content-between gap-3 mb_16">
+              <h6 className="mb-0">
+                {query.trim() ? "Search Results" : "Recently viewed products"}
+              </h6>
+              <Link
+                href={query.trim() ? `/search-result?q=${encodeURIComponent(query.trim())}` : "/all-products"}
+                className="tf-btn btn-fill text-nowrap"
+                data-bs-dismiss="modal"
+              >
+                <span className="text text-btn-uppercase">View all products</span>
+              </Link>
+            </div>
             {loading && query.trim() && (
               <div
                 className="d-flex justify-content-center align-items-center py-3"

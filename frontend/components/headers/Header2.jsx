@@ -30,14 +30,14 @@ export default function Header2() {
           <div className="row wrapper-header align-items-center">
             <div className="col-xl-5 d-none d-xl-block">
               <ul className="header-list-categories">
-                <li className="categories-item active">
-                  <Link href="/collections/kitchen" >
-                    Modular Kitchen
+                <li className="categories-item">
+                  <Link href="/contact">
+                    Contact Us
                   </Link>
                 </li>
                 <li className="categories-item">
-                  <Link href="/collections/wardrobe" >
-                    Modular Wardrobe
+                  <Link href="/blogs">
+                    Blog
                   </Link>
                 </li>
               </ul>

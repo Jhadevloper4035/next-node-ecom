@@ -1153,6 +1153,15 @@ ul.list-text {
   }
 }
 
+.contact-page {
+  .contact-form-section {
+    padding-bottom: 40px;
+  }
+  .contact-location-section {
+    padding-top: 40px;
+  }
+}
+
 .page-404 {
   min-height: 100vh;
   display: flex;

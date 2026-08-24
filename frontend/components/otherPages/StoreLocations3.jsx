@@ -2,7 +2,7 @@ import React from "react";
 
 export default function StoreLocations3() {
   return (
-    <section className="flat-spacing">
+    <section className="contact-location-section flat-spacing">
       <div className="container">
         <div className="row">
           <div className="col-12">
@@ -28,11 +28,11 @@ export default function StoreLocations3() {
                 <h4>Information</h4>
                 <div className="mb_20">
                   <div className="text-title mb_8">Phone:</div>
-                  <p className="text-secondary">+1 666 234 8888</p>
+                  <p className="text-secondary">+91 92891 66363</p>
                 </div>
                 <div className="mb_20">
                   <div className="text-title mb_8">Email:</div>
-                  <p className="text-secondary">themesflat@gmail.com</p>
+                  <p className="text-secondary">info@curve-comfort.com</p>
                 </div>
                 <div className="mb_20">
                   <div className="text-title mb_8">Address:</div>

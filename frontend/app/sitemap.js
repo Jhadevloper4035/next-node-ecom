@@ -5,7 +5,7 @@ const routes = [
   "/all-products",
   "/about-us",
   "/contact",
-  "/blog-default",
+  "/blogs",
   "/FAQs",
   "/privacy-policy",
   "/term-of-use",

@@ -1307,6 +1307,8 @@
         margin-bottom: 30px;
       }
       img {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -1648,39 +1650,55 @@
 
 .modal-newleter {
   .modal-dialog {
-    max-width: 660px !important;
+    max-width: 840px !important;
   }
   .modal-content {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
     border: 0;
+    background: var(--white) !important;
+    opacity: 1 !important;
     .modal-top {
       position: relative;
-      border-radius: 10px 10px 0px 0px;
+      min-height: 500px;
       overflow: hidden;
-      .icon {
-        position: absolute;
-        cursor: pointer;
-        top: 12px;
-        right: 12px;
-        width: 40px;
-        height: 40px;
-        @include mixin.flex(center, center);
-        border-radius: 999px;
-        background-color: var(--white);
-        font-size: 16px;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
     }
-    .modal-bottom {
-      border-radius: 0px 0px 10px 10px;
+    .newsletter-popup-dismiss {
+      position: absolute;
+      cursor: pointer;
+      top: 16px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
       background-color: var(--white);
-      padding: 40px 15px;
-      max-width: 397px;
-      margin-left: auto;
-      margin-right: auto;
+      color: var(--main);
+      font-size: 28px;
+      line-height: 1;
+      z-index: 1;
+    }
+    .modal-bottom {
+      background: var(--white) !important;
+      max-width: none;
+      margin: 0;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       p {
         margin-bottom: 8px;
       }
       h5 {
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
     }
     form {
@@ -1690,10 +1708,27 @@
       margin-bottom: 6px;
       input {
         margin-bottom: 16px;
-        height: 40px;
+        height: 48px;
       }
       button {
-        height: 40px;
+        height: 48px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .modal-newleter {
+    .modal-dialog {
+      margin: 16px;
+    }
+    .modal-content {
+      grid-template-columns: 1fr;
+      .modal-top {
+        min-height: 240px;
+      }
+      .modal-bottom {
+        padding: 32px 24px;
       }
     }
   }

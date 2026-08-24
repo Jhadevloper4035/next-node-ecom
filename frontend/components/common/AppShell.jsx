@@ -15,6 +15,7 @@ import DemoModal from "@/components/modals/DemoModal";
 import Categories from "@/components/modals/Categories";
 import RtlToggler from "@/components/common/RtlToggler";
 import AccountSidebar from "@/components/modals/AccountSidebar";
+import NewsletterPopup from "@/components/modals/NewsletterPopup";
 import AuthHydrator from "@/components/common/AuthHydrator";
 import { ToastProvider } from "@/components/common/ToastContext";
 import Header from "@/components/headers/Header2";
@@ -165,6 +166,7 @@ export default function AppShell({ children }) {
         <DemoModal />
         <Categories />
         <AccountSidebar />
+        <NewsletterPopup />
       </ToastProvider>
     </Provider>
   );

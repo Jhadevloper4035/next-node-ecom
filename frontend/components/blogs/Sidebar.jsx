@@ -1,176 +1,41 @@
-"use client";
-import Link from "next/link";
-import React from "react";
 import Image from "next/image";
-import { blogPosts6 } from "@/data/blogs";
-export default function Sidebar() {
+import Link from "next/link";
+import { getBlogExcerpt } from "@/lib/blogs";
+
+export default function Sidebar({ posts = [] }) {
+  const categories = [...new Set(posts.map((post) => post.category).filter(Boolean))];
+  const tags = [...new Set(posts.flatMap((post) => post.tags || []))];
+
   return (
-    <div className="sidebar maxw-360">
-      <div className="sidebar-item sidebar-search">
-        <form className="form-search" onSubmit={(e) => e.preventDefault()}>
-          <fieldset className="text">
-            <input
-              type="email"
-              placeholder="Your email address"
-              className=""
-              name="email"
-              tabIndex={0}
-              defaultValue=""
-              aria-required="true"
-              required
-            />
-          </fieldset>
-          <button className="" type="submit">
-            <svg
-              className="icon"
-              width={20}
-              height={20}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-                stroke="#181818"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M21.35 21.0004L17 16.6504"
-                stroke="#181818"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </form>
-      </div>
-      <div className="sidebar-item sidebar-relatest-post">
-        <h5 className="sidebar-heading">Relatest Post</h5>
-        <div>
-          {blogPosts6.slice(3, 8).map((post, i) => (
-            <div
-              key={i}
-              className={`relatest-post-item ${
-                i != 0 ? "style-row" : ""
-              } hover-image `}
-            >
+    <aside className="sidebar maxw-360">
+      {posts.length > 0 && (
+        <div className="sidebar-item sidebar-relatest-post">
+          <h5 className="sidebar-heading">Latest Posts</h5>
+          {posts.slice(0, 5).map((post, index) => (
+            <div key={post._id || post.url} className={`relatest-post-item ${index ? "style-row" : ""} hover-image`}>
               <div className="image">
-                <Image
-                  className="lazyload"
-                  alt=""
-                  src={post.imgSrc}
-                  width={540}
-                  height={360}
-                />
+                <Image className="lazyload" alt={post.title} src={post.image} width={540} height={360} />
               </div>
               <div className="content">
-                <div className="meta">
-                  <div className="meta-item gap-8">
-                    <div className="icon">
-                      <i className="icon-calendar" />
-                    </div>
-                    <p className="text-caption-1">{post.date}</p>
-                  </div>
-                  <div className="meta-item gap-8">
-                    <div className="icon">
-                      <i className="icon-user" />
-                    </div>
-                    <p className="text-caption-1">
-                      by{" "}
-                      <a className="link" href="#">
-                        {post.author}
-                      </a>
-                    </p>
-                  </div>
-                </div>
-                <h6 className="title fw-5">
-                  <Link className="link" href={`/blog-detail/${post.id}`}>
-                    {post.description.split(" ").slice(0, 8).join(" ")}
-                  </Link>
-                </h6>
+                <div className="meta"><div className="meta-item gap-8"><i className="icon-calendar" /><p className="text-caption-1">{new Date(post.created_at).toLocaleDateString()}</p></div></div>
+                <h6 className="title fw-5"><Link className="link" href={`/blog-detail/${post.url}`}>{getBlogExcerpt(post, 8)}</Link></h6>
               </div>
             </div>
           ))}
         </div>
-      </div>
-      <div className="sidebar-item sidebar-categories">
-        <h5 className="sidebar-heading">Categories</h5>
-        <ul>
-          <li>
-            <a className="text-button link" href="#">
-              Trending
-            </a>
-          </li>
-          <li>
-            <a className="text-button link" href="#">
-              Fashion
-            </a>
-          </li>
-          <li>
-            <a className="text-button link" href="#">
-              Outfit
-            </a>
-          </li>
-          <li>
-            <a className="text-button link" href="#">
-              Accessories
-            </a>
-          </li>
-          <li>
-            <a className="text-button link" href="#">
-              Beauty
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div className="sidebar-item sidebar-tag">
-        <h5 className="sidebar-heading">Popular Tag</h5>
-        <ul className="list-tags">
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Fashion Trends
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Sustainable Fashion
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Street Style
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Beauty Tips
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Street Style
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Vintage Fashion
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Eco Friendly
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-caption-1 link">
-              Tips
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
+      )}
+      {categories.length > 0 && (
+        <div className="sidebar-item sidebar-categories">
+          <h5 className="sidebar-heading">Categories</h5>
+          <ul>{categories.map((category) => <li key={category}><Link className="text-button link" href={`/blogs?category=${encodeURIComponent(category)}`}>{category}</Link></li>)}</ul>
+        </div>
+      )}
+      {tags.length > 0 && (
+        <div className="sidebar-item sidebar-tag">
+          <h5 className="sidebar-heading">Popular Tags</h5>
+          <ul className="list-tags">{tags.map((tag) => <li key={tag}><Link href={`/blogs?tag=${encodeURIComponent(tag)}`} className="text-caption-1 link">{tag}</Link></li>)}</ul>
+        </div>
+      )}
+    </aside>
   );
 }

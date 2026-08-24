@@ -8,8 +8,8 @@ import useProductSearch from "@/hooks/useProductSearch";
 import { fallbackHeaderCategories } from "@/data/headerCategories";
 
 const fixedHeaderCategories = [
-  { slug: "kitchen", name: "Modular Kitchen" },
-  { slug: "wardrobe", name: "Modular Wardrobe" },
+  { slug: "kitchen", name: "Kitchen" },
+  { slug: "wardrobe", name: "Wardrobe" },
 ];
 
 export default function MobileMenu() {

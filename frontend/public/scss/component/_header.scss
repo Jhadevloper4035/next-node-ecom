@@ -1156,6 +1156,18 @@
   .main-header .wrapper-header {
     padding-bottom: 26px;
   }
+  .header-bottom {
+    .box-nav-ul {
+      flex-wrap: nowrap;
+      gap: 18px;
+    }
+    .item-link {
+      white-space: nowrap;
+      font-size: 15px;
+      line-height: 22px;
+      letter-spacing: 0.3px;
+    }
+  }
   .wrapper-header-right {
     .tf-currencies {
       padding-right: 17px;

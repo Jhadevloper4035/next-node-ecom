@@ -5,40 +5,37 @@ import { useRouter } from "next/navigation";
 export default function Contact3() {
   const router = useRouter();
   const formRef = useRef();
-  const [success, setSuccess] = useState(true);
-  const [showMessage, setShowMessage] = useState(false);
-
-  const handleShowMessage = () => {
-    setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 2000);
-  };
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sendMail = async (e) => {
     e.preventDefault();
-    
+
     const formData = new FormData(formRef.current);
     const payload = {
       name: formData.get("name"),
       email: formData.get("email"),
-      mobileNumber: formData.get("phone"),
+      mobileNumber: String(formData.get("phone") || "").replace(/\D/g, "").replace(/^91(?=\d{10}$)/, ""),
+      subject: formData.get("subject"),
       message: formData.get("message"),
     };
 
+    setErrorMessage("");
+    setIsSubmitting(true);
+
     try {
       await submitContact(payload);
-      setSuccess(true);
       formRef.current.reset();
       router.push("/contact-success");
-    } catch {
-      setSuccess(false);
-      handleShowMessage();
+    } catch (error) {
+      setErrorMessage(error?.message || "Unable to send your enquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <section className="flat-spacing pt-0">
+    <section className="contact-form-section flat-spacing">
       <div className="container">
         <div className="heading-section text-center">
           <h3 className="heading">Get In Touch</h3>
@@ -47,19 +44,7 @@ export default function Contact3() {
           </p>
         </div>
 
-        <div
-          className={`tfSubscribeMsg footer-sub-element ${
-            showMessage ? "active" : ""
-          }`}
-        >
-          {success ? (
-            <p style={{ color: "rgb(52, 168, 83)" }}>
-              Message Sent Successfully
-            </p>
-          ) : (
-            <p style={{ color: "red" }}>Something went wrong</p>
-          )}
-        </div>
+        {errorMessage && <p className="text-center text-danger mb-3" role="alert">{errorMessage}</p>}
 
         <form
           onSubmit={sendMail}
@@ -96,8 +81,6 @@ export default function Contact3() {
                   type="tel"
                   placeholder="Your Phone*"
                   name="phone"
-                  pattern="[6-9]{1}[0-9]{9}"
-                  title="Enter valid Indian phone number"
                   required
                 />
               </fieldset>
@@ -123,8 +106,8 @@ export default function Contact3() {
           </div>
 
           <div className="button-submit send-wrap">
-            <button className="tf-btn btn-fill" type="submit">
-              <span className="text text-button">Send message</span>
+            <button className="tf-btn btn-fill" type="submit" disabled={isSubmitting}>
+              <span className="text text-button">{isSubmitting ? "Sending..." : "Send message"}</span>
             </button>
           </div>
         </form>

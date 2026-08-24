@@ -3,13 +3,15 @@ import Sidebar from "./Sidebar";
 import Pagination from "../common/Pagination";
 import Link from "next/link";
 import Image from "next/image";
+import { getBlogExcerpt } from "@/lib/blogs";
 
-export default function BlogDefault({ posts }) {
+export default function BlogDefault({ posts = [] }) {
   return (
     <div className="main-content-page">
       <div className="container">
         <div className="row">
           <div className="col-lg-8 mb-lg-30">
+            {posts.length === 0 && <p>No blogs have been published yet.</p>}
             {posts.slice(0, 3).map((post, i) => (
               <React.Fragment key={i}>
                 {i != 0 ? <div className="line-bt mb_40" /> : ""}
@@ -64,7 +66,8 @@ export default function BlogDefault({ posts }) {
                         {post.title}
                       </Link>
                     </h4>
-                    <div className="body-text-1">{post.meta_description || post.text}</div>
+                    {post.category && <p className="text-caption-1">{post.category}</p>}
+                    <div className="body-text-1">{getBlogExcerpt(post)}</div>
                   </div>
                 </div>{" "}
               </React.Fragment>
@@ -75,7 +78,7 @@ export default function BlogDefault({ posts }) {
             </ul>
           </div>
           <div className="col-lg-4">
-            <Sidebar />
+            <Sidebar posts={posts} />
           </div>
         </div>
       </div>

@@ -24,6 +24,11 @@ import { fetchCategoriesStart, fetchCategoriesSuccess, fetchCategoriesFailure } 
 import { getAllCategories } from "@/services/category/category.service";
 import { fallbackHeaderCategories } from "@/data/headerCategories";
 
+const fixedProductCategories = [
+  { slug: "kitchen", name: "Kitchen" },
+  { slug: "wardrobe", name: "Wardrobe" },
+];
+
 export default function Nav() {
   const pathname = usePathname();
   const dispatch = useDispatch();
@@ -51,12 +56,17 @@ export default function Nav() {
 
   const apiCategoriesBySlug = new Map((categories || []).map((category) => [category.slug, category]));
   const fallbackSlugs = new Set(fallbackHeaderCategories.map((category) => category.slug));
+  const fixedSlugs = new Set(fixedProductCategories.map((category) => category.slug));
   const headerCategories = [
+    ...fixedProductCategories.map((category) => ({
+      ...apiCategoriesBySlug.get(category.slug),
+      ...category,
+    })),
     ...fallbackHeaderCategories.map((category) => ({
       ...category,
       ...apiCategoriesBySlug.get(category.slug),
     })),
-    ...(categories || []).filter((category) => !fallbackSlugs.has(category.slug) && !["kitchen", "wardrobe"].includes(category.slug)),
+    ...(categories || []).filter((category) => !fallbackSlugs.has(category.slug) && !fixedSlugs.has(category.slug)),
   ];
 
   return (

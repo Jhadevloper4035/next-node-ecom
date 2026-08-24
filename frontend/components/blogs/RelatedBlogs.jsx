@@ -2,10 +2,12 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import { blogPosts6 } from "@/data/blogs";
+import { getBlogExcerpt } from "@/lib/blogs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-export default function RelatedBlogs() {
+export default function RelatedBlogs({ posts = [], currentUrl }) {
+  const related = posts.filter((post) => post.url !== currentUrl).slice(0, 5);
+  if (related.length === 0) return null;
   return (
     <section className="flat-spacing">
       <div className="container">
@@ -14,8 +16,7 @@ export default function RelatedBlogs() {
             <div className="heading-section text-center">
               <h3>Related Articles</h3>
               <p className="body-text-1">
-                Discover the Hottest Fashion News and Trends Straight from the
-                Runway
+                More ideas and inspiration from Curve & Comfort.
               </p>
             </div>
             <Swiper
@@ -43,14 +44,14 @@ export default function RelatedBlogs() {
               }}
               modules={[Pagination]}
             >
-              {blogPosts6.slice(0, 5).map((post, i) => (
-                <SwiperSlide key={i} className="swiper-slide">
+              {related.map((post) => (
+                <SwiperSlide key={post._id || post.url} className="swiper-slide">
                   <div className="wg-blog style-1 hover-image">
                     <div className="image">
                       <Image
                         className="lazyload"
                         alt=""
-                        src={post.imgSrc}
+                        src={post.image}
                         width={615}
                         height={461}
                       />
@@ -61,7 +62,7 @@ export default function RelatedBlogs() {
                           <div className="icon">
                             <i className="icon-calendar" />
                           </div>
-                          <p className="text-caption-1">{post.date}</p>
+                          <p className="text-caption-1">{new Date(post.created_at).toLocaleDateString()}</p>
                         </div>
                         <div className="meta-item gap-8">
                           <div className="icon">
@@ -77,15 +78,12 @@ export default function RelatedBlogs() {
                       </div>
                       <div>
                         <h6 className="title fw-5">
-                          <Link
-                            className="link"
-                            href={`/blog-detail/${post.id}`}
-                          >
+                          <Link className="link" href={`/blog-detail/${post.url}`}>
                             {post.title}
                           </Link>
                         </h6>
                         <div className="body-text">
-                          {post.description.split(" ").slice(0, 10).join(" ")}
+                          {getBlogExcerpt(post)}
                         </div>
                       </div>
                     </div>

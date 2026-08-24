@@ -3,14 +3,17 @@ import Sidebar from "./Sidebar";
 import Pagination from "../common/Pagination";
 import Link from "next/link";
 import Image from "next/image";
-export default function BlogList({ posts }) {
+import { getBlogExcerpt } from "@/lib/blogs";
+
+export default function BlogList({ posts = [] }) {
   return (
     <div className="main-content-page">
       <div className="container">
         <div className="row">
           <div className="col-lg-8 mb-lg-30">
-            {posts.slice(0, 5).map((post, i) => (
-              <div key={i} className="wg-blog style-row hover-image mb_40">
+            {posts.length === 0 && <p>No blogs have been published yet.</p>}
+            {posts.slice(0, 5).map((post) => (
+              <div key={post._id || post.url} className="wg-blog style-row hover-image mb_40">
                 <div className="image">
                   <Image
                     className="lazyload"
@@ -47,7 +50,8 @@ export default function BlogList({ posts }) {
                       {post.title}
                     </Link>
                   </h5>
-                  <p>{(post.meta_description || post.text).split(" ").slice(0, 10).join(" ")}</p>
+                  {post.category && <p className="text-caption-1">{post.category}</p>}
+                  <p>{getBlogExcerpt(post)}</p>
                   <Link
                     href={`/blog-detail/${post.url}`}
                     className="link text-button bot-button"
@@ -62,7 +66,7 @@ export default function BlogList({ posts }) {
             </ul>
           </div>
           <div className="col-lg-4">
-            <Sidebar />
+            <Sidebar posts={posts} />
           </div>
         </div>
       </div>

@@ -4,14 +4,14 @@ const Contact = require("../models/contact.model");
 
 exports.submitContact = async (req, res) => {
   try {
-    const { name, email, mobileNumber, message } = req.body;
+    const { name, email, mobileNumber, subject, message } = req.body;
 
     const contact = await Contact.create({
       name,
       email,
       mobileNumber,
+      subject,
       message,
-        
     });
 
     return res.status(201).json({

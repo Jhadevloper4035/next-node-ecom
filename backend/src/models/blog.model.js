@@ -54,6 +54,19 @@ const blogSchema = new mongoose.Schema(
             trim: true,
             index: true,
         },
+        category: {
+            type: String,
+            default: null,
+            trim: true,
+            index: true,
+        },
+        tags: {
+            type: [String],
+            default: [],
+            set: (tags) => Array.isArray(tags)
+                ? [...new Set(tags.map((tag) => String(tag).trim()).filter(Boolean))]
+                : [],
+        },
         seo: {
             type: mongoose.Schema.Types.ObjectId,
             ref: SeoMeta.modelName,

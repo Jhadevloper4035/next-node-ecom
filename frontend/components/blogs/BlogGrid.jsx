@@ -2,15 +2,18 @@ import React from "react";
 import Pagination from "../common/Pagination";
 import Link from "next/link";
 import Image from "next/image";
-export default function BlogGrid({ posts }) {
+import { getBlogExcerpt } from "@/lib/blogs";
+
+export default function BlogGrid({ posts = [] }) {
   return (
     <div className="main-content-page">
       <div className="container">
         <div className="row">
           <div className="col-12">
             <div className="tf-grid-layout md-col-3">
-              {posts.map((blog, index) => (
-                <div className="wg-blog style-1 hover-image" key={index}>
+              {posts.length === 0 && <p>No blogs have been published yet.</p>}
+              {posts.map((blog) => (
+                <div className="wg-blog style-1 hover-image" key={blog._id || blog.url}>
                   <div className="image">
                     <Image
                       className="lazyload"
@@ -47,7 +50,8 @@ export default function BlogGrid({ posts }) {
                           {blog.title}
                         </Link>
                       </h6>
-                      <div className="body-text">{blog.meta_description || blog.text}</div>
+                      {blog.category && <p className="text-caption-1">{blog.category}</p>}
+                      <div className="body-text">{getBlogExcerpt(blog)}</div>
                     </div>
                   </div>
                 </div>

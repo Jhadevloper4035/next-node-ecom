@@ -1,7 +1,5 @@
 import Footer1 from "@/components/footers/Footer1";
-import Topbar6 from "@/components/headers/Topbar6";
 import Contact3 from "@/components/otherPages/Contact3";
-import StoreLocations3 from "@/components/otherPages/StoreLocations3";
 import React from "react";
 import Link from "next/link";
 export const metadata = {
@@ -12,8 +10,6 @@ export const metadata = {
 export default function ContactPage2() {
   return (
     <>
-      {/* <Topbar6 bgColor="bg-main" />
-       */}
       <div
         className="page-title"
         style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}
@@ -45,8 +41,9 @@ export default function ContactPage2() {
           </div>
         </div>
       </div>
-      <StoreLocations3 />
-      <Contact3 />
+      <main className="contact-page">
+        <Contact3 />
+      </main>
 
       <Footer1 />
     </>

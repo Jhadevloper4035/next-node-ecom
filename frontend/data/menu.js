@@ -355,7 +355,6 @@ export const otherPageLinks = [
   { href: "/store-list", name: "Store List 1" },
   { href: "/store-list-02", name: "Store List 2" },
   { href: "/contact", name: "Contact Us 1" },
-  { href: "/contact-02", name: "Contact Us 2" },
   { href: "/404", name: "404" },
   { href: "/FAQs", name: "FAQs" },
   { href: "/term-of-use", name: "Terms Of Use" },

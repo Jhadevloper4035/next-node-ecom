@@ -21,6 +21,12 @@ exports.createContactValidator = [
         .matches(/^[0-9]{10}$/)
         .withMessage("Mobile number must be a valid 10-digit number."),
 
+    body("subject")
+        .notEmpty()
+        .trim()
+        .isLength({ min: 2, max: 200 })
+        .withMessage("Subject must be between 2 and 200 characters."),
+
     body("message")
         .notEmpty()
         .trim()
@@ -33,6 +39,7 @@ exports.createContactValidator = [
             "name",
             "email",
             "mobileNumber",
+            "subject",
             "message",
         ]);
 

@@ -11,7 +11,7 @@ const columns = [
     title: "Quick Links",
     links: [
       ["About Us", "/about-us"],
-      ["Our Blog", "/blog-default"],
+      ["Our Blog", "/blogs"],
       ["Contact Us", "/contact"],
       ["Store Locations", "/store-list"],
     ],

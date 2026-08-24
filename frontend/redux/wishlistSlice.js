@@ -43,10 +43,15 @@ const wishlistSlice = createSlice({
         localStorage.removeItem("wishlist");
       }
     },
+    replace(state, action) {
+      state.wishList = action.payload;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("wishlist", JSON.stringify(state.wishList));
+      }
+    },
   },
 });
 
-export const { add: addToWishlist, remove: removeFromWishlist, clear: clearWishlist } =
+export const { add: addToWishlist, remove: removeFromWishlist, clear: clearWishlist, replace: replaceWishlist } =
   wishlistSlice.actions;
 export default wishlistSlice.reducer;
-

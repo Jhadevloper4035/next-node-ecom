@@ -22,6 +22,7 @@ const UserSchema = new mongoose.Schema({
   lockedUntil: { type: Date, default: null },
   tokenVersion: { type: Number, default: 0 },
   cartItems: { type: [cartItemSchema], default: [] },
+  wishlistItems: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }], default: [] },
 }, { timestamps: true });
 
 UserSchema.pre("save", async function (next) {

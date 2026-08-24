@@ -13,7 +13,6 @@ export default function ProductCard10({ product, gridClass = "" }) {
     isAddedtoWishlist,
     addToCompareItem,
     isAddedtoCompareItem,
-    setQuickViewItem,
     addProductToCart,
     isAddedToCartProducts,
   } = useAppState();
@@ -176,7 +175,7 @@ export default function ProductCard10({ product, gridClass = "" }) {
         )}
         <div className="list-product-btn">
           <a
-            onClick={() => addToWishlist(product.id)}
+            onClick={() => addToWishlist(product.id, product)}
             className="box-icon wishlist btn-icon-action"
           >
             <span className="icon icon-heart" />

@@ -194,11 +194,7 @@ export default function Header2() {
                     </Link>
                   </li>
                   <li className="nav-cart">
-                    <a
-                      href="#shoppingCart"
-                      data-bs-toggle="modal"
-                      className="nav-icon-item"
-                    >
+                    <Link href="/shopping-cart" className="nav-icon-item">
                       <svg
                         className="icon"
                         width={24}
@@ -218,7 +214,7 @@ export default function Header2() {
                       <span className="count-box">
                         <CartLength />
                       </span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>

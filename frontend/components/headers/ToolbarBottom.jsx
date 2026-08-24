@@ -90,7 +90,7 @@ export default function ToolbarBottom() {
         </a>
       </div>
       <div className="toolbar-item">
-        <a href="#shoppingCart" data-bs-toggle="modal">
+        <Link href="/shopping-cart">
           <div className="toolbar-icon">
             <svg
               className="icon"
@@ -110,7 +110,7 @@ export default function ToolbarBottom() {
             </svg>
           </div>
           <div className="toolbar-label">Cart</div>
-        </a>
+        </Link>
       </div>
     </div>
   );

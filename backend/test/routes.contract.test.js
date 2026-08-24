@@ -15,6 +15,7 @@ const controllers = {
   auth: require("../src/controllers/auth.controller"),
   blog: require("../src/controllers/blog.controller"),
   cart: require("../src/controllers/cart.controller"),
+  wishlist: require("../src/controllers/wishlist.controller"),
   category: require("../src/controllers/category.controller"),
   checkout: require("../src/controllers/checkout.controller"),
   contact: require("../src/controllers/contact.controller"),
@@ -33,6 +34,7 @@ const routers = {
   auth: require("../src/routes/auth.route"),
   blog: require("../src/routes/blog.route"),
   cart: require("../src/routes/cart.route"),
+  wishlist: require("../src/routes/wishlist.route"),
   category: require("../src/routes/category.route"),
   checkout: require("../src/routes/checkout.route"),
   contact: require("../src/routes/contact.route"),
@@ -49,6 +51,7 @@ const expected = {
   auth: "POST /register|POST /verify-email|POST /resend-verification|POST /login|POST /refresh|POST /logout|POST /logout-all|GET /me|POST /forgot-password|POST /reset-password|POST /change-password",
   blog: "GET /|GET /:url",
   cart: "GET /|PUT /",
+  wishlist: "GET /|PUT /",
   category: "POST /|GET /|GET /tree|GET /stats|GET /slug/:slug|GET /:id|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|GET /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
   checkout: "DELETE /:orderId|GET /active|POST /|POST /:orderId/retry",
   contact: "POST /submit",
@@ -73,6 +76,7 @@ const controllerHandlers = {
   },
   blog: { "GET /": "listBlogs", "GET /:url": "getBlogByUrl" },
   cart: { "GET /": "getCart", "PUT /": "replaceCart" },
+  wishlist: { "GET /": "getWishlist", "PUT /": "replaceWishlist" },
   category: {
     "POST /": "createCategory", "GET /": "getCategories", "GET /tree": "getCategoryTree", "GET /stats": "getCategoryStats",
     "GET /slug/:slug": "getCategoryBySlug", "GET /:id": "getCategoryById", "PUT /:id": "updateCategory",
@@ -159,6 +163,7 @@ test("all private endpoints include authentication", () => {
     admin: expected.admin,
     checkout: expected.checkout,
     cart: expected.cart,
+    wishlist: expected.wishlist,
     coupon: expected.coupon,
     order: expected.order,
     user: expected.user,
@@ -198,7 +203,7 @@ test("admin and payment routes retain their authorization and abuse controls", (
 test("the API index mounts every route group and health endpoint", () => {
   const index = require("../src/routes");
   const mounted = index.stack.filter((layer) => layer.name === "router").map((layer) => layer.regexp.toString());
-  for (const prefix of ["categories", "product", "address", "contact", "reviews", "blogs", "checkout", "orders", "cart", "coupons", "auth", "users", "admin"]) {
+  for (const prefix of ["categories", "product", "address", "contact", "reviews", "blogs", "checkout", "orders", "cart", "wishlist", "coupons", "auth", "users", "admin"]) {
     assert.ok(mounted.some((regexp) => regexp.includes(prefix)), `${prefix} is not mounted`);
   }
   assert.ok(getRoute(index, "get", "/health"), "health endpoint is missing");

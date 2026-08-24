@@ -2,34 +2,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import LanguageSelect from "../common/LanguageSelect";
-import CurrencySelect from "../common/CurrencySelect";
-import {
-  blogLinks,
-  demoItems,
-  otherPageLinks,
-  otherShopMenus,
-  productFeatures,
-  productLinks,
-  productStyles,
-  shopFeatures,
-  shopLayout,
-  swatchLinks,
-} from "@/data/menu";
 import { useSelector } from "react-redux";
 import ProductSearchSuggestions from "@/components/search/ProductSearchSuggestions";
 import useProductSearch from "@/hooks/useProductSearch";
+import { fallbackHeaderCategories } from "@/data/headerCategories";
 
 const fixedHeaderCategories = [
-  { slug: "kitchen", name: "Kitchen" },
-  { slug: "wardrobe", name: "Wardrobe" },
+  { slug: "kitchen", name: "Modular Kitchen" },
+  { slug: "wardrobe", name: "Modular Wardrobe" },
 ];
 
 export default function MobileMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
-  const { categories, loading, error } = useSelector((state) => state.category);
+  const { categories, loading } = useSelector((state) => state.category);
   const {
     canSearch,
     hasError: suggestionsError,
@@ -64,10 +51,22 @@ export default function MobileMenu() {
     resetSearch();
   };
 
-  const categorySlugs = new Set((categories || []).map((category) => category.slug));
+  const apiCategories = categories || [];
+  const apiCategoriesBySlug = new Map(apiCategories.map((category) => [category.slug, category]));
+  const fallbackSlugs = new Set(fallbackHeaderCategories.map((category) => category.slug));
+  const fixedSlugs = new Set(fixedHeaderCategories.map((category) => category.slug));
   const mobileCategories = [
-    ...(categories || []),
-    ...fixedHeaderCategories.filter((category) => !categorySlugs.has(category.slug)),
+    ...fixedHeaderCategories.map((category) => ({
+      ...apiCategoriesBySlug.get(category.slug),
+      ...category,
+    })),
+    ...fallbackHeaderCategories.map((category) => ({
+      ...category,
+      ...apiCategoriesBySlug.get(category.slug),
+    })),
+    ...apiCategories.filter(
+      (category) => !fallbackSlugs.has(category.slug) && !fixedSlugs.has(category.slug)
+    ),
   ];
 
   return (
@@ -133,49 +132,9 @@ export default function MobileMenu() {
               />
             )}
             <ul className="nav-ul-mb" id="wrapper-menu-navigation">
-              <li className="nav-mb-item active">
-                <a
-                  href="#dropdown-menu-one"
-                  className={`collapsed mb-menu-link ${
-                    [...demoItems].some(
-                      (elm) => elm.href.split("/")[1] == pathname.split("/")[1]
-                    )
-                      ? "active"
-                      : ""
-                  } `}
-                  data-bs-toggle="collapse"
-                  aria-expanded="true"
-                  aria-controls="dropdown-menu-one"
-                >
-                  <span>Home</span>
-                  <span className="btn-open-sub" />
-                </a>
-                <div id="dropdown-menu-one" className="collapse">
-                  <ul className="sub-nav-menu">
-                    {demoItems.map((link, i) => (
-                      <li key={i}>
-                        <Link
-                          href={link.href}
-                          className={`sub-nav-link ${
-                            pathname.split("/")[1] == link.href.split("/")[1]
-                              ? "active"
-                              : ""
-                          } `}
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
               {loading ? (
                 <li className="nav-mb-item">
                   <span className="mb-menu-link">Loading Categories...</span>
-                </li>
-              ) : error ? (
-                <li className="nav-mb-item">
-                  <span className="mb-menu-link text-danger">Error Loading Categories</span>
                 </li>
               ) : null}
               {!loading &&
@@ -226,86 +185,6 @@ export default function MobileMenu() {
                     </li>
                   )
                 ))}
-              <li className="nav-mb-item">
-                <a
-                  href="#dropdown-menu-four"
-                  className={`collapsed mb-menu-link ${
-                    [...blogLinks].some(
-                      (elm) => elm.href.split("/")[1] == pathname.split("/")[1]
-                    )
-                      ? "active"
-                      : ""
-                  } `}
-                  data-bs-toggle="collapse"
-                  aria-expanded="true"
-                  aria-controls="dropdown-menu-four"
-                >
-                  <span>Blog</span>
-                  <span className="btn-open-sub" />
-                </a>
-                <div id="dropdown-menu-four" className="collapse">
-                  <ul className="sub-nav-menu">
-                    {blogLinks.map((link, i) => (
-                      <li key={i}>
-                        <Link
-                          href={link.href}
-                          className={`sub-nav-link ${
-                            pathname.split("/")[1] == link.href.split("/")[1]
-                              ? "active"
-                              : ""
-                          } `}
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-              <li className="nav-mb-item">
-                <a
-                  href="#dropdown-menu-five"
-                  className={`collapsed mb-menu-link ${
-                    [...otherPageLinks].some(
-                      (elm) => elm.href.split("/")[1] == pathname.split("/")[1]
-                    )
-                      ? "active"
-                      : ""
-                  } `}
-                  data-bs-toggle="collapse"
-                  aria-expanded="true"
-                  aria-controls="dropdown-menu-five"
-                >
-                  <span>Pages</span>
-                  <span className="btn-open-sub" />
-                </a>
-                <div id="dropdown-menu-five" className="collapse">
-                  <ul className="sub-nav-menu">
-                    {otherPageLinks.map((link, i) => (
-                      <li key={i}>
-                        <Link
-                          href={link.href}
-                          className={`sub-nav-link ${
-                            pathname.split("/")[1] == link.href.split("/")[1]
-                              ? "active"
-                              : ""
-                          } `}
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-              <li className="nav-mb-item">
-                <a
-                  href="https://themeforest.net/user/themesflat"
-                  className="mb-menu-link"
-                >
-                  Buy Theme
-                </a>
-              </li>
             </ul>
           </div>
           <div className="mb-other-content">
@@ -362,25 +241,23 @@ export default function MobileMenu() {
               </Link>
             </div>
             <div className="mb-contact">
-              <p className="text-caption-1">
-                549 Oak St.Crystal Lake, IL 60014
-              </p>
+              <p className="text-caption-1">Curve &amp; Comfort Customer Support</p>
               <Link
                 href={`/contact`}
                 className="tf-btn-default text-btn-uppercase"
               >
-                GET DIRECTION
+                CONTACT US
                 <i className="icon-arrowUpRight" />
               </Link>
             </div>
             <ul className="mb-info">
               <li>
                 <i className="icon icon-mail" />
-                <p>themesflat@gmail.com</p>
+                <a href="mailto:info@curve-comfort.com">info@curve-comfort.com</a>
               </li>
               <li>
                 <i className="icon icon-phone" />
-                <p>315-666-6688</p>
+                <a href="tel:+919289166363">+91 92891 66363</a>
               </li>
             </ul>
           </div>

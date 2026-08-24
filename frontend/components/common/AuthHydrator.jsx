@@ -10,7 +10,7 @@ import { useRouteLoadingState } from "@/hooks/useRouteLoadingState";
 import { getMe } from "@/services/user/me.service";
 import { clearAuth } from "@/utlis/auth.utlis";
 
-const protectedRoutes = ["/my-account", "/my-account-address", "/my-account-orders", "/my-account-orders-details", "/wish-list", "/checkout", "/view-cart"];
+const protectedRoutes = ["/my-account", "/my-account-address", "/my-account-orders", "/my-account-orders-details", "/checkout", "/view-cart"];
 
 export default function AuthHydrator() {
   const dispatch = useDispatch();

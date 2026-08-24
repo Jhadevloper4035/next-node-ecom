@@ -147,7 +147,7 @@ export default function DetailsPreOrder({ product }) {
                           </span>
                         </a>
                         <a
-                          onClick={() => addToWishlist(product.id)}
+                          onClick={() => addToWishlist(product.id, product)}
                           className="box-icon hover-tooltip text-caption-2 wishlist btn-icon-action"
                         >
                           <span className="icon icon-heart" />

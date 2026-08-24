@@ -18624,6 +18624,12 @@ ul.list-text.type-number {
 }
 
 @media only screen and (max-width: 1199px) {
+  .card-product .list-product-btn .wishlist {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
   .news-item-2 .image {
     width: 35%;
   }

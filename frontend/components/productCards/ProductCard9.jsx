@@ -13,7 +13,6 @@ export default function ProductCard9({ product, gridClass = "" }) {
     isAddedtoWishlist,
     addToCompareItem,
     isAddedtoCompareItem,
-    setQuickViewItem,
     addProductToCart,
     isAddedToCartProducts,
   } = useAppState();
@@ -175,15 +174,8 @@ export default function ProductCard9({ product, gridClass = "" }) {
           ""
         )}
         <div className="list-product-btn">
-          <Link
-            href={`/product-detail/${product.id}`}
-            className="box-icon quickadd"
-          >
-            <span className="icon icon-eye" />
-            <span className="tooltip">View Product</span>
-          </Link>
           <a
-            onClick={() => addToWishlist(product.id)}
+            onClick={() => addToWishlist(product.id, product)}
             className="box-icon wishlist btn-icon-action"
           >
             <span className="icon icon-heart" />
@@ -207,15 +199,6 @@ export default function ProductCard9({ product, gridClass = "" }) {
                 ? "Already compared"
                 : "Compare"}
             </span>
-          </a>
-          <a
-            href="#quickView"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon quickview tf-btn-loading"
-          >
-            <span className="icon icon-eye" />
-            <span className="tooltip">Quick View</span>
           </a>
         </div>
       </div>

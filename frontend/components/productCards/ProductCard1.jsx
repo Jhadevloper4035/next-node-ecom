@@ -19,7 +19,6 @@ export default function ProductCard1({
     isAddedtoWishlist,
     addToCompareItem,
     isAddedtoCompareItem,
-    setQuickViewItem,
     addProductToCart,
     isAddedToCartProducts,
   } = useAppState();
@@ -201,15 +200,6 @@ export default function ProductCard1({
                 ? "Already compared"
                 : "Compare"}
             </span>
-          </a>
-          <a
-            href="#quickView"
-            onClick={() => setQuickViewItem(product)}
-            data-bs-toggle="modal"
-            className="box-icon quickview tf-btn-loading"
-          >
-            <span className="icon icon-eye" />
-            <span className="tooltip">Quick View</span>
           </a>
         </div>
         <div className="list-btn-main">

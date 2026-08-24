@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ProductCard1 from "../productCards/ProductCard1";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,10 +14,17 @@ export default function SearchProducts() {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const [visibleCount, setVisibleCount] = useState(12);
+  const [price, setPrice] = useState([0, 100000]);
+  const [availability, setAvailability] = useState("all");
 
   const trimmedQuery = query.trim();
-  const visibleProducts = products.slice(0, visibleCount);
-  const hasMore = visibleCount < products.length;
+  const filteredProducts = useMemo(() => products.filter((product) => {
+    if (product.price < price[0] || product.price > price[1]) return false;
+    if (availability === "all") return true;
+    return availability === "in" ? product.inStock : !product.inStock;
+  }), [availability, price, products]);
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
 
   useEffect(() => {
     const syncQueryFromUrl = () => {
@@ -49,7 +56,11 @@ export default function SearchProducts() {
         );
 
         if (isCurrent) {
-          setProducts(mapProductsForCards(response?.data || []));
+          const mapped = mapProductsForCards(response?.data || []);
+          const prices = mapped.map((product) => product.price).filter(Number.isFinite);
+          setProducts(mapped);
+          setPrice(prices.length ? [Math.min(...prices), Math.max(...prices)] : [0, 100000]);
+          setAvailability("all");
           setVisibleCount(12);
         }
       } catch (err) {
@@ -85,6 +96,12 @@ export default function SearchProducts() {
   const handleQuickSearch = (value) => {
     setQuery(value);
     updateSearchUrl(value);
+  };
+
+  const resetFilters = () => {
+    const prices = products.map((product) => product.price).filter(Number.isFinite);
+    setPrice(prices.length ? [Math.min(...prices), Math.max(...prices)] : [0, 100000]);
+    setAvailability("all");
   };
 
   return (
@@ -167,6 +184,14 @@ export default function SearchProducts() {
               {trimmedQuery ? `Results for "${trimmedQuery}"` : "Latest Products"}
             </h3>
           </div>
+          {!loading && products.length > 0 && (
+            <div className="d-xl-none mb-3">
+              <button type="button" className="tf-btn-filter" data-bs-toggle="offcanvas" data-bs-target="#searchFilterShop" aria-controls="searchFilterShop">
+                <span className="icon icon-filter" />
+                <span className="text">Filters</span>
+              </button>
+            </div>
+          )}
 
           {loading ? (
             <div
@@ -203,6 +228,37 @@ export default function SearchProducts() {
           )}
         </div>
       </section>
+      <div className="offcanvas offcanvas-start canvas-filter d-xl-none" tabIndex="-1" id="searchFilterShop">
+        <div className="canvas-wrapper">
+          <div className="canvas-header">
+            <h5>Filters</h5>
+            <button type="button" className="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close filters" />
+          </div>
+          <div className="canvas-body">
+            <div className="widget-facet facet-price">
+              <h6 className="facet-title">Price</h6>
+              <div className="d-flex gap-2">
+                <input className="form-control" type="number" min="0" value={price[0]} onChange={(event) => setPrice([Number(event.target.value), price[1]])} aria-label="Minimum price" />
+                <input className="form-control" type="number" min="0" value={price[1]} onChange={(event) => setPrice([price[0], Number(event.target.value)])} aria-label="Maximum price" />
+              </div>
+            </div>
+            <div className="widget-facet facet-fieldset">
+              <h6 className="facet-title">Availability</h6>
+              <div className="box-fieldset-item">
+                {[["all", "All"], ["in", "In stock"], ["out", "Made to order"]].map(([value, label]) => (
+                  <fieldset className="fieldset-item" onClick={() => setAvailability(value)} key={value}>
+                    <input type="radio" name="search-availability" className="tf-check" readOnly checked={availability === value} />
+                    <label>{label}</label>
+                  </fieldset>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="canvas-bottom">
+            <button type="button" onClick={resetFilters} className="tf-btn btn-reset">Reset filters</button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

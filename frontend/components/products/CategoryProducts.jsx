@@ -167,13 +167,104 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
   const activeFilterKeys = config.filters || [];
   const showPrice = activeFilterKeys.includes("price");
   const showAvailability = activeFilterKeys.includes("availability");
+  const renderFilterFields = () => <>
+    {showPrice && (
+      <div className="widget-facet facet-price">
+        <h6 className="facet-title">Price</h6>
+        <div className="d-flex gap-2">
+          <input
+            className="form-control"
+            type="number"
+            min="0"
+            value={price[0]}
+            onChange={(event) => setPrice([Number(event.target.value), price[1]])}
+            aria-label="Minimum price"
+          />
+          <input
+            className="form-control"
+            type="number"
+            min="0"
+            value={price[1]}
+            onChange={(event) => setPrice([price[0], Number(event.target.value)])}
+            aria-label="Maximum price"
+          />
+        </div>
+        <p className="text-caption-1 mt-2 mb-0">
+          {formatPrice(price[0])} - {formatPrice(price[1])}
+        </p>
+      </div>
+    )}
+
+    {showAvailability && (
+      <div className="widget-facet facet-fieldset">
+        <h6 className="facet-title">Availability</h6>
+        <div className="box-fieldset-item">
+          {[
+            ["all", "All"],
+            ["in", "In stock"],
+            ["out", "Made to order"],
+          ].map(([value, label]) => (
+            <fieldset
+              className="fieldset-item"
+              onClick={() => setAvailability(value)}
+              key={value}
+            >
+              <input
+                type="radio"
+                className="tf-check"
+                readOnly
+                checked={availability === value}
+              />
+              <label>{label}</label>
+            </fieldset>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {Object.entries(filterOptions).map(([key, options]) =>
+      options.length ? (
+        <div className="widget-facet facet-fieldset" key={key}>
+          <h6 className="facet-title">{optionFilterLabels[key] || key}</h6>
+          <div className="box-fieldset-item">
+            {options.map((option) => (
+              <fieldset
+                className="fieldset-item"
+                onClick={() => toggleFilter(key, option)}
+                key={option}
+              >
+                <input
+                  type="checkbox"
+                  className="tf-check"
+                  readOnly
+                  checked={selectedFilters[key] === option}
+                />
+                <label>{option}</label>
+              </fieldset>
+            ))}
+          </div>
+        </div>
+      ) : null,
+    )}
+  </>;
 
   return (
-    <section className="flat-spacing">
-      <div className="container">
-        <div className="tf-shop-control">
+    <>
+      <section className="flat-spacing">
+        <div className="container">
+        <div className="tf-shop-control category-shop-control">
           <div className="tf-control-filter">
-            <button type="button" className="tf-btn-filter" onClick={clearFilters}>
+            <button
+              type="button"
+              className="tf-btn-filter d-xl-none"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#categoryFilterShop"
+              aria-controls="categoryFilterShop"
+            >
+              <span className="icon icon-filter" />
+              <span className="text">Filters</span>
+            </button>
+            <button type="button" className="tf-btn-filter d-none d-xl-inline-flex" onClick={clearFilters}>
               <span className="icon icon-filter" />
               <span className="text">Reset Filters</span>
             </button>
@@ -184,7 +275,7 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
           <div className="tf-control-sorting">
             <p className="d-none d-lg-block text-caption-1">Sort by:</p>
             <select
-              className="tf-select"
+              className="category-sort-select"
               value={sort}
               onChange={(event) => setSort(event.target.value)}
               aria-label="Sort products"
@@ -199,86 +290,9 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
         </div>
 
         <div className="row">
-          <aside className="col-xl-3 mb-4 mb-xl-0">
+          <aside className="col-xl-3 mb-4 mb-xl-0 d-none d-xl-block">
             <div className="canvas-body p-0">
-              {showPrice && (
-                <div className="widget-facet facet-price">
-                  <h6 className="facet-title">Price</h6>
-                  <div className="d-flex gap-2">
-                    <input
-                      className="form-control"
-                      type="number"
-                      min="0"
-                      value={price[0]}
-                      onChange={(event) => setPrice([Number(event.target.value), price[1]])}
-                      aria-label="Minimum price"
-                    />
-                    <input
-                      className="form-control"
-                      type="number"
-                      min="0"
-                      value={price[1]}
-                      onChange={(event) => setPrice([price[0], Number(event.target.value)])}
-                      aria-label="Maximum price"
-                    />
-                  </div>
-                  <p className="text-caption-1 mt-2 mb-0">
-                    {formatPrice(price[0])} - {formatPrice(price[1])}
-                  </p>
-                </div>
-              )}
-
-              {showAvailability && (
-                <div className="widget-facet facet-fieldset">
-                  <h6 className="facet-title">Availability</h6>
-                  <div className="box-fieldset-item">
-                    {[
-                      ["all", "All"],
-                      ["in", "In stock"],
-                      ["out", "Made to order"],
-                    ].map(([value, label]) => (
-                      <fieldset
-                        className="fieldset-item"
-                        onClick={() => setAvailability(value)}
-                        key={value}
-                      >
-                        <input
-                          type="radio"
-                          className="tf-check"
-                          readOnly
-                          checked={availability === value}
-                        />
-                        <label>{label}</label>
-                      </fieldset>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {Object.entries(filterOptions).map(([key, options]) =>
-                options.length ? (
-                  <div className="widget-facet facet-fieldset" key={key}>
-                    <h6 className="facet-title">{optionFilterLabels[key] || key}</h6>
-                    <div className="box-fieldset-item">
-                      {options.map((option) => (
-                        <fieldset
-                          className="fieldset-item"
-                          onClick={() => toggleFilter(key, option)}
-                          key={option}
-                        >
-                          <input
-                            type="checkbox"
-                            className="tf-check"
-                            readOnly
-                            checked={selectedFilters[key] === option}
-                          />
-                          <label>{option}</label>
-                        </fieldset>
-                      ))}
-                    </div>
-                  </div>
-                ) : null,
-              )}
+              {renderFilterFields()}
             </div>
           </aside>
 
@@ -301,6 +315,19 @@ export default function CategoryProducts({ categorySlug, subcategorySlug }) {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+      <div className="offcanvas offcanvas-start canvas-filter d-xl-none" tabIndex="-1" id="categoryFilterShop">
+        <div className="canvas-wrapper">
+          <div className="canvas-header">
+            <h5>Filters</h5>
+            <button type="button" className="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close filters" />
+          </div>
+          <div className="canvas-body">{renderFilterFields()}</div>
+          <div className="canvas-bottom">
+            <button type="button" onClick={clearFilters} className="tf-btn btn-reset">Reset filters</button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

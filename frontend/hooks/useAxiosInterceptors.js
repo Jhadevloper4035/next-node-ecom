@@ -4,7 +4,7 @@ import api from "@/api/api.config";
 import { setIsLoading } from "@/redux/uiSlice";
 
 // This hook initializes axios interceptors
-// Call this once in a client component that loads early (like AuthHydrator)
+// Call this once in a client component that loads early (like AuthHydrator)   
 export const useAxiosInterceptors = () => {
   const dispatch = useDispatch();
 

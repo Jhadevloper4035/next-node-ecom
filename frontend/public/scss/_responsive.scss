@@ -2858,10 +2858,36 @@
     gap: 20px;
   }
 
-  .tf-shop-control {
-    .tf-control-layout {
-      gap: 6px;
+  .category-shop-control {
+    grid-template-columns: auto minmax(0, 1fr) 128px;
+    align-items: center;
+    column-gap: 12px;
+
+    > .text-caption-1 {
+      min-width: 0;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
+    .tf-control-sorting {
+      min-width: 0;
+    }
+
+    .category-sort-select {
+      width: 128px;
+      max-width: 100%;
+      height: 32px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--white);
+    }
+  }
+
+  .tf-shop-control .tf-control-layout {
+    gap: 6px;
   }
 
   .wg-pagination {

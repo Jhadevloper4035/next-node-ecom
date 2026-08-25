@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import CartModal from "@/components/modals/CartModal";
@@ -25,6 +26,7 @@ import WishlistPersistence from "@/components/common/WishlistPersistence";
 
 export default function AppShell({ children }) {
   const [scrollDirection, setScrollDirection] = useState("up");
+  const pathname = usePathname();
 
   useEffect(() => {
     import("bootstrap/dist/js/bootstrap.esm");
@@ -166,7 +168,7 @@ export default function AppShell({ children }) {
         <DemoModal />
         <Categories />
         <AccountSidebar />
-        <NewsletterPopup />
+        {!pathname.startsWith("/admin") && <NewsletterPopup />}
       </ToastProvider>
     </Provider>
   );

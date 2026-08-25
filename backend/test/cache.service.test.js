@@ -3,7 +3,6 @@ const assert = require("node:assert/strict");
 
 process.env.MONGODB_URI ||= "mongodb+srv://<db_username>:<db_password>@curve-and-comfort.lvwb3ba.mongodb.net/ecomerce-development?retryWrites=true&w=majority&appName=curve-and-comfort";
 process.env.JWT_ACCESS_SECRET ||= "test-access-secret";
-process.env.JWT_REFRESH_SECRET ||= "test-refresh-secret";
 delete process.env.REDIS_URL;
 
 const { stableStringify } = require("../src/services/cache.service");

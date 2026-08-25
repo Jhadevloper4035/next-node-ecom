@@ -1,6 +1,5 @@
 process.env.MONGODB_URI ||= "mongodb://127.0.0.1:27017/curve-comfort-test";
 process.env.JWT_ACCESS_SECRET ||= "test-access-secret";
-process.env.JWT_REFRESH_SECRET ||= "test-refresh-secret";
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
@@ -41,4 +40,27 @@ test("validation errors do not expose password values", () => {
   assert.equal(statusCode, 400);
   assert.equal(body.message, "Something went wrong. Please try again later.");
   assert.equal(JSON.stringify(body).includes("$2a$12$secret"), false);
+});
+
+test("invalid database identifiers return a safe client error", () => {
+  const err = new Error('Cast to ObjectId failed for value "not-an-id" at path "_id"');
+  err.name = "CastError";
+
+  let statusCode;
+  let body;
+  const res = {
+    status(code) {
+      statusCode = code;
+      return this;
+    },
+    json(value) {
+      body = value;
+    },
+  };
+
+  errorHandler(err, { method: "GET", originalUrl: "/api/v1/products/not-an-id" }, res, () => {});
+
+  assert.equal(statusCode, 400);
+  assert.equal(body.message, "Something went wrong. Please try again later.");
+  assert.equal(JSON.stringify(body).includes("not-an-id"), false);
 });

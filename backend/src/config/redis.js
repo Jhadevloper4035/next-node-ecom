@@ -1,5 +1,6 @@
 const { createClient } = require("redis");
 const { env } = require("./env");
+const logger = require("./logger");
 
 let redisClient = null;
 let initialization = null;
@@ -11,7 +12,7 @@ const logRedisError = (error) => {
   const now = Date.now();
 
   if (message !== lastLoggedError || now - lastLoggedAt > 30000) {
-    console.error("Redis error:", message);
+    logger.error({ err: error, event: "redis_error" }, "Redis error");
     lastLoggedError = message;
     lastLoggedAt = now;
   }
@@ -19,7 +20,7 @@ const logRedisError = (error) => {
 
 const initRedis = async () => {
   if (!env.redisUrl) {
-    console.warn("REDIS_URL not set — Redis features disabled.");
+    logger.warn({ event: "redis_disabled" }, "REDIS_URL not set; Redis features disabled");
     return null;
   }
 

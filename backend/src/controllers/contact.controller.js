@@ -1,4 +1,5 @@
 const Contact = require("../models/contact.model");
+const logger = require("../config/logger");
 
 // ================= CREATE CONTACT =================
 
@@ -21,7 +22,7 @@ exports.submitContact = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Contact Submit Error:", error);
+    (req.log || logger).error({ err: error, event: "contact_submit_failed" }, "Contact submit failed");
 
     return res.status(500).json({
       success: false,

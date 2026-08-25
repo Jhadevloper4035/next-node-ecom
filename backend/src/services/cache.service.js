@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { env } = require("../config/env");
 const { getRedisClient } = require("../config/redis");
+const logger = require("../config/logger");
 
 const VERSION_KEY_PREFIX = `${env.cachePrefix}:version`;
 
@@ -55,7 +56,7 @@ const getNamespaceVersion = async (namespace) => {
 
     return version;
   } catch (error) {
-    console.warn("Cache version lookup failed:", error.message);
+    logger.warn({ err: error, event: "cache_version_lookup_failed" }, "Cache version lookup failed");
     return null;
   }
 };
@@ -82,7 +83,7 @@ const getCacheValue = async (key) => {
     if (!value) return null;
     return JSON.parse(value);
   } catch (error) {
-    console.warn("Cache read failed:", error.message);
+    logger.warn({ err: error, event: "cache_read_failed" }, "Cache read failed");
     return null;
   }
 };
@@ -100,7 +101,7 @@ const setCacheValue = async (key, value, ttlSeconds) => {
     );
     return true;
   } catch (error) {
-    console.warn("Cache write failed:", error.message);
+    logger.warn({ err: error, event: "cache_write_failed" }, "Cache write failed");
     return false;
   }
 };
@@ -115,7 +116,7 @@ const invalidateNamespaces = async (namespaces) => {
     );
     return true;
   } catch (error) {
-    console.warn("Cache invalidation failed:", error.message);
+    logger.warn({ err: error, event: "cache_invalidation_failed" }, "Cache invalidation failed");
     return false;
   }
 };

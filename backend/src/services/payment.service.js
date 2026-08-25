@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { env } = require("../config/env");
 const ApiError = require("../utils/ApiError");
 const PaymentGatewayCall = require("../models/paymentGatewayCall.model");
+const logger = require("../config/logger");
 
 const baseUrl = () => env.cashfreeEnvironment === "production" ? "https://api.cashfree.com" : "https://sandbox.cashfree.com";
 
@@ -12,9 +13,9 @@ function requireCashfree() {
 function recordCashfreeCall(data) {
   if (PaymentGatewayCall.db.readyState !== 1) return;
   try {
-    PaymentGatewayCall.create(data).catch((error) => console.error("Cashfree monitoring write failed:", error.message));
+    PaymentGatewayCall.create(data).catch((error) => logger.error({ err: error, event: "cashfree_monitoring_write_failed" }, "Cashfree monitoring write failed"));
   } catch (error) {
-    console.error("Cashfree monitoring write failed:", error.message);
+    logger.error({ err: error, event: "cashfree_monitoring_write_failed" }, "Cashfree monitoring write failed");
   }
 }
 

@@ -16,8 +16,10 @@ const { reconcileRefunds } = require("./services/refund.service");
 const { dispatchOutboxEvents, monitorOutboxEvents } = require("./services/outbox.service");
 const { recoverFailedEmailEvents } = require("./services/email-event.service");
 const { redactExpiredPaymentPayloads } = require("./services/payment-data-retention.service");
+const logger = require("./config/logger");
 
 const server = http.createServer(app);
+const logBackgroundFailure = (event) => (err) => logger.error({ err, event }, "Background task failed");
 
 async function bootstrap() {
   
@@ -26,22 +28,23 @@ async function bootstrap() {
   startEmailWorker();
   startEventWorker();
   await expirePendingOrders();
-  redactExpiredPaymentPayloads().catch(() => console.error("Payment payload retention failed"));
-  reconcilePayments().catch((err) => console.error("Initial payment reconciliation failed:", err.message));
-  reconcileRefunds().catch((err) => console.error("Initial refund reconciliation failed:", err.message));
-  dispatchOutboxEvents().catch((err) => console.error("Initial outbox dispatch failed:", err.message));
-  recoverFailedEmailEvents().catch((err) => console.error("Initial email recovery failed:", err.message));
-  globalThis.setInterval(() => expirePendingOrders().catch((err) => console.error("Checkout expiry failed:", err.message)), 60_000).unref();
-  globalThis.setInterval(() => reconcilePayments().catch((err) => console.error("Payment reconciliation failed:", err.message)), 5 * 60_000).unref();
-  globalThis.setInterval(() => reconcileRefunds().catch((err) => console.error("Refund reconciliation failed:", err.message)), 5 * 60_000).unref();
-  globalThis.setInterval(() => dispatchOutboxEvents().catch((err) => console.error("Outbox dispatch failed:", err.message)), 60_000).unref();
-  globalThis.setInterval(() => monitorOutboxEvents().catch((err) => console.error("Outbox monitor failed:", err.message)), 5 * 60_000).unref();
-  globalThis.setInterval(() => recoverFailedEmailEvents().catch((err) => console.error("Email recovery failed:", err.message)), 5 * 60_000).unref();
-  globalThis.setInterval(() => redactExpiredPaymentPayloads().catch(() => console.error("Payment payload retention failed")), 24 * 60 * 60_000).unref();
-  server.listen(env.port);
+  redactExpiredPaymentPayloads().catch(logBackgroundFailure("payment_payload_retention_failed"));
+  reconcilePayments().catch(logBackgroundFailure("initial_payment_reconciliation_failed"));
+  reconcileRefunds().catch(logBackgroundFailure("initial_refund_reconciliation_failed"));
+  dispatchOutboxEvents().catch(logBackgroundFailure("initial_outbox_dispatch_failed"));
+  recoverFailedEmailEvents().catch(logBackgroundFailure("initial_email_recovery_failed"));
+  globalThis.setInterval(() => expirePendingOrders().catch(logBackgroundFailure("checkout_expiry_failed")), 60_000).unref();
+  globalThis.setInterval(() => reconcilePayments().catch(logBackgroundFailure("payment_reconciliation_failed")), 5 * 60_000).unref();
+  globalThis.setInterval(() => reconcileRefunds().catch(logBackgroundFailure("refund_reconciliation_failed")), 5 * 60_000).unref();
+  globalThis.setInterval(() => dispatchOutboxEvents().catch(logBackgroundFailure("outbox_dispatch_failed")), 60_000).unref();
+  globalThis.setInterval(() => monitorOutboxEvents().catch(logBackgroundFailure("outbox_monitor_failed")), 5 * 60_000).unref();
+  globalThis.setInterval(() => recoverFailedEmailEvents().catch(logBackgroundFailure("email_recovery_failed")), 5 * 60_000).unref();
+  globalThis.setInterval(() => redactExpiredPaymentPayloads().catch(logBackgroundFailure("payment_payload_retention_failed")), 24 * 60 * 60_000).unref();
+  server.listen(env.port, () => logger.info({ port: env.port }, "Server started"));
 }
 
 const shutdown = async () => {
+  logger.info("Shutting down");
   server.close();
   await Promise.all([closeEmailWorker(), closeEventWorker(), closeEmailQueue(), closeEventQueue()]);
   await Promise.all([
@@ -55,4 +58,4 @@ const shutdown = async () => {
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
-bootstrap().catch((err) => { console.error("Bootstrap failed:", err.message); process.exit(1); });
+bootstrap().catch((err) => { logger.fatal({ err, event: "bootstrap_failed" }, "Bootstrap failed"); process.exit(1); });

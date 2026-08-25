@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const Address = require("../models/address.model");
 const { sendSuccess, sendError, isDuplicateErr } = require("../helper/request");
+const logger = require("../config/logger");
 
 const editableFields = ["label", "fullName", "phone", "alternatePhone", "line1", "line2", "landmark", "city", "state", "country", "postalCode", "isDefault"];
 
@@ -19,7 +20,7 @@ exports.getAllAddresses = async (req, res) => {
 
         return sendSuccess(res, addresses, "Addresses fetched successfully");
     } catch (err) {
-        console.error("Error fetching addresses:", err);
+        (req.log || logger).error({ err, event: "address_fetch_failed" }, "Address fetch failed");
         return sendError(res, "Failed to fetch addresses", 500);
     }
 };

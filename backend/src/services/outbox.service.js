@@ -1,5 +1,6 @@
 const OutboxEvent = require("../models/outboxEvent.model");
 const { enqueueEvent } = require("../queues/event.queue");
+const logger = require("../config/logger");
 
 async function recordOutboxEvent({ type, order, paymentTransaction, refund, dedupeKey, session }) {
   await OutboxEvent.updateOne(
@@ -37,8 +38,8 @@ async function monitorOutboxEvents(now = new Date()) {
     { $set: { status: "failed", lastError: "Outbox queue claim expired", nextAttemptAt: now } },
   );
   const stuck = await OutboxEvent.countDocuments({ status: { $in: ["pending", "queued", "failed"] }, updatedAt: { $lte: staleBefore } });
-  if (recovered.modifiedCount) console.warn(`Recovered ${recovered.modifiedCount} stale outbox event(s).`);
-  if (stuck) console.error(`Outbox has ${stuck} stuck event(s).`);
+  if (recovered.modifiedCount) logger.warn({ event: "outbox_events_recovered", count: recovered.modifiedCount }, "Recovered stale outbox events");
+  if (stuck) logger.error({ alert: true, event: "outbox_events_stuck", count: stuck }, "Outbox has stuck events");
   return stuck;
 }
 

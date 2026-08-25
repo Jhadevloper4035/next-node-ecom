@@ -1,5 +1,6 @@
 const { Queue } = require("bullmq");
 const { getQueueRedis } = require("../config/queueRedis");
+const logger = require("../config/logger");
 
 const emailPriority = {
   verification: 1,
@@ -43,17 +44,17 @@ async function enqueueEmail({ type, to, data, jobId, emailEventId }, { requireQu
   const queue = getEmailQueue();
   if (!queue) {
     if (requireQueue) {
-      console.error("ALERT: Email queue is unavailable.");
+      logger.error({ alert: true, event: "email_queue_unavailable" }, "Email queue is unavailable");
       throw new Error("Email queue is unavailable");
     }
-    console.warn("Email queue disabled because QUEUE_REDIS_URL and REDIS_URL are not set.");
+    logger.warn({ event: "email_queue_disabled" }, "Email queue disabled because Redis is not configured");
     return null;
   }
 
   try {
     return await queue.add(type, { to, data, emailEventId }, { jobId, priority });
   } catch (error) {
-    console.error("ALERT: Email queue enqueue failed:", error.message);
+    logger.error({ err: error, alert: true, event: "email_queue_enqueue_failed", emailEventId }, "Email queue enqueue failed");
     if (requireQueue) throw error;
     return null;
   }

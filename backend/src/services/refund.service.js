@@ -8,6 +8,7 @@ const { recordOutboxEvent } = require("./outbox.service");
 const { redactPaymentData } = require("../utils/paymentPayload");
 const { paymentAmountPaise } = require("./payment-verification.service");
 const { recordFinancialAudit } = require("./financial-audit.service");
+const logger = require("../config/logger");
 
 const refundId = () => `RF${Date.now().toString(36).toUpperCase()}${crypto.randomBytes(5).toString("hex").toUpperCase()}`;
 const refundableStatuses = ["confirmed", "processing", "cancel_requested", "cancelled", "payment_review_required", "payment_received_after_cancellation", "refund_pending", "partially_refunded"];
@@ -214,7 +215,7 @@ async function reconcileRefunds() {
       const remoteRefund = cashfreeRefunds.find((item) => item.refund_id === refund.refundId || String(item.cf_refund_id) === String(refund.cfRefundId));
       if (remoteRefund) await applyCashfreeRefund(refund, remoteRefund, { actorType: "system_reconciliation", correlationId: `REFUND_RECONCILIATION:${refund._id}`, paymentId: refund.cfRefundId });
     } catch (error) {
-      console.error(`Refund reconciliation failed for ${refund.refundId}:`, error.message);
+      logger.error({ err: error, event: "refund_reconciliation_failed", refundId: refund.refundId }, "Refund reconciliation failed");
     }
   }
 }

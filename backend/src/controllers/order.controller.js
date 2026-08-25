@@ -8,6 +8,7 @@ const { enqueueDurableEmail } = require("../services/email-event.service");
 const { initiateRefund } = require("../services/refund.service");
 const { recordFinancialAudit } = require("../services/financial-audit.service");
 const { recordOutboxEvent } = require("../services/outbox.service");
+const logger = require("../config/logger");
 
 const paymentFields = "gateway status cfOrderId cfPaymentId amountPaise currency paymentSessionId";
 const refundData = (refund) => ({
@@ -42,7 +43,7 @@ exports.getMyOrder = asyncHandler(async (req, res) => {
       const result = await reconcileActiveCheckout(order, req.userDoc);
       if (result.order) order = result.order;
     } catch (error) {
-      console.error("Cashfree payment check failed:", error.message);
+      (req.log || logger).error({ err: error, event: "cashfree_payment_check_failed", orderNumber: order.orderNumber }, "Cashfree payment check failed");
     }
   }
 

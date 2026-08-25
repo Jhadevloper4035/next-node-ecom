@@ -4,7 +4,9 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss");
+const pinoHttp = require("pino-http");
 const { env } = require("./config/env");
+const logger = require("./config/logger");
 
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -17,6 +19,10 @@ const app = express();
 
 if (env.trustProxy) app.set("trust proxy", 1);
 
+app.use(pinoHttp({
+  logger,
+  autoLogging: { ignore: (req) => req.url === "/api/v1/health" },
+}));
 app.use(helmet());
 app.use(
   cors({

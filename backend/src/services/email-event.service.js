@@ -4,6 +4,7 @@ const PaymentTransaction = require("../models/paymentTransaction.model");
 const ApiError = require("../utils/ApiError");
 const { enqueueEmail } = require("../queues/email.queue");
 const { isUnconfirmedPaymentState } = require("./payment-state.service");
+const logger = require("../config/logger");
 
 function failedPaymentEmailReady({ order, payment, hasPaidAttempt }) {
   if (!isUnconfirmedPaymentState(payment?.status) || !["FAILED", "USER_DROPPED", "CANCELLED", "VOID"].includes(payment?.cashfreeStatus) || hasPaidAttempt) return false;
@@ -61,7 +62,7 @@ async function enqueueDurableEmail(emailEvent, { manual = false } = {}) {
       { _id: event._id },
       { $set: { status: "failed", lastAttemptAt: new Date(), finalError: error.message } },
     );
-    console.error("ALERT: Email queue is unavailable:", error.message);
+    logger.error({ err: error, alert: true, event: "email_queue_unavailable", emailEventId: event._id }, "Email queue is unavailable");
     throw error;
   }
 }
@@ -92,7 +93,7 @@ async function recoverFailedEmailEvents() {
     try {
       await enqueueDurableEmail(event);
     } catch (error) {
-      console.error(`Email recovery failed for ${event._id}:`, error.message);
+      logger.error({ err: error, event: "email_recovery_failed", emailEventId: event._id }, "Email recovery failed");
     }
   }
   return events.length;

@@ -2,6 +2,7 @@ const { Worker } = require("bullmq");
 const { env } = require("../config/env");
 const { sendMail } = require("../config/mailer");
 const { getQueueRedis } = require("../config/queueRedis");
+const logger = require("../config/logger");
 const EmailEvent = require("../models/emailEvent.model");
 const { emailEventReady } = require("../services/email-event.service");
 const { verificationEmailTemplate, passwordResetEmailTemplate, passwordChangedEmailTemplate, orderReservedEmailTemplate, paymentFailedEmailTemplate, checkoutExpiredEmailTemplate, orderConfirmedEmailTemplate, refundInitiatedEmailTemplate, refundCompletedEmailTemplate, refundFailedEmailTemplate, duplicatePaymentResolvedSupportEmailTemplate } = require("../utils/emailTemplates");
@@ -87,7 +88,7 @@ async function sendEmailEvent(emailEventId) {
 function startEmailWorker() {
   const connection = getQueueRedis();
   if (!connection) {
-    console.error("ALERT: Email worker is inactive because the Redis queue is unavailable.");
+    logger.error({ alert: true, event: "email_worker_inactive" }, "Email worker is inactive because the Redis queue is unavailable");
     return null;
   }
   if (emailWorker) return emailWorker;
@@ -98,7 +99,7 @@ function startEmailWorker() {
     await sendMail({ to: job.data.to, ...email });
   }, { connection });
 
-  emailWorker.on("failed", (job, error) => console.error(`Email job ${job?.id || "unknown"} failed:`, error.message));
+  emailWorker.on("failed", (job, error) => logger.error({ err: error, alert: true, event: "email_job_failed", jobId: job?.id || "unknown" }, "Email job failed"));
   return emailWorker;
 }
 

@@ -1,6 +1,7 @@
 const rateLimit = require("express-rate-limit");
 const { env } = require("../config/env");
 const { initRedis } = require("../config/redis");
+const logger = require("../config/logger");
 
 const MINUTES = (minutes) => minutes * 60 * 1000;
 
@@ -30,7 +31,7 @@ async function initRateLimitStore() {
     if (!client) return;
     limiters = createLimiters((name) => new RedisStore({ sendCommand: (...args) => client.sendCommand(args), prefix: `curve-comfort:rate-limit:${name}:` }));
   } catch (error) {
-    console.warn("Redis unavailable, using in-memory:", error.message);
+    logger.warn({ err: error, event: "rate_limit_redis_unavailable" }, "Redis unavailable; using in-memory rate limits");
   }
 }
 

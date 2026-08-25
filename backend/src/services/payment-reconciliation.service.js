@@ -8,6 +8,7 @@ const { env } = require("../config/env");
 const { paymentAmountPaise, paymentVerificationError } = require("./payment-verification.service");
 const { releaseCouponReservation } = require("./coupon-lifecycle.service");
 const { recordFinancialAudit } = require("./financial-audit.service");
+const logger = require("../config/logger");
 
 // ponytail: process-local overlap guard; database idempotency protects multiple app instances.
 let isReconciling = false;
@@ -157,7 +158,7 @@ async function reconcilePayments() {
         await Order.updateOne({ _id: order._id }, { $set: { lastPaymentReconciledAt: new Date() } });
       } catch (error) {
         summary.failed += 1;
-        console.error(`Payment reconciliation failed for ${order.orderNumber}:`, error.message);
+        logger.error({ err: error, event: "payment_reconciliation_failed", orderNumber: order.orderNumber }, "Payment reconciliation failed");
       }
     }
     return summary;

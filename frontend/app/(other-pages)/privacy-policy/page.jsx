@@ -2,15 +2,13 @@ import Footer1 from "@/components/footers/Footer1";
 import Privacy from "@/components/otherPages/Privacy";
 import React from "react";
 import Link from "next/link";
+import { getPageSeoMetadata } from "@/lib/page-seo";
 
-
-export const metadata = {
-  title: "Privacy Policy || Curve & Comfort - Premium Furniture Store",
-  description:
-    "Learn how Curve & Comfort (curve-comfort.com) collects, uses, and protects your personal data. Compliant with DPDPA 2023 and IT Act 2000.",
-};
-
-
+export const generateMetadata = () => getPageSeoMetadata("privacy-policy", {
+  title: "Privacy Policy | Curve & Comfort",
+  description: "Learn how Curve & Comfort collects, uses, and protects your personal information.",
+  canonical: "/privacy-policy",
+});
 
 export default function TermsOfUsePage() {
   return (

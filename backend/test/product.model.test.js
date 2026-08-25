@@ -85,3 +85,16 @@ test("rejects customization groups without options", async () => {
 
   await assert.rejects(product.validate(), /must contain at least one option/);
 });
+
+test("normalizes CMS SEO keywords for product metadata", async () => {
+  const product = new Product(productData([]));
+  product.seo = {
+    title: "Custom Sofa | Curve & Comfort",
+    description: "A search-ready custom sofa.",
+    keywords: "custom sofa, living room, custom sofa",
+  };
+
+  await product.validate();
+
+  assert.deepEqual(product.seo.keywords, ["custom sofa", "living room"]);
+});

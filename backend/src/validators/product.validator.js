@@ -4,6 +4,22 @@ const Product = require("../models/product.model");
 
 const isValidObjectId = (v) => mongoose.Types.ObjectId.isValid(v);
 
+const seoRules = [
+  body("seo").optional().isObject().withMessage("seo must be an object"),
+  body("seo.title").optional().isString().trim().isLength({ max: 60 }),
+  body("seo.description").optional().isString().trim().isLength({ max: 160 }),
+  body("seo.keywords").optional().custom((value) => Array.isArray(value) || typeof value === "string"),
+  body("seo.robots").optional().isString().trim().isLength({ max: 160 }),
+  body("seo.canonicalUrl").optional().isString().trim().isLength({ max: 500 }),
+  body("seo.ogTitle").optional().isString().trim().isLength({ max: 100 }),
+  body("seo.ogDescription").optional().isString().trim().isLength({ max: 200 }),
+  body("seo.ogImage").optional().isString().trim().isLength({ max: 500 }),
+  body("seo.ogType").optional().isString().trim().isLength({ max: 40 }),
+  body("seo.twitterTitle").optional().isString().trim().isLength({ max: 100 }),
+  body("seo.twitterDescription").optional().isString().trim().isLength({ max: 200 }),
+  body("seo.twitterImage").optional().isString().trim().isLength({ max: 500 }),
+];
+
 // ================= COMMON OPTION RULES =================
 
 const optionItemRules = (path) => [
@@ -162,6 +178,7 @@ exports.createProductValidator = [
 
   body("tags").optional().isArray(),
   body("tags.*").optional().isString(),
+  ...seoRules,
 
   body("isActive").optional().isBoolean(),
 ];
@@ -227,6 +244,7 @@ exports.updateProductValidator = [
 
   body("tags").optional().isArray(),
   body("tags.*").optional().isString(),
+  ...seoRules,
 
   body("isActive").optional().isBoolean(),
 ];

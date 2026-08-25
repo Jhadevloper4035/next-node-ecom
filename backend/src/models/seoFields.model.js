@@ -36,7 +36,7 @@ const seoMetaSchema = new mongoose.Schema({
     },
     author: {
         type: String,
-        default: 'Skydecor'
+        default: 'Curve & Comfort'
     },
     robots: {
         type: String,
@@ -71,7 +71,7 @@ const seoMetaSchema = new mongoose.Schema({
     },
     ogSiteName: {
         type: String,
-        default: 'Skydecor'
+        default: 'Curve & Comfort'
     },
     ogImage: {
         url: {
@@ -111,7 +111,7 @@ const seoMetaSchema = new mongoose.Schema({
     },
     twitterSite: {
         type: String,
-        default: '@skydecor'
+        default: '@curve_comfort'
     },
 
     // Additional SEO Meta Tags

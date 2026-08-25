@@ -78,7 +78,7 @@ export default function RelatedBlogs({ posts = [], currentUrl }) {
                       </div>
                       <div>
                         <h6 className="title fw-5">
-                          <Link className="link" href={`/blog-detail/${post.url}`}>
+                          <Link className="link" href={`/blogs/${post.url}`}>
                             {post.title}
                           </Link>
                         </h6>

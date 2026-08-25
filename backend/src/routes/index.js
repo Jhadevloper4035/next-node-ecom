@@ -19,6 +19,7 @@ const cartRoutes = require("./cart.route");
 const wishlistRoutes = require("./wishlist.route");
 const couponRoutes = require("./coupon.route");
 const newsletterRoutes = require("./newsletter.route");
+const seoRoutes = require("./seo.route");
 
 
 router.use("/categories", categoryRoutes);
@@ -33,6 +34,7 @@ router.use("/cart", cartRoutes);
 router.use("/wishlist", wishlistRoutes);
 router.use("/coupons", couponRoutes);
 router.use("/newsletter", newsletterRoutes);
+router.use("/seo", seoRoutes);
 
 
 router.use("/auth", authRoutes);

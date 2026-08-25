@@ -243,7 +243,7 @@ export const otherShopMenus = [
 ];
 
 export const blogLinks = [
-  { href: "/blog-detail/1", name: "Blog Detail 1" },
+  { href: "/blogs", name: "Blog" },
 ];
 
 export const otherPageLinks = [

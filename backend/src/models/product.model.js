@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const embeddedSeoSchema = require("./embedded-seo.schema");
 
 const optionItemSchema = new mongoose.Schema(
     {
@@ -181,6 +182,8 @@ const productSchema = new mongoose.Schema(
 
         rating: { type: Number, default: 0, min: 0, max: 5 },
         reviewsCount: { type: Number, default: 0, min: 0 },
+
+        seo: { type: embeddedSeoSchema, default: () => ({}) },
 
         isActive: { type: Boolean, default: true, index: true },
         isDeleted: { type: Boolean, default: false, index: true },

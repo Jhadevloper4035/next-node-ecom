@@ -3,10 +3,13 @@ import Topbar6 from "@/components/headers/Topbar6";
 import Faqs from "@/components/otherPages/Faqs";
 import React from "react";
 import Link from "next/link";
-export const metadata = {
-  title: "Faqs || Modave - Multipurpose React Nextjs eCommerce Template",
-  description: "Modave - Multipurpose React Nextjs eCommerce Template",
-};
+import { getPageSeoMetadata } from "@/lib/page-seo";
+
+export const generateMetadata = () => getPageSeoMetadata("faqs", {
+  title: "Frequently Asked Questions | Curve & Comfort",
+  description: "Find answers to common questions about Curve & Comfort products, orders, delivery, returns, and support.",
+  canonical: "/FAQs",
+});
 
 export default function FAQSPage() {
   return (

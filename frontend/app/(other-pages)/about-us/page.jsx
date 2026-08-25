@@ -7,11 +7,13 @@ import About from "@/components/otherPages/About";
 import Team from "@/components/otherPages/Team";
 import Testimonials from "@/components/otherPages/Testimonials";
 import React from "react";
+import { getPageSeoMetadata } from "@/lib/page-seo";
 
-export const metadata = {
-  title: "About Us || Modave - Multipurpose React Nextjs eCommerce Template",
-  description: "Modave - Multipurpose React Nextjs eCommerce Template",
-};
+export const generateMetadata = () => getPageSeoMetadata("about-us", {
+  title: "About Curve & Comfort | Premium Furniture Store",
+  description: "Learn about Curve & Comfort and our thoughtfully designed furniture for comfortable, beautiful homes.",
+  canonical: "/about-us",
+});
 
 export default function AboutUsPage() {
   return (

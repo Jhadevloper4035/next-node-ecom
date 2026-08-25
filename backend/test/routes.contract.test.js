@@ -21,6 +21,7 @@ const controllers = {
   contact: require("../src/controllers/contact.controller"),
   coupon: require("../src/controllers/coupon.controller"),
   newsletter: require("../src/controllers/newsletter.controller"),
+  seo: require("../src/controllers/seo.controller"),
   health: require("../src/controllers/health.controller"),
   order: require("../src/controllers/order.controller"),
   payment: require("../src/controllers/payment.controller"),
@@ -41,6 +42,7 @@ const routers = {
   contact: require("../src/routes/contact.route"),
   coupon: require("../src/routes/coupon.route"),
   newsletter: require("../src/routes/newsletter.route"),
+  seo: require("../src/routes/seo.route"),
   order: require("../src/routes/order.route"),
   product: require("../src/routes/product.route"),
   review: require("../src/routes/review.route"),
@@ -51,16 +53,17 @@ const expected = {
   address: "GET /|POST /|PUT /:addressId|DELETE /:addressId|PATCH /:addressId/default",
   admin: "GET /dashboard|GET /monitoring|GET /payments|POST /payments/:orderId/reconcile|GET /users|PATCH /users/:id/role|PATCH /users/:id/block",
   auth: "POST /register|POST /verify-email|POST /resend-verification|POST /login|POST /refresh|POST /logout|POST /logout-all|GET /me|POST /forgot-password|POST /reset-password|POST /change-password",
-  blog: "GET /|GET /taxonomies|GET /:url",
+  blog: "GET /|GET /taxonomies|GET /sitemap|GET /:url",
   cart: "GET /|PUT /",
   wishlist: "GET /|PUT /",
-  category: "POST /|GET /|GET /tree|GET /stats|GET /slug/:slug|GET /:id|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|GET /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
+  category: "POST /|GET /|GET /tree|GET /sitemap|GET /stats|GET /slug/:slug|GET /:id|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|GET /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
   checkout: "DELETE /:orderId|GET /active|POST /|POST /:orderId/retry",
   contact: "POST /submit",
   coupon: "GET /:code|POST /|PATCH /:couponId",
   newsletter: "POST /subscribe",
+  seo: "GET /sitemap|GET /:pageSlug",
   order: "GET /|GET /:orderId|PATCH /:orderId/status|POST /:orderId/refunds|POST /:orderId/emails/:emailEventId/resend",
-  product: "GET /|GET /slug/:slug|GET /category/:categorySlug|GET /category/:categorySlug/subcategory/:subcategorySlug|POST /|PUT /:id|DELETE /:id",
+  product: "GET /|GET /slug/:slug|GET /sitemap|GET /category/:categorySlug|GET /category/:categorySlug/subcategory/:subcategorySlug|POST /|PUT /:id|DELETE /:id",
   review: "GET /product/:productId|POST /product/:productId",
   user: "GET /profile|PATCH /profile",
 };
@@ -77,11 +80,11 @@ const controllerHandlers = {
     "GET /me": "me", "POST /forgot-password": "forgotPassword", "POST /reset-password": "resetPassword",
     "POST /change-password": "changePassword",
   },
-  blog: { "GET /": "listBlogs", "GET /taxonomies": "listBlogTaxonomies", "GET /:url": "getBlogByUrl" },
+  blog: { "GET /": "listBlogs", "GET /taxonomies": "listBlogTaxonomies", "GET /sitemap": "getSitemapBlogs", "GET /:url": "getBlogByUrl" },
   cart: { "GET /": "getCart", "PUT /": "replaceCart" },
   wishlist: { "GET /": "getWishlist", "PUT /": "replaceWishlist" },
   category: {
-    "POST /": "createCategory", "GET /": "getCategories", "GET /tree": "getCategoryTree", "GET /stats": "getCategoryStats",
+    "POST /": "createCategory", "GET /": "getCategories", "GET /tree": "getCategoryTree", "GET /sitemap": "getSitemapCategories", "GET /stats": "getCategoryStats",
     "GET /slug/:slug": "getCategoryBySlug", "GET /:id": "getCategoryById", "PUT /:id": "updateCategory",
     "DELETE /:id": "deleteCategory", "POST /:id/restore": "restoreCategory", "PATCH /bulk": "bulkUpdateCategories",
     "POST /bulk-delete": "bulkDeleteCategories", "POST /:parentId/subcategories": "createSubcategory",
@@ -91,9 +94,10 @@ const controllerHandlers = {
   contact: { "POST /submit": "submitContact" },
   coupon: { "GET /:code": "getCoupon", "POST /": "createCoupon", "PATCH /:couponId": "updateCoupon" },
   newsletter: { "POST /subscribe": "subscribe" },
+  seo: { "GET /sitemap": "getPageSeoSitemap", "GET /:pageSlug": "getPageSeo" },
   order: { "GET /": "listMyOrders", "GET /:orderId": "getMyOrder", "PATCH /:orderId/status": "updateOrderStatus", "POST /:orderId/refunds": "createRefund", "POST /:orderId/emails/:emailEventId/resend": "resendEmail" },
   product: {
-    "GET /": "listProducts", "GET /slug/:slug": "getBySlug", "GET /category/:categorySlug": "getByCategorySlug",
+    "GET /": "listProducts", "GET /slug/:slug": "getBySlug", "GET /sitemap": "getSitemapProducts", "GET /category/:categorySlug": "getByCategorySlug",
     "GET /category/:categorySlug/subcategory/:subcategorySlug": "getByCategoryAndSubcategorySlug",
     "POST /": "createProduct", "PUT /:id": "updateProduct", "DELETE /:id": "softDeleteProduct",
   },
@@ -207,7 +211,7 @@ test("admin and payment routes retain their authorization and abuse controls", (
 test("the API index mounts every route group and health endpoint", () => {
   const index = require("../src/routes");
   const mounted = index.stack.filter((layer) => layer.name === "router").map((layer) => layer.regexp.toString());
-  for (const prefix of ["categories", "product", "address", "contact", "reviews", "blogs", "checkout", "orders", "cart", "wishlist", "coupons", "auth", "users", "admin"]) {
+  for (const prefix of ["categories", "product", "address", "contact", "reviews", "blogs", "checkout", "orders", "cart", "wishlist", "coupons", "newsletter", "seo", "auth", "users", "admin"]) {
     assert.ok(mounted.some((regexp) => regexp.includes(prefix)), `${prefix} is not mounted`);
   }
   assert.ok(getRoute(index, "get", "/health"), "health endpoint is missing");

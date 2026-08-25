@@ -1,12 +1,13 @@
 import BlogList from "@/components/blogs/BlogList";
 import Footer1 from "@/components/footers/Footer1";
 import { getBlogs, getBlogTaxonomies } from "@/lib/blogs";
+import { getPageSeoMetadata } from "@/lib/page-seo";
 
-export const metadata = {
-  title: "Blog | Curve & Comfort",
-  description: "Furniture ideas, design inspiration, and buying guides from Curve & Comfort.",
-  alternates: { canonical: "/blogs" },
-};
+export const generateMetadata = () => getPageSeoMetadata("blogs", {
+  title: "Furniture Ideas and Buying Guides | Curve & Comfort Blog",
+  description: "Explore furniture ideas, home design inspiration, and practical buying guides from Curve & Comfort.",
+  canonical: "/blogs",
+});
 
 export default async function BlogsPage({ searchParams }) {
   const filters = (await searchParams) || {};

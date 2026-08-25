@@ -34,6 +34,10 @@ export async function getBlog(url) {
   return (await request(`/${encodeURIComponent(url)}`))?.data || null;
 }
 
+export async function getBlogSitemap() {
+  return (await request("/sitemap"))?.data || [];
+}
+
 export function getBlogExcerpt(blog, words = 18) {
   const text = (blog.meta_description || blog.text || "")
     .replace(/<[^>]*>/g, " ")

@@ -52,3 +52,14 @@ exports.getBlogByUrl = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getSitemapBlogs = async (req, res, next) => {
+  try {
+    const blogs = await Blog.find({ status: "active", image: { $not: /^\/images\/blog\// } })
+      .select("url updated_at")
+      .lean();
+    res.json({ success: true, data: blogs });
+  } catch (error) {
+    next(error);
+  }
+};

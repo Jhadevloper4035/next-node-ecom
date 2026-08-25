@@ -142,6 +142,17 @@ exports.getCategoryBySlug = async (req, res) => {
   }
 };
 
+exports.getSitemapCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({ isDeleted: false, isActive: true })
+      .select("slug parent updatedAt")
+      .lean();
+    return sendSuccess(res, categories);
+  } catch (error) {
+    return sendError(res, error.message, 400);
+  }
+};
+
 exports.deleteCategory = async (req, res) => {
   try {
     const doc = await Category.findOne({ _id: req.params.id, isDeleted: false });

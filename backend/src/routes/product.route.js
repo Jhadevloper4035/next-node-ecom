@@ -35,6 +35,7 @@ router.get(
   }),
   productController.getBySlug,
 );
+router.get("/sitemap", productController.getSitemapProducts);
 
 
 // By category/subcategory slugs

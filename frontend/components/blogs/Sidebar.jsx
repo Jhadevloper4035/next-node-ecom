@@ -18,7 +18,7 @@ export default function Sidebar({ posts = [], taxonomies }) {
               </div>
               <div className="content">
                 <div className="meta"><div className="meta-item gap-8"><i className="icon-calendar" /><p className="text-caption-1">{new Date(post.created_at).toLocaleDateString()}</p></div></div>
-                <h6 className="title fw-5"><Link className="link" href={`/blog-detail/${post.url}`}>{getBlogExcerpt(post, 8)}</Link></h6>
+                <h6 className="title fw-5"><Link className="link" href={`/blogs/${post.url}`}>{getBlogExcerpt(post, 8)}</Link></h6>
               </div>
             </div>
           ))}

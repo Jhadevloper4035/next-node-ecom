@@ -19,6 +19,7 @@ router.post("/", ...adminOnly, validator.createCategory, validate , ctrl.createC
 router.get("/", validator.getCategories, validate, categoryCache("list"), ctrl.getCategories);
 
 router.get("/tree", categoryCache("tree"), ctrl.getCategoryTree);
+router.get("/sitemap", ctrl.getSitemapCategories);
 router.get("/stats", ...adminOnly, ctrl.getCategoryStats);
 
 router.get("/slug/:slug", validator.getBySlug, validate, categoryCache("slug"), ctrl.getCategoryBySlug);

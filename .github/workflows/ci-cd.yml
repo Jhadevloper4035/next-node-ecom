@@ -268,6 +268,7 @@ jobs:
             docker compose -f docker-compose.prod.yml --env-file .env pull
             docker compose -f docker-compose.prod.yml --env-file .env down --remove-orphans
             docker compose -f docker-compose.prod.yml --env-file .env run --rm --no-deps backend npm run migrate:payment-attempts
+            docker compose -f docker-compose.prod.yml --env-file .env run --rm --no-deps backend npm run seed:seo
             docker compose -f docker-compose.prod.yml --env-file .env run --rm --no-deps backend node -e "const nodemailer=require('nodemailer'); const t=nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT||587),secure:process.env.SMTP_SECURE==='true',auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}}); t.verify().then(()=>console.log('SMTP verify ok')).catch(err=>{console.error('SMTP verify failed:', err.code||err.name, err.responseCode||'', err.message); process.exit(1);})"
             docker compose -f docker-compose.prod.yml --env-file .env up -d --no-build --remove-orphans --wait --wait-timeout 300
 
@@ -297,6 +298,11 @@ jobs:
             check_url "https://127.0.0.1:${HTTPS_PORT:-443}/health" -k
             check_url "$BASE_URL/"
             check_url "$BASE_URL/api/v1/product/?limit=1"
+            check_url "$BASE_URL/api/v1/seo/sitemap"
+            check_url "$BASE_URL/api/v1/product/sitemap"
+            check_url "$BASE_URL/api/v1/categories/sitemap"
+            check_url "$BASE_URL/api/v1/blogs/sitemap"
+            check_url "$BASE_URL/sitemap.xml"
 
             docker image prune -f
             echo "Deployed $GIT_COMMIT_SHA"

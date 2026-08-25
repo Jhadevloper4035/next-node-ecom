@@ -1,5 +1,6 @@
 import Footer1 from "@/components/footers/Footer1";
 import ProductDetailsBySlug from "@/components/products/ProductDetailsBySlug";
+import { createSeoMetadata } from "@/lib/seo";
 import { getProductBySlug } from "@/services/product/product.service";
 import React from "react";
 
@@ -22,33 +23,26 @@ export async function generateMetadata({ params }) {
     const product = response?.data;
     if (!product) return {};
 
-    const title = product.title || product.name || "Premium Furniture";
+    const productName = product.title || product.name || "Premium Furniture";
+    const title = `${productName} | Curve & Comfort`;
     const description =
       plainText(product.shortDescription || product.description) ||
-      `Shop ${title} online at Curve & Comfort.`;
+      `Shop ${productName} online at Curve & Comfort.`;
     const image = firstImage(product);
 
-    return {
+    return createSeoMetadata({
+      seo: product.seo,
       title,
       description,
-      alternates: {
-        canonical: `/product/${slug}`,
-      },
-      openGraph: {
-        title,
-        description,
-        type: "website",
-        url: `/product/${slug}`,
-        images: image ? [{ url: image, alt: title }] : undefined,
-      },
-    };
+      canonical: `/product/${slug}`,
+      image,
+    });
   } catch {
-    return {
+    return createSeoMetadata({
       title: "Product",
-      alternates: {
-        canonical: `/product/${slug}`,
-      },
-    };
+      description: "Shop furniture at Curve & Comfort.",
+      canonical: `/product/${slug}`,
+    });
   }
 }
 

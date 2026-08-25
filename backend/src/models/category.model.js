@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const embeddedSeoSchema = require("./embedded-seo.schema");
 
 /**
  * Category Model
@@ -65,11 +66,7 @@ const categorySchema = new mongoose.Schema(
     ],
 
     // SEO fields
-    seo: {
-      title: { type: String, maxlength: 60 },
-      description: { type: String, maxlength: 160 },
-      keywords: [String],
-    },
+    seo: { type: embeddedSeoSchema, default: () => ({}) },
 
     // Status and ordering
     isActive: {

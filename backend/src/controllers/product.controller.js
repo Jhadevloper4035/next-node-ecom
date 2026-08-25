@@ -172,6 +172,17 @@ exports.getBySlug = async (req, res, next) => {
   }
 };
 
+exports.getSitemapProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find({ isDeleted: false, isActive: true })
+      .select("slug updatedAt")
+      .lean();
+    res.json({ success: true, data: products });
+  } catch (err) {
+    next(err);
+  }
+};
+
 /**
  * LIST (ALL PRODUCTS) WITH PAGINATION + FILTERS
  * Supports:

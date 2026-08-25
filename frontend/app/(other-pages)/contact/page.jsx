@@ -2,10 +2,13 @@ import Footer1 from "@/components/footers/Footer1";
 import Contact3 from "@/components/otherPages/Contact3";
 import React from "react";
 import Link from "next/link";
-export const metadata = {
-  title: "Countact 02 || Modave - Multipurpose React Nextjs eCommerce Template",
-  description: "Modave - Multipurpose React Nextjs eCommerce Template",
-};
+import { getPageSeoMetadata } from "@/lib/page-seo";
+
+export const generateMetadata = () => getPageSeoMetadata("contact", {
+  title: "Contact Curve & Comfort | Furniture Support",
+  description: "Contact Curve & Comfort for product questions, order support, and help choosing furniture for your home.",
+  canonical: "/contact",
+});
 
 export default function ContactPage2() {
   return (

@@ -7,22 +7,13 @@ import Hero from "@/components/homes/home-1/Hero";
 import Products from "@/components/common/Products2";
 import ShopGram from "@/components/common/ShopGram";
 import Testimonials from "@/components/homes/decor/Testimonials";
+import { getPageSeoMetadata } from "@/lib/page-seo";
 
-export const metadata = {
+export const generateMetadata = () => getPageSeoMetadata("home", {
   title: "Online Furniture Stores | Premium Furniture Online - Curve & Comfort",
-  description:
-    "Discover premium furniture online at Curve & Comfort. Shop high-end designer sofas, luxury chairs, and premium wooden furniture crafted for ultimate elegance. Buy furniture online today.",
-  keywords: [
-    "online furniture",
-    "premium furniture online",
-    "buy furniture online",
-    "online furniture stores",
-    "shop furniture online",
-  ],
-  alternates: {
-    canonical: "https://curve-comfort.com/",
-  },
-};
+  description: "Discover premium furniture online at Curve & Comfort. Shop high-end designer sofas, luxury chairs, and premium wooden furniture crafted for ultimate elegance. Buy furniture online today.",
+  canonical: "/",
+});
 
 export default function HomePage() {
   return (

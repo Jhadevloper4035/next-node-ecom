@@ -3,10 +3,13 @@ import Topbar6 from "@/components/headers/Topbar6";
 import Terms from "@/components/otherPages/Terms";
 import React from "react";
 import Link from "next/link";
-export const metadata = {
-  title: "Terms & Conditions || Curve & Comfort - Premium Furniture Store",
-  description: "Read the Terms and Conditions for Curve & Comfort (curve-comfort.com). Understand our policies on orders, payments via Cashfree, shipping, returns, and more.",
-};
+import { getPageSeoMetadata } from "@/lib/page-seo";
+
+export const generateMetadata = () => getPageSeoMetadata("term-of-use", {
+  title: "Terms and Conditions | Curve & Comfort",
+  description: "Read Curve & Comfort terms and conditions for orders, payments, shipping, returns, and website use.",
+  canonical: "/term-of-use",
+});
 
 export default function TermsOfUsePage() {
   return (

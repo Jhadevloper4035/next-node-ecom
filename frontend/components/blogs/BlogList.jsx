@@ -46,14 +46,14 @@ export default function BlogList({ posts = [], taxonomies }) {
                     </div>
                   </div>
                   <h5 className="title">
-                    <Link className="link" href={`/blog-detail/${post.url}`}>
+                    <Link className="link" href={`/blogs/${post.url}`}>
                       {post.title}
                     </Link>
                   </h5>
                   {post.category && <p className="text-caption-1">{post.category}</p>}
                   <p>{getBlogExcerpt(post)}</p>
                   <Link
-                    href={`/blog-detail/${post.url}`}
+                    href={`/blogs/${post.url}`}
                     className="link text-button bot-button"
                   >
                     Read More

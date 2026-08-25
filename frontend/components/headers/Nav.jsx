@@ -2,21 +2,6 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import { products } from "@/data/products";
-import { Swiper, SwiperSlide } from "swiper/react";
-import ProductCard1 from "../productCards/ProductCard1";
-import {
-  blogLinks,
-  demoItems,
-  otherPageLinks,
-  otherShopMenus,
-  productFeatures,
-  productLinks,
-  productStyles,
-  shopFeatures,
-  shopLayout,
-  swatchLinks,
-} from "@/data/menu";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";

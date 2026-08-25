@@ -20,7 +20,7 @@ const columns = [
     title: "Shop",
     links: [
       ["All Products", "/all-products"],
-      ["Shop Furniture", "/shop-default-grid"],
+      ["Shop Furniture", "/all-products"],
       ["Shopping Cart", "/shopping-cart"],
       ["Wishlist", "/wish-list"],
       ["Compare Products", "/compare-products"],
@@ -86,7 +86,7 @@ export default function Footer1({ hasPaddingBottom = false }) {
             ))}
             <section className={styles.column}>
               <h2>Shop by Category</h2>
-              {(categoryLinks.length ? categoryLinks : [["All Products", "/all-products"], ["Furniture Collection", "/shop-collection"], ["Shop by Category", "/shop-categories-top"], ["New Arrivals", "/shop-default-grid"]]).map(([label, href]) => (
+              {(categoryLinks.length ? categoryLinks : [["All Products", "/all-products"], ["Furniture Collection", "/collections"], ["New Arrivals", "/all-products"]]).map(([label, href]) => (
                 <Link key={label} href={href}>{label}</Link>
               ))}
             </section>

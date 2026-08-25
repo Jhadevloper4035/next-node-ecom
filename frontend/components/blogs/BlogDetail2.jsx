@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "./Sidebar";
 
-export default function BlogDetail2({ blog, posts }) {
+export default function BlogDetail2({ blog, posts, taxonomies }) {
   return (
     <section className="flat-spacing"><div className="container"><div className="row">
       <div className="col-lg-8 mb-lg-30"><div className="blog-detail-wrap page-single-2"><div className="inner">
@@ -11,7 +11,7 @@ export default function BlogDetail2({ blog, posts }) {
         <div className="content body-text-1 blog-article-content" dangerouslySetInnerHTML={{ __html: blog.text }} />
         {(blog.category || blog.tags?.length > 0) && <div className="meta mt_24">{blog.category && <div className="meta-item gap-8"><span>Category:</span><Link className="link" href={`/blogs?category=${encodeURIComponent(blog.category)}`}>{blog.category}</Link></div>}{blog.tags?.map((tag) => <Link className="text-caption-1 link" key={tag} href={`/blogs?tag=${encodeURIComponent(tag)}`}>#{tag}</Link>)}</div>}
       </div></div></div>
-      <div className="col-lg-4"><Sidebar posts={posts} /></div>
+      <div className="col-lg-4"><Sidebar posts={posts} taxonomies={taxonomies} /></div>
     </div></div></section>
   );
 }

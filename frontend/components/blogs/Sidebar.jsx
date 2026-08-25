@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { getBlogExcerpt } from "@/lib/blogs";
 
-export default function Sidebar({ posts = [] }) {
-  const categories = [...new Set(posts.map((post) => post.category).filter(Boolean))];
-  const tags = [...new Set(posts.flatMap((post) => post.tags || []))];
+export default function Sidebar({ posts = [], taxonomies }) {
+  const categories = taxonomies?.category?.length ? taxonomies.category.map((item) => item.name) : [...new Set(posts.map((post) => post.category).filter(Boolean))];
+  const tags = taxonomies?.tag?.length ? taxonomies.tag.map((item) => item.name) : [...new Set(posts.flatMap((post) => post.tags || []))];
 
   return (
     <aside className="sidebar maxw-360">

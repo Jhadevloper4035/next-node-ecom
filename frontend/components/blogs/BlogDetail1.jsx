@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "./Sidebar";
 
-export default function BlogDetail1({ blog, posts }) {
+export default function BlogDetail1({ blog, posts, taxonomies }) {
   return (
     <section className="flat-spacing">
       <div className="container">
@@ -28,7 +28,7 @@ export default function BlogDetail1({ blog, posts }) {
               </div>
             </div>
           </article>
-          <aside className="col-lg-4"><Sidebar posts={posts} /></aside>
+          <aside className="col-lg-4"><Sidebar posts={posts} taxonomies={taxonomies} /></aside>
         </div>
       </div>
     </section>

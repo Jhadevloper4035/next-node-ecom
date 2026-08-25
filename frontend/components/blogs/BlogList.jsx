@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getBlogExcerpt } from "@/lib/blogs";
 
-export default function BlogList({ posts = [] }) {
+export default function BlogList({ posts = [], taxonomies }) {
   return (
     <div className="main-content-page">
       <div className="container">
@@ -66,7 +66,7 @@ export default function BlogList({ posts = [] }) {
             </ul>
           </div>
           <div className="col-lg-4">
-            <Sidebar posts={posts} />
+            <Sidebar posts={posts} taxonomies={taxonomies} />
           </div>
         </div>
       </div>

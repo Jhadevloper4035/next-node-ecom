@@ -1,6 +1,6 @@
 import BlogList from "@/components/blogs/BlogList";
 import Footer1 from "@/components/footers/Footer1";
-import { getBlogs } from "@/lib/blogs";
+import { getBlogs, getBlogTaxonomies } from "@/lib/blogs";
 
 export const metadata = {
   title: "Blog | Curve & Comfort",
@@ -10,13 +10,16 @@ export const metadata = {
 
 export default async function BlogsPage({ searchParams }) {
   const filters = (await searchParams) || {};
-  const posts = await getBlogs({ category: filters.category, tag: filters.tag });
+  const [posts, taxonomies] = await Promise.all([
+    getBlogs({ category: filters.category, tag: filters.tag }),
+    getBlogTaxonomies(),
+  ]);
 
   return <>
     <div className="page-title" style={{ backgroundImage: "url(/images/section/page-title.jpg)" }}>
       <div className="container-full"><div className="row"><div className="col-12"><h1 className="heading text-center">Blog</h1></div></div></div>
     </div>
-    <BlogList posts={posts} />
+    <BlogList posts={posts} taxonomies={taxonomies} />
     <Footer1 />
   </>;
 }

@@ -11,12 +11,14 @@ import { getMe } from "@/services/user/me.service";
 import { clearAuth } from "@/utlis/auth.utlis";
 
 const protectedRoutes = ["/my-account", "/my-account-address", "/my-account-orders", "/my-account-orders-details", "/checkout", "/view-cart"];
+const guestOnlyRoutes = ["/login", "/register", "/forget-password"];
 
 export default function AuthHydrator() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const pathname = usePathname();
   const router = useRouter();
+  const isGuestOnlyRoute = guestOnlyRoutes.includes(pathname);
 
   useAxiosInterceptors();
   useRouteLoadingState();
@@ -33,11 +35,17 @@ export default function AuthHydrator() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (user || pathname === "/forget-password" || pathname === "/reset-password") return;
+      if (user) {
+        if (isGuestOnlyRoute) router.replace("/my-account");
+        return;
+      }
+      if (pathname === "/reset-password") return;
+
       try {
         const res = await getMe();
-        if (res.data?.user) dispatch(updateUser(res.data.user));
-        else throw new Error("No active session");
+        if (!res.data?.user) throw new Error("No active session");
+        dispatch(updateUser(res.data.user));
+        if (isGuestOnlyRoute) router.replace("/my-account");
       } catch {
         dispatch(logout());
         if (protectedRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
@@ -45,7 +53,7 @@ export default function AuthHydrator() {
     };
 
     fetchUserData();
-  }, [dispatch, pathname, router, user]);
+  }, [dispatch, isGuestOnlyRoute, pathname, router, user]);
 
   return null; // This component renders nothing
 }

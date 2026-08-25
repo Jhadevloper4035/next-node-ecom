@@ -1,4 +1,5 @@
 const Blog = require("../models/blog.model");
+const BlogTaxonomy = require("../models/blog-taxonomy.model");
 const xss = require("xss");
 
 const queryValue = (value) => typeof value === "string" ? value.trim().slice(0, 80) : "";
@@ -23,6 +24,20 @@ exports.listBlogs = async (req, res, next) => {
     ]);
 
     res.json({ success: true, data: data.map(publicBlog), meta: { page, limit, total, totalPages: Math.ceil(total / limit) } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.listBlogTaxonomies = async (req, res, next) => {
+  try {
+    const taxonomies = await BlogTaxonomy.find({ type: { $in: ["category", "tag"] } })
+      .sort({ name: 1 })
+      .select("type name slug");
+    const data = { category: [], tag: [] };
+
+    taxonomies.forEach((taxonomy) => data[taxonomy.type].push(taxonomy));
+    res.json({ success: true, data });
   } catch (error) {
     next(error);
   }

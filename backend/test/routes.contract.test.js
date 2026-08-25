@@ -51,7 +51,7 @@ const expected = {
   address: "GET /|POST /|PUT /:addressId|DELETE /:addressId|PATCH /:addressId/default",
   admin: "GET /dashboard|GET /monitoring|GET /payments|POST /payments/:orderId/reconcile|GET /users|PATCH /users/:id/role|PATCH /users/:id/block",
   auth: "POST /register|POST /verify-email|POST /resend-verification|POST /login|POST /refresh|POST /logout|POST /logout-all|GET /me|POST /forgot-password|POST /reset-password|POST /change-password",
-  blog: "GET /|GET /:url",
+  blog: "GET /|GET /taxonomies|GET /:url",
   cart: "GET /|PUT /",
   wishlist: "GET /|PUT /",
   category: "POST /|GET /|GET /tree|GET /stats|GET /slug/:slug|GET /:id|PUT /:id|DELETE /:id|POST /:id/restore|PATCH /bulk|POST /bulk-delete|POST /:parentId/subcategories|GET /:parentId/subcategories|PUT /:parentId/subcategories/reorder",
@@ -77,7 +77,7 @@ const controllerHandlers = {
     "GET /me": "me", "POST /forgot-password": "forgotPassword", "POST /reset-password": "resetPassword",
     "POST /change-password": "changePassword",
   },
-  blog: { "GET /": "listBlogs", "GET /:url": "getBlogByUrl" },
+  blog: { "GET /": "listBlogs", "GET /taxonomies": "listBlogTaxonomies", "GET /:url": "getBlogByUrl" },
   cart: { "GET /": "getCart", "PUT /": "replaceCart" },
   wishlist: { "GET /": "getWishlist", "PUT /": "replaceWishlist" },
   category: {

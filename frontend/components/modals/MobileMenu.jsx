@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/redux/authSlice";
+import { logoutAPI } from "@/services/auth/logout.service";
 import ProductSearchSuggestions from "@/components/search/ProductSearchSuggestions";
 import useProductSearch from "@/hooks/useProductSearch";
 import { fallbackHeaderCategories } from "@/data/headerCategories";
@@ -14,9 +16,11 @@ const fixedHeaderCategories = [
 
 export default function MobileMenu() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const { categories, loading } = useSelector((state) => state.category);
+  const user = useSelector((state) => state.auth.user);
   const {
     canSearch,
     hasError: suggestionsError,
@@ -49,6 +53,16 @@ export default function MobileMenu() {
   const handleSuggestionClick = () => {
     closeMobileMenu();
     resetSearch();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutAPI();
+    } catch {}
+
+    dispatch(logout());
+    closeMobileMenu();
+    router.push("/");
   };
 
   const apiCategories = categories || [];
@@ -208,7 +222,32 @@ export default function MobileMenu() {
                 </svg>
                 Wishlist
               </Link>
-              <Link href={`/login`} className="site-nav-icon">
+              {user ? <button type="button" className="site-nav-icon" onClick={handleLogout}>
+                <svg
+                  className="icon"
+                  width={18}
+                  height={18}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                    stroke="#181818"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+                    stroke="#181818"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Logout
+              </button> : <Link href={`/login`} className="site-nav-icon">
                 <svg
                   className="icon"
                   width={18}
@@ -233,7 +272,7 @@ export default function MobileMenu() {
                   />
                 </svg>
                 Login
-              </Link>
+              </Link>}
             </div>
             <div className="mb-notice">
               <Link href={`/contact`} className="text-need">

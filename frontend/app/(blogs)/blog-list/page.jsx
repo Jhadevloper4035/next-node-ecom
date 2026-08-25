@@ -4,10 +4,10 @@ import Footer1 from "@/components/footers/Footer1";
 import Topbar6 from "@/components/headers/Topbar6";
 import Link from "next/link";
 import React from "react";
-import { getBlogs } from "@/lib/blogs";
+import { getBlogs, getBlogTaxonomies } from "@/lib/blogs";
 
 export default async function BlogListPage() {
-  const posts = await getBlogs();
+  const [posts, taxonomies] = await Promise.all([getBlogs(), getBlogTaxonomies()]);
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" /> */}
@@ -42,7 +42,7 @@ export default async function BlogListPage() {
           </div>
         </div>
       </div>
-      <BlogList posts={posts} />
+      <BlogList posts={posts} taxonomies={taxonomies} />
       <Footer1 />
     </>
   );

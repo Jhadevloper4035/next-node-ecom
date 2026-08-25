@@ -26,6 +26,10 @@ export async function getBlogs({ category, tag } = {}) {
   return (await request(`?${params}`))?.data || [];
 }
 
+export async function getBlogTaxonomies() {
+  return (await request("/taxonomies"))?.data || { category: [], tag: [] };
+}
+
 export async function getBlog(url) {
   return (await request(`/${encodeURIComponent(url)}`))?.data || null;
 }

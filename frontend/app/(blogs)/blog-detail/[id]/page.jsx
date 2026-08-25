@@ -3,7 +3,7 @@ import RelatedBlogs from "@/components/blogs/RelatedBlogs";
 
 import Footer1 from "@/components/footers/Footer1";
 import Topbar6 from "@/components/headers/Topbar6";
-import { getBlog, getBlogs } from "@/lib/blogs";
+import { getBlog, getBlogs, getBlogTaxonomies } from "@/lib/blogs";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -16,13 +16,12 @@ export async function generateMetadata({ params }) {
 
 export default async function BlogDetailsPage1({ params }) {
   const { id } = await params;
-  const blog = await getBlog(id);
+  const [blog, posts, taxonomies] = await Promise.all([getBlog(id), getBlogs(), getBlogTaxonomies()]);
   if (!blog) notFound();
-  const posts = await getBlogs();
   return (
     <>
       {/* <Topbar6 bgColor="bg-main" /> */}
-      <BlogDetail1 blog={blog} posts={posts} />
+      <BlogDetail1 blog={blog} posts={posts} taxonomies={taxonomies} />
       <RelatedBlogs posts={posts} currentUrl={blog.url} />
       <Footer1 />
     </>

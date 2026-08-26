@@ -1675,8 +1675,8 @@
       cursor: pointer;
       top: 16px;
       right: 16px;
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       padding: 0;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -1685,6 +1685,9 @@
       font-size: 28px;
       line-height: 1;
       z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .modal-bottom {
       background: var(--white) !important;

@@ -290,8 +290,6 @@ jobs:
               return 1
             }
 
-            check_url "$BASE_URL/health"
-            check_url "https://127.0.0.1:${HTTPS_PORT:-443}/health" -k
             check_url "$BASE_URL/"
             check_url "$BASE_URL/api/v1/product/?limit=1"
             check_url "$BASE_URL/api/v1/seo/sitemap"

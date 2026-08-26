@@ -141,7 +141,8 @@ On EC2, verify:
 cd /opt/curve-comfort
 docker compose -f docker-compose.prod.yml --env-file .env ps
 docker compose -f docker-compose.prod.yml --env-file .env logs --tail=100
-curl http://127.0.0.1/health
+curl -I http://127.0.0.1/health # redirects to the admin-only health endpoint
+docker compose -f docker-compose.prod.yml --env-file .env exec -T backend node -e "fetch('http://127.0.0.1:5000/api/v1/health/internal').then(r => process.exit(r.ok ? 0 : 1))"
 curl http://127.0.0.1/
 ```
 

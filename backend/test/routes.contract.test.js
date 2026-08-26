@@ -154,9 +154,19 @@ for (const [routeGroup, endpoints] of Object.entries(controllerHandlers)) {
   }
 }
 
-test("health endpoint uses health controller", () => {
+test("health endpoint requires an admin", () => {
   const apiRoutes = require("../src/routes");
-  assert.equal(getRoute(apiRoutes, "get", "/health").stack.at(-1).handle, controllers.health.health);
+  const handlers = getRoute(apiRoutes, "get", "/health").stack.map((layer) => layer.handle);
+  assert.equal(handlers[0], auth);
+  let error;
+  handlers[1]({ user: { role: "user" } }, {}, (err) => { error = err; });
+  assert.equal(error?.statusCode, 403);
+  assert.equal(handlers.at(-1), controllers.health.health);
+});
+
+test("internal health endpoint retains the health controller", () => {
+  const apiRoutes = require("../src/routes");
+  assert.equal(getRoute(apiRoutes, "get", "/health/internal").stack.at(-1).handle, controllers.health.health);
 });
 
 test("Cashfree webhook uses payment controller", () => {

@@ -2,6 +2,8 @@
 const router = require("express").Router();
 
 const healthCtrl = require("../controllers/health.controller");
+const auth = require("../middlewares/auth");
+const requireRole = require("../middlewares/requireRole");
 
 
 const authRoutes = require("./auth.route");
@@ -42,7 +44,8 @@ router.use("/users", userRoutes);
 router.use("/admin", adminRoutes);
 
 // Health
-router.get("/health", healthCtrl.health);
+router.get("/health/internal", healthCtrl.health);
+router.get("/health", auth, requireRole("admin"), healthCtrl.health);
 
 
 module.exports = router;

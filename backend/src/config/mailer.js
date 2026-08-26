@@ -17,7 +17,7 @@ function getTransporter() {
 async function sendMail({ to, subject, html }) {
   const t = getTransporter();
   if (!t) throw new Error(`SMTP_HOST not set; cannot send email: ${subject}`);
-  await t.sendMail({ from: env.mailFrom, to, subject, html });
+  await t.sendMail({ from: env.mailFrom, to, subject, html, replyTo: "info@curve-comfort.com" });
 }
 
 module.exports = { sendMail };

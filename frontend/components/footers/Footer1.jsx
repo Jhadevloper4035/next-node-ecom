@@ -136,7 +136,7 @@ export default function Footer1({ hasPaddingBottom = false }) {
               <Link href="/privacy-policy">Privacy Policy</Link>
               <Link href="/refund-policy">Refund Policy</Link>
             </div>
-            <p>©{new Date().getFullYear()} Curve &amp; Comfort. All rights reserved.</p>
+            <p>©{new Date().getFullYear()} Curve &amp; Comfort. All rights reserved. Powered by <a href="https://www.rantechnology.in/">Rantechnology</a>.</p>
           </div>
         </div>
       </footer>

@@ -23,3 +23,6 @@ docs/
 .env
 .env
 .env
+
+# MindexAI
+.mindexai/
